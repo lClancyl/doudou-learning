@@ -4072,14 +4072,31 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
                 if (elapsed > 3000) { done(false); return; }
                 // Mark that iFlytek handled this request — prevent system speech from playing too
                 state.iflytekHandledReqId = reqId;
-                // Always cancel system speech before playing iFlytek audio
+                // Cancel system speech first, then play iFlytek audio
+                // On iOS/WebKit, cancel is unreliable — add delay to let it actually stop
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
-                clearAudioBlobUrl();
-                var blobUrl = URL.createObjectURL(audioBlob);
-                state.audioBlobUrl = blobUrl;
-                audioPlayer.src = blobUrl;
-                audioPlayer.play().catch(function() {});
-                done(true);
+                function playAudio() {
+                  if (reqId !== state.speechReqId) { done(false); return; }
+                  clearAudioBlobUrl();
+                  var blobUrl = URL.createObjectURL(audioBlob);
+                  state.audioBlobUrl = blobUrl;
+                  audioPlayer.src = blobUrl;
+                  audioPlayer.play().catch(function() {});
+                  done(true);
+                }
+                // iOS/WebKit: wait for speech to actually stop before playing audio
+                if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                  var waitStart = Date.now();
+                  var waitInterval = setInterval(function() {
+                    if (!window.speechSynthesis.speaking || Date.now() - waitStart > 500) {
+                      clearInterval(waitInterval);
+                      if (window.speechSynthesis) window.speechSynthesis.cancel();
+                      playAudio();
+                    }
+                  }, 50);
+                } else {
+                  playAudio();
+                }
               }
             } catch (e) { done(false); }
           };
@@ -4223,11 +4240,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }
       const iflytekReqId = reqId;
       speakWithIflytek(speechText, iflytekReqId, selectedVcn).then(ok => {
-        if (!ok || iflytekReqId !== state.speechReqId) return;
-        // iFlytek already cancelled system speech internally — just verify it's still stopped
-        if (window.speechSynthesis) {
-          window.speechSynthesis.cancel();
-        }
+        // iFlytek handled everything internally (cancel + play)
+        // Nothing to do here
       });
     }
 
