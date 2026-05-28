@@ -5283,6 +5283,48 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }
 
 
+      // Draw 田字格 cross lines only (no outer box)
+      function drawTianZiGeCell(cx, cy, cellSize) {
+        ctx.setLineDash([6, 8]);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(180, 170, 160, 0.3)';
+        ctx.beginPath();
+        ctx.moveTo(cx + cellSize / 2, cy);
+        ctx.lineTo(cx + cellSize / 2, cy + cellSize);
+        ctx.moveTo(cx, cy + cellSize / 2);
+        ctx.lineTo(cx + cellSize, cy + cellSize / 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Draw 田字格 cells (cross lines, no boxes) — same layout as drawGuide
+      function drawTianZiGe(num) {
+        if (!ctx) return;
+        const digits = String(num);
+        const count = digits.length;
+        const box = display.getBoundingClientRect();
+        const w = box.width;
+        const h = box.height;
+        const margin = Math.min(w, h) * 0.03;
+
+        ctx.save();
+
+        if (count === 1) {
+          const cellSize = Math.min(w, h) - margin * 2;
+          drawTianZiGeCell((w - cellSize) / 2, (h - cellSize) / 2, cellSize);
+        } else {
+          const cellW = w / count;
+          const cellSize = Math.min(cellW - margin, h - margin * 2);
+          const startX = (w - cellSize * count) / 2;
+          const startY = (h - cellSize) / 2;
+          for (let i = 0; i < count; i++) {
+            drawTianZiGeCell(startX + i * cellSize, startY, cellSize);
+          }
+        }
+
+        ctx.restore();
+      }
+
       // Draw the guide number — fill entire canvas, no grid
       function drawGuide(num) {
         if (!ctx) return;
@@ -5324,15 +5366,17 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         hasDrawn = false;
         userStrokes = [];
         currentStroke = [];
+        drawTianZiGe(currentNum);
         drawGuide(currentNum);
       }
 
-      // Redraw everything: guide + all user strokes
+      // Redraw everything: grid cross lines + guide + all user strokes
       function redraw() {
         if (!ctx) return;
         const w = canvas.width / (window.devicePixelRatio || 1);
         const h = canvas.height / (window.devicePixelRatio || 1);
         ctx.clearRect(0, 0, w, h);
+        drawTianZiGe(currentNum);
         drawGuide(currentNum);
 
         const penWidth = Math.max(3, display.getBoundingClientRect().width * 0.018);
