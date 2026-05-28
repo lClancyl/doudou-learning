@@ -4066,11 +4066,13 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
                 var audioBlob = new Blob([merged], { type: "audio/mpeg" });
                 if (audioBlob.size < 100) { done(false); return; }
                 if (reqId !== state.speechReqId) { done(false); return; }
-                // Don't double-play: if system speech already finished, skip
-                if (window.speechSynthesis && !window.speechSynthesis.speaking) {
-                  done(false); return;
-                }
-                // Cancel system speech, play iFlytek audio instead
+                // Skip if iFlytek audio arrived too late (system speech already finished)
+                // Use time-based check: if >3s since speak() started, audio is stale
+                var elapsed = Date.now() - (state.speechStartedAt || 0);
+                if (elapsed > 3000) { done(false); return; }
+                // Mark that iFlytek handled this request — prevent system speech from playing too
+                state.iflytekHandledReqId = reqId;
+                // Always cancel system speech before playing iFlytek audio
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
                 clearAudioBlobUrl();
                 var blobUrl = URL.createObjectURL(audioBlob);
@@ -4142,6 +4144,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       // Safari workaround: small delay after cancel
       setTimeout(() => {
         if (reqId !== state.speechReqId) return;
+        // Don't play system speech if iFlytek already handled this request
+        if (state.iflytekHandledReqId === reqId) return;
         synth.cancel();
         synth.speak(u);
       }, 50);
@@ -4201,6 +4205,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const oneChar = /^[\u3400-\u9fff]$/.test(clean);
       const speechText = oneChar ? `${clean}。` : clean;
       const reqId = ++state.speechReqId;
+      state.speechStartedAt = Date.now();
 
       // Cancel any ongoing speech
       if (window.speechSynthesis) {
@@ -4219,7 +4224,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const iflytekReqId = reqId;
       speakWithIflytek(speechText, iflytekReqId, selectedVcn).then(ok => {
         if (!ok || iflytekReqId !== state.speechReqId) return;
-        // iFlytek succeeded — cancel system speech and let the better audio play
+        // iFlytek already cancelled system speech internally — just verify it's still stopped
         if (window.speechSynthesis) {
           window.speechSynthesis.cancel();
         }
@@ -4514,6 +4519,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }
       unlockSpeechIfNeeded();
       const reqId = ++state.speechReqId;
+      state.speechStartedAt = Date.now();
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
