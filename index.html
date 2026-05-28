@@ -5284,35 +5284,53 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         ctx.lineJoin = 'round';
       }
 
-      // Draw the 田字格 (field grid) behind the guide number
-      function drawTianZiGe() {
-        if (!ctx) return;
-        const box = display.getBoundingClientRect();
-        const w = box.width;
-        const h = box.height;
-        const margin = w * 0.12; // 12% margin for grid border
-        const x = margin;
-        const y = margin;
-        const size = w - margin * 2;
-
-        ctx.save();
+      // Draw one 田字格 cell at position (cx, cy) with given size
+      function drawTianZiGeCell(cx, cy, cellSize) {
         ctx.strokeStyle = 'rgba(180, 170, 160, 0.5)';
         ctx.lineWidth = 2;
+        ctx.setLineDash([]);
+        ctx.strokeRect(cx, cy, cellSize, cellSize);
 
-        // Outer box
-        ctx.strokeRect(x, y, size, size);
-
-        // Dashed cross lines (horizontal + vertical center)
+        // Dashed cross lines
         ctx.setLineDash([6, 8]);
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = 'rgba(180, 170, 160, 0.3)';
         ctx.beginPath();
-        ctx.moveTo(x + size / 2, y);        // vertical
-        ctx.lineTo(x + size / 2, y + size);
-        ctx.moveTo(x, y + size / 2);         // horizontal
-        ctx.lineTo(x + size, y + size / 2);
+        ctx.moveTo(cx + cellSize / 2, cy);
+        ctx.lineTo(cx + cellSize / 2, cy + cellSize);
+        ctx.moveTo(cx, cy + cellSize / 2);
+        ctx.lineTo(cx + cellSize, cy + cellSize / 2);
         ctx.stroke();
         ctx.setLineDash([]);
+      }
+
+      // Draw 田字格 cells — one per digit
+      function drawTianZiGe(num) {
+        if (!ctx) return;
+        const digits = String(num);
+        const count = digits.length;
+        const box = display.getBoundingClientRect();
+        const w = box.width;
+        const h = box.height;
+        const margin = w * 0.1;
+
+        ctx.save();
+
+        if (count === 1) {
+          // Single digit: one centered square
+          const cellSize = w - margin * 2;
+          drawTianZiGeCell(margin, (h - cellSize) / 2, cellSize);
+        } else {
+          // Two digits: two squares side by side, centered
+          const gap = w * 0.06;
+          const cellSize = (w - margin * 2 - gap) / 2;
+          const totalW = cellSize * 2 + gap;
+          const startX = (w - totalW) / 2;
+          const startY = (h - cellSize) / 2;
+          for (let i = 0; i < count; i++) {
+            drawTianZiGeCell(startX + i * (cellSize + gap), startY, cellSize);
+          }
+        }
 
         ctx.restore();
       }
@@ -5320,21 +5338,38 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       // Draw the guide number (large, light-colored, for tracing over)
       function drawGuide(num) {
         if (!ctx) return;
+        const digits = String(num);
+        const count = digits.length;
         const box = display.getBoundingClientRect();
         const w = box.width;
         const h = box.height;
-        const margin = w * 0.12;
-        const gridSize = w - margin * 2;
-        // Scale font based on digit count: single digit fills ~70% of grid, double ~50%
-        const isDouble = String(num).length > 1;
-        const fontSize = gridSize * (isDouble ? 0.55 : 0.72);
+        const margin = w * 0.1;
 
         ctx.save();
-        ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
+        ctx.fontWeight = '700';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(255, 107, 157, 0.2)';
-        ctx.fillText(String(num), w / 2, h / 2 + fontSize * 0.04);
+
+        if (count === 1) {
+          const cellSize = w - margin * 2;
+          const fontSize = cellSize * 0.72;
+          ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
+          ctx.fillText(digits[0], w / 2, h / 2 + fontSize * 0.04);
+        } else {
+          const gap = w * 0.06;
+          const cellSize = (w - margin * 2 - gap) / 2;
+          const totalW = cellSize * 2 + gap;
+          const startX = (w - totalW) / 2;
+          const startY = h / 2;
+          const fontSize = cellSize * 0.72;
+          ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
+          for (let i = 0; i < count; i++) {
+            const cx = startX + i * (cellSize + gap) + cellSize / 2;
+            ctx.fillText(digits[i], cx, startY + fontSize * 0.04);
+          }
+        }
+
         ctx.restore();
       }
 
@@ -5346,7 +5381,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         hasDrawn = false;
         userStrokes = [];
         currentStroke = [];
-        drawTianZiGe();
+        drawTianZiGe(currentNum);
         drawGuide(currentNum);
       }
 
@@ -5356,7 +5391,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         const w = canvas.width / (window.devicePixelRatio || 1);
         const h = canvas.height / (window.devicePixelRatio || 1);
         ctx.clearRect(0, 0, w, h);
-        drawTianZiGe();
+        drawTianZiGe(currentNum);
         drawGuide(currentNum);
 
         const penWidth = Math.max(3, display.getBoundingClientRect().width * 0.018);
