@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="data:," />
   <title>豆豆学习</title>
   <style>
@@ -35,7 +36,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Baloo 2", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-family: "Comfortaa", "Baloo 2", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       color: var(--ink);
       background:
         radial-gradient(circle at 85% 8%, rgba(255,255,255,0.85) 0%, transparent 18%),
@@ -1816,6 +1817,7 @@
     .compare-card-num {
       font-size: clamp(48px, 12vw, 80px);
       font-weight: 900;
+      font-family: "Comfortaa", "Baloo 2", sans-serif;
       line-height: 1;
     }
     .compare-vs {
@@ -2229,15 +2231,13 @@
       </section>
       <section class="card">
         <div class="num-nav">
-          <button id="traceNumPrev">上一个</button>
-          <span id="traceNumLabel" style="font-size:24px;font-weight:800;color:var(--peppa-pink-dark);">0</span>
-          <button id="traceNumNext">下一个</button>
-          <button id="traceNumClear" style="margin-left:16px;">清除</button>
+          <span id="traceNumLabel" style="font-size:28px;font-weight:800;color:var(--peppa-pink-dark);">0</span>
+          <button id="traceNumRandom">换一个</button>
+          <button id="traceNumClear">清除</button>
         </div>
         <div class="trace-num-display" id="traceNumDisplay">
           <canvas id="traceNumCanvas"></canvas>
         </div>
-        <div id="traceNumScore" style="text-align:center;font-size:22px;font-weight:800;min-height:32px;color:var(--peppa-pink-dark);"></div>
         <p class="tip" style="text-align:center;">沿着浅色数字描写吧！</p>
       </section>
     </div>
@@ -5179,7 +5179,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
     // ===== 数字学习模块 =====
     const numState = {
-      traceNum: 0,
       countCorrect: 0,
       addCorrect: 0,
       compareCorrect: 0,
@@ -5220,7 +5219,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const canvas = document.getElementById('traceNumCanvas');
       const display = document.getElementById('traceNumDisplay');
       const labelEl = document.getElementById('traceNumLabel');
-      const scoreEl = document.getElementById('traceNumScore');
       let drawing = false;
       let ctx;
       let hasDrawn = false;
@@ -5252,7 +5250,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         const fontSize = Math.min(w, h) * 0.85;
 
         ctx.save();
-        ctx.font = `900 ${fontSize}px "Baloo 2", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif`;
+        ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(255, 107, 157, 0.15)';
@@ -5268,7 +5266,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         hasDrawn = false;
         userStrokes = [];
         currentStroke = [];
-        if (scoreEl) scoreEl.textContent = '';
         drawGuide(currentNum);
       }
 
@@ -5297,110 +5294,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         });
       }
 
-      // Score: compare user strokes against the guide number's pixel coverage
-      function scoreWriting() {
-        if (!hasDrawn || userStrokes.length === 0) return;
-
-        const dpr = window.devicePixelRatio || 1;
-        const cw = canvas.width;
-        const ch = canvas.height;
-
-        // Create an offscreen canvas with just the guide number
-        const guideCanvas = document.createElement('canvas');
-        guideCanvas.width = cw;
-        guideCanvas.height = ch;
-        const gCtx = guideCanvas.getContext('2d');
-        gCtx.scale(dpr, dpr);
-        const box = display.getBoundingClientRect();
-        const w = box.width;
-        const h = box.height;
-        const fontSize = Math.min(w, h) * 0.85;
-        gCtx.font = `900 ${fontSize}px "Baloo 2", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif`;
-        gCtx.textAlign = 'center';
-        gCtx.textBaseline = 'middle';
-        gCtx.fillStyle = '#000';
-        gCtx.fillText(String(currentNum), w / 2, h / 2 + fontSize * 0.03);
-
-        // Get guide pixels
-        const guideData = gCtx.getImageData(0, 0, cw, ch).data;
-
-        // Create an offscreen canvas with just user strokes
-        const userCanvas = document.createElement('canvas');
-        userCanvas.width = cw;
-        userCanvas.height = ch;
-        const uCtx = userCanvas.getContext('2d');
-        uCtx.scale(dpr, dpr);
-        const penWidth = Math.max(3, w * 0.018);
-        uCtx.lineWidth = penWidth;
-        uCtx.strokeStyle = '#000';
-        uCtx.lineCap = 'round';
-        uCtx.lineJoin = 'round';
-        userStrokes.forEach(stroke => {
-          if (stroke.length < 2) return;
-          uCtx.beginPath();
-          uCtx.moveTo(stroke[0].x, stroke[0].y);
-          for (let i = 1; i < stroke.length; i++) {
-            uCtx.lineTo(stroke[i].x, stroke[i].y);
-          }
-          uCtx.stroke();
-        });
-        const userData = uCtx.getImageData(0, 0, cw, ch).data;
-
-        // Sample points and compare
-        const step = 4; // sample every 4 pixels for performance
-        let guidePixels = 0;
-        let coveredPixels = 0;
-        let userPixels = 0;
-        let userOnGuide = 0;
-
-        for (let y = 0; y < ch; y += step) {
-          for (let x = 0; x < cw; x += step) {
-            const idx = (y * cw + x) * 4;
-            const isGuide = guideData[idx + 3] > 128;
-            const isUser = userData[idx + 3] > 128;
-            if (isGuide) guidePixels++;
-            if (isUser) userPixels++;
-            if (isGuide && isUser) {
-              coveredPixels++;
-              userOnGuide++;
-            }
-          }
-        }
-
-        if (guidePixels === 0) return;
-
-        // Coverage: how much of the guide did the user cover
-        const coverage = coveredPixels / guidePixels;
-
-        // Precision: how much of user's ink is on the guide
-        const precision = userPixels > 0 ? userOnGuide / userPixels : 0;
-
-        // Combined score
-        const rawScore = coverage * 60 + precision * 40;
-        const score = Math.min(100, Math.max(0, Math.round(rawScore)));
-
-        let stars = '';
-        let msg = '';
-        if (score >= 80) { stars = '⭐⭐⭐'; msg = '太棒了！写得真好！'; }
-        else if (score >= 60) { stars = '⭐⭐'; msg = '写得不错哦！'; }
-        else if (score >= 35) { stars = '⭐'; msg = '继续加油！'; }
-        else { stars = ''; msg = '再练练吧！'; }
-
-        if (scoreEl) scoreEl.textContent = `${stars} ${score}分 ${msg}`;
-        if (score >= 60) {
-          playBigCheerSound();
-          speak(msg);
-        } else {
-          speak(msg);
-        }
-      }
-
       function renderNum() {
-        currentNum = numState.traceNum;
+        currentNum = Math.floor(Math.random() * 100); // 0-99
         labelEl.textContent = currentNum;
-        document.getElementById('traceNumPrev').disabled = currentNum <= 0;
-        document.getElementById('traceNumNext').disabled = currentNum >= 9;
-        if (scoreEl) scoreEl.textContent = '';
         initCanvas();
         clearUserStrokes();
       }
@@ -5450,7 +5346,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           userStrokes.push([...currentStroke]);
           currentStroke = [];
         }
-        setTimeout(scoreWriting, 800);
       }
 
       canvas.addEventListener('mousedown', start);
@@ -5460,11 +5355,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       canvas.addEventListener('touchmove', move, { passive: false });
       canvas.addEventListener('touchend', end);
 
-      document.getElementById('traceNumPrev').addEventListener('click', () => {
-        if (numState.traceNum > 0) { numState.traceNum--; renderNum(); speak(numState.traceNum); }
-      });
-      document.getElementById('traceNumNext').addEventListener('click', () => {
-        if (numState.traceNum < 9) { numState.traceNum++; renderNum(); speak(numState.traceNum); }
+      document.getElementById('traceNumRandom').addEventListener('click', () => {
+        renderNum();
+        speak(currentNum);
       });
       document.getElementById('traceNumClear').addEventListener('click', () => {
         clearUserStrokes();
