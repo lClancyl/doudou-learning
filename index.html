@@ -5321,8 +5321,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           const cellSize = w - margin * 2;
           drawTianZiGeCell(margin, (h - cellSize) / 2, cellSize);
         } else {
-          // Two digits: two squares side by side, centered
-          const gap = w * 0.06;
+          // Two digits: two squares side by side, touching
+          const gap = 0;
           const cellSize = (w - margin * 2 - gap) / 2;
           const totalW = cellSize * 2 + gap;
           const startX = (w - totalW) / 2;
@@ -5357,7 +5357,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
           ctx.fillText(digits[0], w / 2, h / 2 + fontSize * 0.04);
         } else {
-          const gap = w * 0.06;
+          const gap = 0;
           const cellSize = (w - margin * 2 - gap) / 2;
           const totalW = cellSize * 2 + gap;
           const startX = (w - totalW) / 2;
