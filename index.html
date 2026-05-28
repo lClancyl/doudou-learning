@@ -5310,14 +5310,15 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         const box = display.getBoundingClientRect();
         const w = box.width;
         const h = box.height;
-        const margin = w * 0.05;
+        const margin = Math.min(w, h) * 0.02;
 
         ctx.save();
 
         if (count === 1) {
-          // Single digit: one centered square
-          const cellSize = w - margin * 2;
-          drawTianZiGeCell(margin, (h - cellSize) / 2, cellSize);
+          // Single digit: maximize to fill nearly entire area
+          const maxSize = Math.min(w, h);
+          const cellSize = maxSize - margin * 2;
+          drawTianZiGeCell((w - cellSize) / 2, (h - cellSize) / 2, cellSize);
         } else {
           // Two digits: two squares side by side, touching
           const gap = 0;
@@ -5341,7 +5342,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         const box = display.getBoundingClientRect();
         const w = box.width;
         const h = box.height;
-        const margin = w * 0.05;
+        const margin = Math.min(w, h) * 0.02;
 
         ctx.save();
         ctx.fontWeight = '700';
@@ -5350,8 +5351,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         ctx.fillStyle = 'rgba(255, 107, 157, 0.2)';
 
         if (count === 1) {
-          const cellSize = w - margin * 2;
-          const fontSize = cellSize * 0.88;
+          const maxSize = Math.min(w, h);
+          const cellSize = maxSize - margin * 2;
+          const fontSize = cellSize * 0.95;
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
           ctx.fillText(digits[0], w / 2, h / 2 + fontSize * 0.04);
         } else {
@@ -5360,7 +5362,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           const totalW = cellSize * 2 + gap;
           const startX = (w - totalW) / 2;
           const startY = h / 2;
-          const fontSize = cellSize * 0.88;
+          const fontSize = cellSize * 0.95;
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
           for (let i = 0; i < count; i++) {
             const cx = startX + i * (cellSize + gap) + cellSize / 2;
