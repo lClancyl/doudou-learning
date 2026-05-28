@@ -5284,19 +5284,19 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
 
       // Draw 田字格 cell — border + cross lines
-      function drawRiZiGeCell(cx, cy, cellSize) {
+      function drawRiZiGeCell(cx, cy, cellW, cellH) {
         ctx.strokeStyle = 'rgba(180, 170, 160, 0.5)';
         ctx.lineWidth = 2;
         ctx.setLineDash([]);
-        ctx.strokeRect(cx, cy, cellSize, cellSize);
+        ctx.strokeRect(cx, cy, cellW, cellH);
 
         // Dashed horizontal midline only (日字格)
         ctx.setLineDash([6, 8]);
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = 'rgba(180, 170, 160, 0.3)';
         ctx.beginPath();
-        ctx.moveTo(cx, cy + cellSize / 2);
-        ctx.lineTo(cx + cellSize, cy + cellSize / 2);
+        ctx.moveTo(cx, cy + cellH / 2);
+        ctx.lineTo(cx + cellW, cy + cellH / 2);
         ctx.stroke();
         ctx.setLineDash([]);
       }
@@ -5311,25 +5311,28 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         const h = box.height;
         const margin = Math.min(w, h) * 0.015;
 
+        // 日字格 is tall and narrow: height fills canvas, width = height / 2
+        const cellH = Math.min(w, h) - margin * 2;
+        const cellW = cellH / 2;
+
         ctx.save();
 
         if (count === 1) {
-          const cellSize = Math.min(w, h) - margin * 2;
-          drawRiZiGeCell((w - cellSize) / 2, (h - cellSize) / 2, cellSize);
+          drawRiZiGeCell((w - cellW) / 2, (h - cellH) / 2, cellW, cellH);
         } else {
-          const cellW = w / count;
-          const cellSize = Math.min(cellW - margin, h - margin * 2);
-          const startX = (w - cellSize * count) / 2;
-          const startY = (h - cellSize) / 2;
+          const gap = 0;
+          const totalW = cellW * count + gap * (count - 1);
+          const startX = (w - totalW) / 2;
+          const startY = (h - cellH) / 2;
           for (let i = 0; i < count; i++) {
-            drawRiZiGeCell(startX + i * cellSize, startY, cellSize);
+            drawRiZiGeCell(startX + i * (cellW + gap), startY, cellW, cellH);
           }
         }
 
         ctx.restore();
       }
 
-      // Draw the guide number — fill entire canvas, no grid
+      // Draw the guide number — same narrow 日字格 layout
       function drawGuide(num) {
         if (!ctx) return;
         const digits = String(num);
@@ -5339,6 +5342,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         const h = box.height;
         const margin = Math.min(w, h) * 0.015;
 
+        // Same cell dimensions as drawRiZiGe
+        const cellH = Math.min(w, h) - margin * 2;
+        const cellW = cellH / 2;
+
         ctx.save();
         ctx.fontWeight = '700';
         ctx.textAlign = 'center';
@@ -5346,15 +5353,16 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         ctx.fillStyle = 'rgba(255, 107, 157, 0.2)';
 
         if (count === 1) {
-          const fontSize = Math.min(w, h) - margin * 2;
+          const fontSize = cellW * 0.9;
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
           ctx.fillText(digits[0], w / 2, h / 2 + fontSize * 0.04);
         } else {
-          const cellW = w / count;
-          const fontSize = Math.min(cellW - margin, h - margin * 2);
+          const gap = 0;
+          const startX = (w - cellW * count) / 2;
+          const fontSize = cellW * 0.9;
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
           for (let i = 0; i < count; i++) {
-            const cx = cellW * i + cellW / 2;
+            const cx = startX + i * cellW + cellW / 2;
             ctx.fillText(digits[i], cx, h / 2 + fontSize * 0.04);
           }
         }
