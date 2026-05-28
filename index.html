@@ -5268,6 +5268,23 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       let userStrokes = [];
       let currentStroke = [];
       let currentNum = 0;
+      let currentColor = '#3a2d4a';
+
+      function randomPenColor() {
+        const colors = [
+          '#e91e63', // 粉红
+          '#ff5722', // 橘红
+          '#ff9800', // 橘黄
+          '#4caf50', // 草绿
+          '#2196f3', // 蓝
+          '#9c27b0', // 紫
+          '#00bcd4', // 青
+          '#ff6f00', // 琥珀
+          '#d81b60', // 玫红
+          '#1b5e20', // 深绿
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
 
       function initCanvas() {
         const box = display.getBoundingClientRect();
@@ -5396,7 +5413,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
         const penWidth = Math.max(3, display.getBoundingClientRect().width * 0.018);
         ctx.lineWidth = penWidth;
-        ctx.strokeStyle = '#3a2d4a';
+        ctx.strokeStyle = currentColor;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
 
@@ -5413,7 +5430,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       function renderNum() {
         currentNum = Math.floor(Math.random() * 100); // 0-99
+        currentColor = randomPenColor();
         labelEl.textContent = currentNum;
+        labelEl.style.color = currentColor;
         initCanvas();
         clearUserStrokes();
       }
@@ -5434,7 +5453,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         // Draw current point
         const penWidth = Math.max(3, display.getBoundingClientRect().width * 0.018);
         ctx.lineWidth = penWidth;
-        ctx.strokeStyle = '#3a2d4a';
+        ctx.strokeStyle = currentColor;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.beginPath();
@@ -5448,7 +5467,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         // Incremental draw for performance
         const penWidth = Math.max(3, display.getBoundingClientRect().width * 0.018);
         ctx.lineWidth = penWidth;
-        ctx.strokeStyle = '#3a2d4a';
+        ctx.strokeStyle = currentColor;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.lineTo(p.x, p.y);
