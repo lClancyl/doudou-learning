@@ -1635,8 +1635,13 @@
     /* 描红数字 */
     .trace-num-display {
       position: relative;
-      margin: 10px 0;
-      height: clamp(200px, 40vw, 320px);
+      margin: 10px auto;
+      width: min(85vw, 340px);
+      aspect-ratio: 1;
+      background: #fffef9;
+      border: 3px solid var(--peppa-pink-light);
+      border-radius: 14px;
+      overflow: hidden;
     }
     .trace-num-display canvas {
       position: absolute;
@@ -5279,20 +5284,57 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         ctx.lineJoin = 'round';
       }
 
+      // Draw the 田字格 (field grid) behind the guide number
+      function drawTianZiGe() {
+        if (!ctx) return;
+        const box = display.getBoundingClientRect();
+        const w = box.width;
+        const h = box.height;
+        const margin = w * 0.12; // 12% margin for grid border
+        const x = margin;
+        const y = margin;
+        const size = w - margin * 2;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(180, 170, 160, 0.5)';
+        ctx.lineWidth = 2;
+
+        // Outer box
+        ctx.strokeRect(x, y, size, size);
+
+        // Dashed cross lines (horizontal + vertical center)
+        ctx.setLineDash([6, 8]);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(180, 170, 160, 0.3)';
+        ctx.beginPath();
+        ctx.moveTo(x + size / 2, y);        // vertical
+        ctx.lineTo(x + size / 2, y + size);
+        ctx.moveTo(x, y + size / 2);         // horizontal
+        ctx.lineTo(x + size, y + size / 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.restore();
+      }
+
       // Draw the guide number (large, light-colored, for tracing over)
       function drawGuide(num) {
         if (!ctx) return;
         const box = display.getBoundingClientRect();
         const w = box.width;
         const h = box.height;
-        const fontSize = Math.min(w, h) * 0.85;
+        const margin = w * 0.12;
+        const gridSize = w - margin * 2;
+        // Scale font based on digit count: single digit fills ~70% of grid, double ~50%
+        const isDouble = String(num).length > 1;
+        const fontSize = gridSize * (isDouble ? 0.55 : 0.72);
 
         ctx.save();
         ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = 'rgba(255, 107, 157, 0.15)';
-        ctx.fillText(String(num), w / 2, h / 2 + fontSize * 0.03);
+        ctx.fillStyle = 'rgba(255, 107, 157, 0.2)';
+        ctx.fillText(String(num), w / 2, h / 2 + fontSize * 0.04);
         ctx.restore();
       }
 
@@ -5304,15 +5346,17 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         hasDrawn = false;
         userStrokes = [];
         currentStroke = [];
+        drawTianZiGe();
         drawGuide(currentNum);
       }
 
-      // Redraw everything: guide + all user strokes
+      // Redraw everything: grid + guide + all user strokes
       function redraw() {
         if (!ctx) return;
         const w = canvas.width / (window.devicePixelRatio || 1);
         const h = canvas.height / (window.devicePixelRatio || 1);
         ctx.clearRect(0, 0, w, h);
+        drawTianZiGe();
         drawGuide(currentNum);
 
         const penWidth = Math.max(3, display.getBoundingClientRect().width * 0.018);
