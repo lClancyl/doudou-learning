@@ -4066,37 +4066,21 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
                 var audioBlob = new Blob([merged], { type: "audio/mpeg" });
                 if (audioBlob.size < 100) { done(false); return; }
                 if (reqId !== state.speechReqId) { done(false); return; }
-                // Skip if iFlytek audio arrived too late (system speech already finished)
-                // Use time-based check: if >3s since speak() started, audio is stale
+                // Skip if iFlytek audio arrived too late (>3s since speak started)
                 var elapsed = Date.now() - (state.speechStartedAt || 0);
                 if (elapsed > 3000) { done(false); return; }
-                // Mark that iFlytek handled this request — prevent system speech from playing too
+                // Mark that iFlytek handled this request — prevent stale system speech
                 state.iflytekHandledReqId = reqId;
-                // Cancel system speech first, then play iFlytek audio
-                // On iOS/WebKit, cancel is unreliable — add delay to let it actually stop
-                if (window.speechSynthesis) window.speechSynthesis.cancel();
-                function playAudio() {
-                  if (reqId !== state.speechReqId) { done(false); return; }
-                  clearAudioBlobUrl();
-                  var blobUrl = URL.createObjectURL(audioBlob);
-                  state.audioBlobUrl = blobUrl;
-                  audioPlayer.src = blobUrl;
-                  audioPlayer.play().catch(function() {});
-                  done(true);
-                }
-                // iOS/WebKit: wait for speech to actually stop before playing audio
+                // Cancel system speech if it's still playing (desktop only; iOS skips system speech)
                 if (window.speechSynthesis && window.speechSynthesis.speaking) {
-                  var waitStart = Date.now();
-                  var waitInterval = setInterval(function() {
-                    if (!window.speechSynthesis.speaking || Date.now() - waitStart > 500) {
-                      clearInterval(waitInterval);
-                      if (window.speechSynthesis) window.speechSynthesis.cancel();
-                      playAudio();
-                    }
-                  }, 50);
-                } else {
-                  playAudio();
+                  window.speechSynthesis.cancel();
                 }
+                clearAudioBlobUrl();
+                var blobUrl = URL.createObjectURL(audioBlob);
+                state.audioBlobUrl = blobUrl;
+                audioPlayer.src = blobUrl;
+                audioPlayer.play().catch(function() {});
+                done(true);
               }
             } catch (e) { done(false); }
           };
@@ -4224,24 +4208,34 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const reqId = ++state.speechReqId;
       state.speechStartedAt = Date.now();
 
-      // Cancel any ongoing speech
-      if (window.speechSynthesis) {
+      // iOS WebKit: speechSynthesis.cancel() is broken — never use system speech
+      // Just use iFlytek audio directly; fall back to system speech only if iFlytek fails
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+      // Cancel any ongoing speech (desktop only — on iOS don't bother)
+      if (!isIOS && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
 
-      // STEP 1: Play system speech IMMEDIATELY (synchronous, works within user gesture)
-      speakWithSystemSpeech(speechText, oneChar, reqId);
+      // On iOS, skip system speech entirely — cancel() can't stop it
+      if (!isIOS) {
+        speakWithSystemSpeech(speechText, oneChar, reqId);
+      }
 
-      // STEP 2: Try iFlytek TTS for better quality
-      // If it arrives in time, cancel system speech and play iFlytek audio instead
+      // Try iFlytek TTS for better quality
+      // On desktop: arrives in time → cancel system speech, play audio
+      // On iOS: the only voice source, no conflict
       let selectedVcn = IFLYTEK_TTS.vcn;
       if (state.selectedVoiceName && state.selectedVoiceName.startsWith("__iflytek__:")) {
         selectedVcn = state.selectedVoiceName.split(":")[1];
       }
       const iflytekReqId = reqId;
       speakWithIflytek(speechText, iflytekReqId, selectedVcn).then(ok => {
-        // iFlytek handled everything internally (cancel + play)
-        // Nothing to do here
+        // On iOS: if iFlytek failed, fall back to system speech
+        if (isIOS && !ok && iflytekReqId === state.speechReqId) {
+          speakWithSystemSpeech(speechText, oneChar, iflytekReqId);
+        }
+        // Desktop: iFlytek already handled everything internally
       });
     }
 
