@@ -5353,17 +5353,17 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         ctx.fillStyle = 'rgba(255, 107, 157, 0.2)';
 
         if (count === 1) {
-          const fontSize = cellW * 0.9;
+          const fontSize = cellH;
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
-          ctx.fillText(digits[0], w / 2, h / 2 + fontSize * 0.04);
+          ctx.fillText(digits[0], w / 2, h / 2 + fontSize * 0.05);
         } else {
           const gap = 0;
           const startX = (w - cellW * count) / 2;
-          const fontSize = cellW * 0.9;
+          const fontSize = cellH;
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
           for (let i = 0; i < count; i++) {
             const cx = startX + i * cellW + cellW / 2;
-            ctx.fillText(digits[i], cx, h / 2 + fontSize * 0.04);
+            ctx.fillText(digits[i], cx, h / 2 + fontSize * 0.05);
           }
         }
 
