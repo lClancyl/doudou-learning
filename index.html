@@ -5284,27 +5284,25 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
 
       // Draw 田字格 cell — border + cross lines
-      function drawTianZiGeCell(cx, cy, cellSize) {
+      function drawRiZiGeCell(cx, cy, cellSize) {
         ctx.strokeStyle = 'rgba(180, 170, 160, 0.5)';
         ctx.lineWidth = 2;
         ctx.setLineDash([]);
         ctx.strokeRect(cx, cy, cellSize, cellSize);
 
-        // Dashed cross lines
+        // Dashed horizontal midline only (日字格)
         ctx.setLineDash([6, 8]);
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = 'rgba(180, 170, 160, 0.3)';
         ctx.beginPath();
-        ctx.moveTo(cx + cellSize / 2, cy);
-        ctx.lineTo(cx + cellSize / 2, cy + cellSize);
         ctx.moveTo(cx, cy + cellSize / 2);
         ctx.lineTo(cx + cellSize, cy + cellSize / 2);
         ctx.stroke();
         ctx.setLineDash([]);
       }
 
-      // Draw 田字格 cells (cross lines, no boxes) — same layout as drawGuide
-      function drawTianZiGe(num) {
+      // Draw 日字格 cells — same layout as drawGuide
+      function drawRiZiGe(num) {
         if (!ctx) return;
         const digits = String(num);
         const count = digits.length;
@@ -5317,14 +5315,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
         if (count === 1) {
           const cellSize = Math.min(w, h) - margin * 2;
-          drawTianZiGeCell((w - cellSize) / 2, (h - cellSize) / 2, cellSize);
+          drawRiZiGeCell((w - cellSize) / 2, (h - cellSize) / 2, cellSize);
         } else {
           const cellW = w / count;
           const cellSize = Math.min(cellW - margin, h - margin * 2);
           const startX = (w - cellSize * count) / 2;
           const startY = (h - cellSize) / 2;
           for (let i = 0; i < count; i++) {
-            drawTianZiGeCell(startX + i * cellSize, startY, cellSize);
+            drawRiZiGeCell(startX + i * cellSize, startY, cellSize);
           }
         }
 
@@ -5372,7 +5370,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         hasDrawn = false;
         userStrokes = [];
         currentStroke = [];
-        drawTianZiGe(currentNum);
+        drawRiZiGe(currentNum);
         drawGuide(currentNum);
       }
 
@@ -5382,7 +5380,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         const w = canvas.width / (window.devicePixelRatio || 1);
         const h = canvas.height / (window.devicePixelRatio || 1);
         ctx.clearRect(0, 0, w, h);
-        drawTianZiGe(currentNum);
+        drawRiZiGe(currentNum);
         drawGuide(currentNum);
 
         const penWidth = Math.max(3, display.getBoundingClientRect().width * 0.018);
