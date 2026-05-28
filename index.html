@@ -4208,9 +4208,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const reqId = ++state.speechReqId;
       state.speechStartedAt = Date.now();
 
-      // iOS WebKit: speechSynthesis.cancel() is broken — never use system speech
-      // Just use iFlytek audio directly; fall back to system speech only if iFlytek fails
-      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      // iOS/iPadOS detection: modern iPads (13+) report as Mac, not iPad
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 1 && navigator.platform === 'MacIntel');
 
       // Cancel any ongoing speech (desktop only — on iOS don't bother)
       if (!isIOS && window.speechSynthesis) {
@@ -4528,7 +4528,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       unlockSpeechIfNeeded();
       const reqId = ++state.speechReqId;
       state.speechStartedAt = Date.now();
-      if (window.speechSynthesis) {
+      // iOS: cancel() is broken, skip it
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 1 && navigator.platform === 'MacIntel');
+      if (!isIOS && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
       const forcedText = buildPolyphoneIflytekText(char, item);
