@@ -1639,7 +1639,7 @@
       width: min(85vw, 340px);
       aspect-ratio: 1;
       background: #fffef9;
-      border: 3px solid var(--peppa-pink-light);
+      border: none;
       border-radius: 14px;
       overflow: hidden;
     }
@@ -5283,8 +5283,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }
 
 
-      // Draw 田字格 cross lines only (no outer box)
+      // Draw 田字格 cell — border + cross lines
       function drawTianZiGeCell(cx, cy, cellSize) {
+        ctx.strokeStyle = 'rgba(180, 170, 160, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([]);
+        ctx.strokeRect(cx, cy, cellSize, cellSize);
+
+        // Dashed cross lines
         ctx.setLineDash([6, 8]);
         ctx.lineWidth = 1.5;
         ctx.strokeStyle = 'rgba(180, 170, 160, 0.3)';
