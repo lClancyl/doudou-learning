@@ -2132,6 +2132,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     const DAY_MS = 24 * 60 * 60 * 1000;
     const IFLYTEK_TTS = {
       enabled: true,
+      appId: "0fe945a4",
+      apiKey: "45a3200a4560187742b106225270d615",
+      apiSecret: "N2ZhNjQ2NmMxOWM3NTMwZmM4ZmJlNzQw",
       vcn: "x4_yezi",
       voices: [
         { vcn: "x4_yezi",        label: "小希 (男童声)" },
@@ -3642,7 +3645,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     function hasIflytekTtsConfig() {
       return !!(
         IFLYTEK_TTS.enabled &&
-        IFLYTEK_TTS.vcn.trim()
+        IFLYTEK_TTS.appId && IFLYTEK_TTS.appId.trim() &&
+        IFLYTEK_TTS.apiKey && IFLYTEK_TTS.apiKey.trim() &&
+        IFLYTEK_TTS.apiSecret && IFLYTEK_TTS.apiSecret.trim() &&
+        IFLYTEK_TTS.vcn && IFLYTEK_TTS.vcn.trim()
       );
     }
 
@@ -3777,23 +3783,92 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
     async function speakWithIflytek(text, reqId, vcn) {
       if (!hasIflytekTtsConfig()) return false;
+      const host = "tts-api.xfyun.cn";
+      const path = "/v2/tts";
+      const date = new Date().toUTCString();
+      const signatureOrigin = `host: ${host}\ndate: ${date}\nGET ${path} HTTP/1.1`;
+
       try {
-        const resp = await fetch("/api/tts/iflytek", {
-          method: "POST",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify({ text, vcn: vcn || IFLYTEK_TTS.vcn })
+        // HMAC-SHA256 签名 (Web Crypto API)
+        const encoder = new TextEncoder();
+        const key = await crypto.subtle.importKey(
+          "raw", encoder.encode(IFLYTEK_TTS.apiSecret),
+          { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+        );
+        const sigBuf = await crypto.subtle.sign("HMAC", key, encoder.encode(signatureOrigin));
+        const signature = btoa(String.fromCharCode(...new Uint8Array(sigBuf)));
+        const authOrigin = `api_key="${IFLYTEK_TTS.apiKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${signature}"`;
+        const authorization = btoa(authOrigin);
+        const wsUrl = `wss://${host}${path}?authorization=${encodeURIComponent(authorization)}&date=${encodeURIComponent(date)}&host=${host}`;
+
+        return new Promise(function(resolve) {
+          var ws = new WebSocket(wsUrl);
+          var chunks = [];
+          var resolved = false;
+
+          function done(ok) {
+            if (resolved) return;
+            resolved = true;
+            clearTimeout(timer);
+            try { ws.close(); } catch (e) {}
+            resolve(ok);
+          }
+
+          var timer = setTimeout(function() { done(false); }, 12000);
+
+          ws.onopen = function() {
+            var payload = {
+              common: { app_id: IFLYTEK_TTS.appId },
+              business: {
+                aue: "lame", sfl: 1,
+                auf: "audio/L16;rate=16000",
+                vcn: vcn || IFLYTEK_TTS.vcn,
+                speed: 50, volume: 70, pitch: 50,
+                tte: "UTF8"
+              },
+              data: {
+                status: 2,
+                text: btoa(unescape(encodeURIComponent(text)))
+              }
+            };
+            ws.send(JSON.stringify(payload));
+          };
+
+          ws.onmessage = function(event) {
+            if (reqId !== state.speechReqId) { done(false); return; }
+            try {
+              var resp = JSON.parse(event.data);
+              if (resp.code !== 0) { console.warn("讯飞TTS错误:", resp.code, resp.message); done(false); return; }
+              if (resp.data && resp.data.audio) {
+                var binary = atob(resp.data.audio);
+                var bytes = new Uint8Array(binary.length);
+                for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                chunks.push(bytes);
+              }
+              if (resp.data && resp.data.status === 2) {
+                if (chunks.length === 0) { done(false); return; }
+                var totalLen = chunks.reduce(function(s, c) { return s + c.length; }, 0);
+                var merged = new Uint8Array(totalLen);
+                var offset = 0;
+                for (var j = 0; j < chunks.length; j++) { merged.set(chunks[j], offset); offset += chunks[j].length; }
+                var audioBlob = new Blob([merged], { type: "audio/mpeg" });
+                if (audioBlob.size < 100) { done(false); return; }
+                if (reqId !== state.speechReqId) { done(false); return; }
+                clearAudioBlobUrl();
+                var blobUrl = URL.createObjectURL(audioBlob);
+                state.audioBlobUrl = blobUrl;
+                audioPlayer.src = blobUrl;
+                audioPlayer.play().catch(function() {});
+                done(true);
+              }
+            } catch (e) { done(false); }
+          };
+
+          ws.onerror = function() { done(false); };
+          ws.onclose = function() { if (!resolved) done(false); };
         });
-        if (!resp.ok || reqId !== state.speechReqId) return false;
-        const audioBlob = await resp.blob();
-        if (!audioBlob || audioBlob.size < 100) return false;
-        clearAudioBlobUrl();
-        const blobUrl = URL.createObjectURL(audioBlob);
-        state.audioBlobUrl = blobUrl;
-        audioPlayer.src = blobUrl;
-        audioPlayer.play().catch(() => {});
-        return true;
       } catch (err) {
-        console.warn("TTS failed, fallback to system voice", err);
+        console.warn("iFlytek TTS auth failed:", err);
         return false;
       }
     }
