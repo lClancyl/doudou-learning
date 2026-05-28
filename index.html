@@ -1976,11 +1976,6 @@
         </span>
         <h1 class="home-title">豆豆学习</h1>
       </div>
-      <input id="avatarInput" type="file" accept="image/*" class="hidden" />
-      <p class="avatar-tip">点击头像可上传豆豆照片</p>
-      <div class="avatar-actions">
-        <button id="uploadAvatarBtn" class="avatar-upload-btn" type="button">上传头像</button>
-      </div>
       <div class="module-tabs" id="moduleTabs">
         <button class="module-tab active" id="moduleTabLiterate">识字</button>
         <button class="module-tab" id="moduleTabNumber">数字</button>
@@ -2780,8 +2775,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       homeTitle: document.getElementById("homeTitle"),
       homeAvatar: document.getElementById("homeAvatar"),
       homeAvatarImg: document.getElementById("homeAvatarImg"),
-      avatarInput: document.getElementById("avatarInput"),
-      uploadAvatarBtn: document.getElementById("uploadAvatarBtn"),
       backHomeFromLearn: document.getElementById("backHomeFromLearn"),
       backHomeFromReview: document.getElementById("backHomeFromReview"),
       backHomeFromLibrary: document.getElementById("backHomeFromLibrary"),
@@ -5049,18 +5042,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           playStickerSound();
         });
       });
-      const openAvatarPicker = (e) => {
-        e.stopPropagation();
-        el.avatarInput.value = "";
-        el.avatarInput.click();
-      };
-      el.homeAvatar.addEventListener("click", openAvatarPicker);
-      el.uploadAvatarBtn.addEventListener("click", openAvatarPicker);
-      el.avatarInput.addEventListener("change", (e) => {
-        const file = e.target.files && e.target.files[0];
-        handleAvatarFile(file);
-      });
-
       el.entryLearn.addEventListener("click", () => {
         speak("认字");
         gotoNextUnlearned(true);
