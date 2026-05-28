@@ -138,8 +138,9 @@
 
     .primary {
       background: linear-gradient(140deg, var(--peppa-pink), var(--sun-yellow));
-      color: #fff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      color: var(--ink);
+      text-shadow: 0 1px 1px rgba(255,255,255,0.35);
+      font-weight: 800;
       box-shadow:
         0 6px 20px rgba(255, 107, 157, 0.3),
         0 2px 6px rgba(0,0,0,0.1),
@@ -1716,7 +1717,7 @@
       margin-top: 8px;
     }
 
-    /* 加法练习 */
+    /* 加减练习 */
     .add-problem {
       text-align: center;
       font-size: clamp(48px, 8vw, 72px);
@@ -1773,6 +1774,169 @@
       font-size: 32px;
     }
 
+    /* ===== 比大小游戏 ===== */
+    .compare-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(8px, 3vw, 24px);
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+    .compare-card {
+      flex: 0 0 auto;
+      width: clamp(120px, 28vw, 180px);
+      height: clamp(120px, 28vw, 180px);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .compare-card:hover {
+      transform: scale(1.06);
+    }
+    .compare-card:active {
+      transform: scale(0.94);
+    }
+    .compare-card.correct {
+      transform: scale(1.12);
+      animation: popPulse 0.4s ease;
+    }
+    .compare-card.wrong {
+      animation: wrongShake 0.5s ease;
+    }
+    .compare-card.disabled {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .compare-card-num {
+      font-size: clamp(48px, 12vw, 80px);
+      font-weight: 900;
+      line-height: 1;
+    }
+    .compare-vs {
+      font-size: clamp(24px, 6vw, 48px);
+      animation: vsBounce 1.5s ease-in-out infinite;
+      user-select: none;
+    }
+    .compare-feedback {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 800;
+      min-height: 36px;
+      margin: 10px 0;
+      transition: all 0.3s;
+    }
+    .compare-feedback.correct { color: var(--grass-green); }
+    .compare-feedback.wrong { color: var(--peppa-pink); }
+    .compare-score {
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink);
+      margin-top: 4px;
+    }
+    .compare-mode {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--peppa-pink-light);
+      color: var(--peppa-pink-dark);
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .compare-round-progress {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 10px 0;
+    }
+    .compare-round-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #e0d0d8;
+      transition: all 0.3s;
+    }
+    .compare-round-dot.done { background: var(--grass-green); transform: scale(1.15); }
+    .compare-round-dot.wrong-dot { background: var(--peppa-pink); }
+    .compare-round-dot.current { box-shadow: 0 0 0 3px var(--sun-yellow); }
+    .compare-trophy-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+    .compare-trophy-card {
+      background: linear-gradient(180deg, #fffbe6, #fff0c4);
+      border-radius: 30px;
+      padding: 32px 40px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border: 4px solid var(--sun-yellow);
+      animation: trophyBounce 0.6s ease;
+    }
+    .compare-trophy-icon {
+      font-size: 80px;
+      animation: trophySpin 0.8s ease;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .compare-trophy-text {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--ink);
+      margin: 8px 0;
+    }
+    .compare-trophy-score {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--sun-yellow);
+      text-shadow: 0 2px 8px rgba(255,150,0,0.4);
+      margin: 4px 0;
+    }
+    .compare-trophy-sub {
+      font-size: 16px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes trophyBounce {
+      0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+      50% { transform: scale(1.08) rotate(2deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    @keyframes trophySpin {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
+    @keyframes popPulse {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.18); }
+      100% { transform: scale(1.08); }
+    }
+    @keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(4px); }
+    }
+    @keyframes vsBounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+
   </style>
 </head>
 <body>
@@ -1814,9 +1978,10 @@
         <div class="num-sub-grid">
           <button class="num-sub-btn" id="entryTraceNum"><span class="sub-icon">✏️</span>描红数字</button>
           <button class="num-sub-btn" id="entryCount"><span class="sub-icon">🔢</span>数数练习</button>
-          <button class="num-sub-btn" id="entryAdd"><span class="sub-icon">➕</span>加法练习</button>
+          <button class="num-sub-btn" id="entryAdd"><span class="sub-icon">➕➖</span>加减练习</button>
+          <button class="num-sub-btn" id="entryCompare"><span class="sub-icon">📏</span>比大小</button>
         </div>
-        <p class="feature-hint">10以内加法，轻松掌握</p>
+        <p class="feature-hint">10以内加减法 &amp; 三位数比大小，轻松掌握</p>
       </div>
       <div class="home-hero">
         <div class="home-stickers">
@@ -2091,7 +2256,7 @@
         <div class="count-feedback" id="countFeedback"></div>
         <div class="count-score" id="countScore">答对：0 题</div>
         <div style="text-align:center;margin-top:12px;">
-          <button class="subtab primary" id="countNext">下一题</button>
+          <button class="subtab primary" id="countNext" style="display:none;">下一题</button>
         </div>
       </section>
     </div>
@@ -2099,7 +2264,7 @@
     <div id="addPage" class="hidden">
       <section class="card top">
         <div class="row">
-          <h1 style="margin-right:auto;">加法练习</h1>
+          <h1 style="margin-right:auto;">加减练习</h1>
           <button id="backHomeFromAdd">返回首页</button>
         </div>
       </section>
@@ -2110,7 +2275,38 @@
         <div class="add-feedback" id="addFeedback"></div>
         <div class="add-score" id="addScore">答对：0 题</div>
         <div style="text-align:center;margin-top:12px;">
-          <button class="subtab primary" id="addNext">下一题</button>
+          <button class="subtab primary" id="addNext" style="display:none;">下一题</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== 比大小游戏 ===== -->
+    <div id="comparePage" class="hidden">
+      <section class="card top">
+        <div class="row">
+          <h1 style="margin-right:auto;">比大小</h1>
+          <button id="backHomeFromCompare">返回首页</button>
+        </div>
+      </section>
+      <section class="card">
+        <div style="text-align:center;">
+          <div class="compare-mode" id="compareMode">🔍 找最大的</div>
+        </div>
+        <p style="text-align:center;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px;" id="compareQuestion">哪个数字更大？点一下！</p>
+        <div class="compare-round-progress" id="compareDots"></div>
+        <div class="compare-stage" id="compareStage">
+          <div class="compare-card" id="compareCardLeft">
+            <div class="compare-card-num" id="compareNumLeft">0</div>
+          </div>
+          <div class="compare-vs" id="compareVs">⚡</div>
+          <div class="compare-card" id="compareCardRight">
+            <div class="compare-card-num" id="compareNumRight">0</div>
+          </div>
+        </div>
+        <div class="compare-feedback" id="compareFeedback"></div>
+        <div class="compare-score" id="compareScore">第 1/10 题</div>
+        <div style="text-align:center;margin-top:12px;">
+          <button class="subtab primary" id="compareNext" style="display:none;">下一题</button>
         </div>
       </section>
     </div>
@@ -3486,7 +3682,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const pages = [
         ['homePage','home'],['learnPage','learn'],['reviewPage','review'],
         ['libraryPage','library'],['radicalsPage','radicals'],
-        ['traceNumPage','traceNum'],['countPage','count'],['addPage','add']
+        ['traceNumPage','traceNum'],['countPage','count'],['addPage','add'],['comparePage','compare']
       ];
       for (const [id, name] of pages) {
         if (!document.getElementById(id).classList.contains('hidden')) return name;
@@ -3498,7 +3694,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       if (page !== "review") {
         clearReviewRuntime();
       }
-      const allPages = ['homePage','learnPage','reviewPage','libraryPage','radicalsPage','traceNumPage','countPage','addPage'];
+      const allPages = ['homePage','learnPage','reviewPage','libraryPage','radicalsPage','traceNumPage','countPage','addPage','comparePage'];
       allPages.forEach(id => document.getElementById(id).classList.add('hidden'));
       if (page === "home") document.getElementById('homePage').classList.remove('hidden');
       if (page === "learn") document.getElementById('learnPage').classList.remove('hidden');
@@ -3508,6 +3704,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       if (page === "traceNum") document.getElementById('traceNumPage').classList.remove('hidden');
       if (page === "count") document.getElementById('countPage').classList.remove('hidden');
       if (page === "add") document.getElementById('addPage').classList.remove('hidden');
+      if (page === "compare") document.getElementById('comparePage').classList.remove('hidden');
       if (syncHistory && historyReady && window.history && window.history.pushState) {
         const curr = window.history.state;
         if (!curr || curr[APP_HISTORY_KEY] !== page) {
@@ -3942,6 +4139,12 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           console.warn("unlockSpeechIfNeeded failed", err);
         }
       }
+      // Unlock Audio element (critical for iOS/async audio playback)
+      try {
+        audioPlayer.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+        const p = audioPlayer.play();
+        if (p) p.then(() => { audioPlayer.pause(); audioPlayer.currentTime = 0; }).catch(() => {});
+      } catch (e) {}
       try {
         const ctx = getGameAudioCtx();
         if (ctx) {
@@ -3977,18 +4180,28 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const oneChar = /^[\u3400-\u9fff]$/.test(clean);
       const speechText = oneChar ? `${clean}。` : clean;
       const reqId = ++state.speechReqId;
+
+      // Cancel any ongoing speech
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
-      // Extract vcn from selected voice name (format: "__iflytek__:x4_yezi")
+
+      // STEP 1: Play system speech IMMEDIATELY (synchronous, works within user gesture)
+      speakWithSystemSpeech(speechText, oneChar, reqId);
+
+      // STEP 2: Try iFlytek TTS for better quality
+      // If it arrives in time, cancel system speech and play iFlytek audio instead
       let selectedVcn = IFLYTEK_TTS.vcn;
       if (state.selectedVoiceName && state.selectedVoiceName.startsWith("__iflytek__:")) {
         selectedVcn = state.selectedVoiceName.split(":")[1];
       }
-      // Use server TTS (edge-tts) - reliable across all browsers
-      speakWithIflytek(speechText, reqId, selectedVcn).then(ok => {
-        if (ok || reqId !== state.speechReqId) return;
-        speakWithSystemSpeech(speechText, oneChar, reqId);
+      const iflytekReqId = reqId;
+      speakWithIflytek(speechText, iflytekReqId, selectedVcn).then(ok => {
+        if (!ok || iflytekReqId !== state.speechReqId) return;
+        // iFlytek succeeded — cancel system speech and let the better audio play
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
       });
     }
 
@@ -4969,10 +5182,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       traceNum: 0,
       countCorrect: 0,
       addCorrect: 0,
+      compareCorrect: 0,
+      compareRound: 0,
+      compareRoundHistory: [], // 'correct' | 'wrong' for current round
       countAnswer: -1,
       addAnswer: -1,
       countLocked: false,
-      addLocked: false
+      addLocked: false,
+      compareLocked: false
     };
 
     // --- Module tabs ---
@@ -5284,6 +5501,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         }
         document.getElementById('countFeedback').textContent = '';
         document.getElementById('countQuestion').textContent = '数一数，下面有几个？';
+        document.getElementById('countNext').style.display = 'none';
 
         // Generate options: correct + 3 wrong
         const options = new Set([count]);
@@ -5316,6 +5534,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
               speak(`不对哦，再数数`);
             }
             document.getElementById('countScore').textContent = `答对：${numState.countCorrect} 题`;
+            document.getElementById('countNext').style.display = 'inline-block';
           });
           optArea.appendChild(btn);
         });
@@ -5330,49 +5549,134 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       document.getElementById('countNext').addEventListener('click', genCountProblem);
     }
 
-    // --- 加法练习 ---
+    // --- 加减练习 ---
     function initAdd() {
       function genAddProblem() {
         numState.addLocked = false;
-        const a = Math.floor(Math.random() * 10); // 0-9
-        const b = Math.floor(Math.random() * (10 - a)); // 0 to (10-a)
-        const answer = a + b;
+        // Randomly choose addition or subtraction (50/50)
+        const isAdd = Math.random() > 0.5;
+        let a, b, answer, opSymbol, opWord;
 
-        // Visual: show a items + b items
-        const emoji1 = COUNT_EMOJIS[Math.floor(Math.random() * COUNT_EMOJIS.length)];
-        const emoji2 = COUNT_EMOJIS[Math.floor(Math.random() * COUNT_EMOJIS.length)];
+        if (isAdd) {
+          // Addition: a + b <= 10
+          a = Math.floor(Math.random() * 11); // 0-10
+          b = Math.floor(Math.random() * (11 - a)); // 0 to (10-a)
+          answer = a + b;
+          opSymbol = '+';
+          opWord = '加';
+        } else {
+          // Subtraction: a - b >= 0, a,b in 0-10
+          a = Math.floor(Math.random() * 11); // 0-10
+          b = Math.floor(Math.random() * (a + 1)); // 0 to a
+          answer = a - b;
+          opSymbol = '−';
+          opWord = '减';
+        }
+
+        // Visual: show items with operation
+        const emojis = [...Array(2)].map(() => COUNT_EMOJIS[Math.floor(Math.random() * COUNT_EMOJIS.length)]);
         const visual = document.getElementById('addVisual');
         visual.innerHTML = '';
-        for (let i = 0; i < a; i++) {
-          const s = document.createElement('span');
-          s.textContent = emoji1;
-          s.style.animation = 'popInSimple 0.3s ease';
-          s.style.animationDelay = (i * 0.05) + 's';
-          visual.appendChild(s);
-        }
-        if (a > 0 && b > 0) {
+
+        if (isAdd) {
+          // Show a emojis (or "0" placeholder) + b emojis (or "0" placeholder)
+          if (a === 0) {
+            const zero = document.createElement('span');
+            zero.textContent = '0';
+            zero.style.fontSize = '28px';
+            zero.style.color = '#bbb';
+            zero.style.fontWeight = '700';
+            visual.appendChild(zero);
+          } else {
+            for (let i = 0; i < a; i++) {
+              const s = document.createElement('span');
+              s.textContent = emojis[0];
+              s.style.animation = 'popInSimple 0.3s ease';
+              s.style.animationDelay = (i * 0.05) + 's';
+              visual.appendChild(s);
+            }
+          }
+          // Always show + sign
           const plus = document.createElement('span');
           plus.textContent = ' + ';
           plus.style.fontSize = '28px';
           plus.style.fontWeight = '900';
           plus.style.color = 'var(--peppa-pink-dark)';
           visual.appendChild(plus);
-        }
-        for (let i = 0; i < b; i++) {
-          const s = document.createElement('span');
-          s.textContent = emoji2;
-          s.style.animation = 'popInSimple 0.3s ease';
-          s.style.animationDelay = ((a + i) * 0.05 + 0.2) + 's';
-          visual.appendChild(s);
+          if (b === 0) {
+            const zero = document.createElement('span');
+            zero.textContent = '0';
+            zero.style.fontSize = '28px';
+            zero.style.color = '#bbb';
+            zero.style.fontWeight = '700';
+            visual.appendChild(zero);
+          } else {
+            for (let i = 0; i < b; i++) {
+              const s = document.createElement('span');
+              s.textContent = emojis[1];
+              s.style.animation = 'popInSimple 0.3s ease';
+              s.style.animationDelay = ((a + i) * 0.05 + 0.2) + 's';
+              visual.appendChild(s);
+            }
+          }
+        } else {
+          // Subtraction: show a emojis, then animate b of them flying away (repeated 3x)
+          const group = document.createElement('span');
+          group.style.display = 'inline-flex';
+          group.style.gap = '4px';
+          group.style.flexWrap = 'wrap';
+          group.style.justifyContent = 'center';
+          const emojiSpans = [];
+          for (let i = 0; i < a; i++) {
+            const s = document.createElement('span');
+            s.textContent = emojis[0];
+            s.style.animation = 'popInSimple 0.3s ease';
+            s.style.animationDelay = (i * 0.05) + 's';
+            s.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            group.appendChild(s);
+            emojiSpans.push(s);
+          }
+          visual.appendChild(group);
+
+          // Infinite loop subtract animation: vanish → wait → reappear → wait → vanish → ...
+          // Stops when user answers (numState.addLocked becomes true)
+          const removeCount = b;
+          const vanish = () => {
+            // Vanish
+            for (let i = a - removeCount; i < a; i++) {
+              if (emojiSpans[i]) {
+                emojiSpans[i].style.opacity = '0';
+                emojiSpans[i].style.transform = 'scale(0.2) translateY(-40px) rotate(30deg)';
+              }
+            }
+            // After vanish finishes (0.8s), wait 0.2s, then reappear
+            setTimeout(() => {
+              if (numState.addLocked) return; // User answered, stay vanished
+              for (let i = a - removeCount; i < a; i++) {
+                if (emojiSpans[i]) {
+                  emojiSpans[i].style.opacity = '1';
+                  emojiSpans[i].style.transform = 'scale(1) translateY(0) rotate(0deg)';
+                }
+              }
+              // After reappear finishes (0.8s), wait 0.4s, then vanish again
+              setTimeout(() => {
+                if (numState.addLocked) return; // User answered, stay visible is fine
+                vanish(); // Loop
+              }, 1200); // 0.8s transition + 0.4s visible pause
+            }, 1000); // 0.8s transition + 0.2s vanished pause
+          };
+          setTimeout(() => vanish(), 600); // Start after pop-in
         }
 
-        document.getElementById('addProblem').innerHTML = `${a} + ${b} = <span class="blank"></span>`;
+        document.getElementById('addProblem').innerHTML = `${a} ${opSymbol} ${b} = <span class="blank"></span>`;
         document.getElementById('addFeedback').textContent = '';
+        document.getElementById('addNext').style.display = 'none';
 
-        // Options
+        // Options: generate 4 choices, ensure answer is among them
         const options = new Set([answer]);
+        const maxVal = isAdd ? 20 : 10;
         while (options.size < 4) {
-          const w = Math.floor(Math.random() * 19); // 0-18
+          const w = Math.floor(Math.random() * (maxVal + 1));
           if (w !== answer) options.add(w);
         }
         const optArr = [...options].sort(() => Math.random() - 0.5);
@@ -5391,27 +5695,254 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
               document.getElementById('addFeedback').style.color = 'var(--good)';
               document.querySelector('.add-problem .blank').textContent = answer;
               numState.addCorrect++;
-              speak(`${a}加${b}等于${answer}，答对了`);
+              speak(`${a}${opWord}${b}等于${answer}，答对了`);
               playBigCheerSound();
             } else {
               btn.classList.add('wrong');
               document.getElementById('addFeedback').textContent = `😊 不对哦，再想想`;
               document.getElementById('addFeedback').style.color = 'var(--bad)';
-              speak(`不对哦，再想想`);
+              speak(`${a}${opWord}${b}等于${answer}哦，记住了吗`);
             }
             document.getElementById('addScore').textContent = `答对：${numState.addCorrect} 题`;
+            document.getElementById('addNext').style.display = 'inline-block';
           });
           optArea.appendChild(btn);
         });
       }
 
       document.getElementById('entryAdd').addEventListener('click', () => {
-        speak('加法练习');
+        speak('加减法练习');
         showPage('add');
         genAddProblem();
       });
       document.getElementById('backHomeFromAdd').addEventListener('click', () => showPage('home'));
       document.getElementById('addNext').addEventListener('click', genAddProblem);
+    }
+
+    // --- 比大小游戏 ---
+    function initCompare() {
+      const cardLeft = document.getElementById('compareCardLeft');
+      const cardRight = document.getElementById('compareCardRight');
+      const numLeftEl = document.getElementById('compareNumLeft');
+      const numRightEl = document.getElementById('compareNumRight');
+      const feedback = document.getElementById('compareFeedback');
+      const scoreEl = document.getElementById('compareScore');
+      const nextBtn = document.getElementById('compareNext');
+      const vsEl = document.getElementById('compareVs');
+      const questionEl = document.getElementById('compareQuestion');
+      const modeEl = document.getElementById('compareMode');
+      const dotsEl = document.getElementById('compareDots');
+
+      let compareState = {
+        findBigger: true,        // randomly set each new game
+        currentLeft: 0,
+        currentRight: 0,
+        locked: false,
+      };
+
+      const cardColors = [
+        ['#ffe8f2', '#e91e89'], // pink
+        ['#e8f4fd', '#2196F3'], // blue
+        ['#e8fbe8', '#4CAF50'], // green
+        ['#fff8e1', '#FF9800'], // orange
+        ['#f3e5f5', '#9C27B0'], // purple
+        ['#fff3e0', '#FF5722'], // deep orange
+      ];
+
+      function generate() {
+        let a = Math.floor(Math.random() * 1000);
+        let b = Math.floor(Math.random() * 1000);
+        let attempts = 0;
+        while ((a === b || Math.abs(a - b) < 3) && attempts < 50) {
+          b = Math.floor(Math.random() * 1000);
+          attempts++;
+        }
+        if (a === b) b = (a + 137) % 1000;
+        compareState.currentLeft = a;
+        compareState.currentRight = b;
+      }
+
+      function applyCardStyle(card, colorIdx) {
+        const [bg, border] = cardColors[colorIdx % cardColors.length];
+        card.style.background = `linear-gradient(135deg, ${bg}, ${bg}bb)`;
+        card.style.border = `3px solid ${border}`;
+        card.style.boxShadow = `0 6px 24px ${border}33`;
+        card.querySelector('.compare-card-num').style.color = border;
+      }
+
+      function updateDots() {
+        dotsEl.innerHTML = '';
+        for (let i = 0; i < 10; i++) {
+          const dot = document.createElement('span');
+          dot.className = 'compare-round-dot';
+          if (i < numState.compareRoundHistory.length) {
+            dot.classList.add(numState.compareRoundHistory[i] === 'correct' ? 'done' : 'wrong-dot');
+          }
+          if (i === numState.compareRound) {
+            dot.classList.add('current');
+          }
+          dotsEl.appendChild(dot);
+        }
+      }
+
+      function showTrophy() {
+        const overlay = document.createElement('div');
+        overlay.className = 'compare-trophy-overlay';
+        overlay.innerHTML = `
+          <div class="compare-trophy-card">
+            <span class="compare-trophy-icon">🏆</span>
+            <div class="compare-trophy-text">太棒了！全部答对！</div>
+            <div class="compare-trophy-score">💯 100分</div>
+            <div class="compare-trophy-sub">连续答对 10 题</div>
+            <button class="primary compare-trophy-btn" id="compareTrophyOk">继续挑战</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay || e.target.id === 'compareTrophyOk') {
+            overlay.remove();
+          }
+        });
+      }
+
+      function startNewGame() {
+        compareState.findBigger = Math.random() > 0.5;
+        numState.compareRound = 0;
+        numState.compareRoundHistory = [];
+
+        const icon = compareState.findBigger ? '🔍' : '🔎';
+        const text = compareState.findBigger ? '找最大的' : '找最小的';
+        modeEl.textContent = `${icon} ${text}`;
+        questionEl.textContent = compareState.findBigger ? '哪个数字更大？点一下！' : '哪个数字更小？点一下！';
+
+        updateDots();
+        scoreEl.textContent = `第 1/10 题`;
+        renderQuestion();
+
+        // Voice prompt for current mode
+        if (compareState.findBigger) {
+          speak('找一找，哪个数字更大？点一下更大的那个');
+        } else {
+          speak('找一找，哪个数字更小？点一下更小的那个');
+        }
+      }
+
+      function renderQuestion() {
+        generate();
+        numLeftEl.textContent = compareState.currentLeft;
+        numRightEl.textContent = compareState.currentRight;
+        feedback.textContent = '';
+        feedback.className = 'compare-feedback';
+        nextBtn.style.display = 'none';
+        cardLeft.classList.remove('correct', 'wrong', 'disabled');
+        cardRight.classList.remove('correct', 'wrong', 'disabled');
+        vsEl.textContent = '⚡';
+        compareState.locked = false;
+
+        const colorL = Math.floor(Math.random() * cardColors.length);
+        let colorR = Math.floor(Math.random() * cardColors.length);
+        if (colorR === colorL) colorR = (colorR + 1) % cardColors.length;
+        applyCardStyle(cardLeft, colorL);
+        applyCardStyle(cardRight, colorR);
+
+        updateDots();
+        scoreEl.textContent = `第 ${numState.compareRound + 1}/10 题`;
+      }
+
+      function getCorrectSide() {
+        const a = compareState.currentLeft;
+        const b = compareState.currentRight;
+        if (compareState.findBigger) {
+          return a > b ? 'left' : 'right';
+        } else {
+          return a < b ? 'left' : 'right';
+        }
+      }
+
+      function handleClick(side) {
+        if (compareState.locked) return;
+        compareState.locked = true;
+
+        const correctSide = getCorrectSide();
+        const correct = (side === correctSide);
+        const chosenCard = side === 'left' ? cardLeft : cardRight;
+        const otherCard = side === 'left' ? cardRight : cardLeft;
+
+        chosenCard.classList.add(correct ? 'correct' : 'wrong');
+        otherCard.classList.add('disabled');
+
+        const bigNum = Math.max(compareState.currentLeft, compareState.currentRight);
+        const smallNum = Math.min(compareState.currentLeft, compareState.currentRight);
+
+        if (correct) {
+          feedback.textContent = '🎉 答对了！真棒！';
+          feedback.className = 'compare-feedback correct';
+          vsEl.textContent = side === 'left' ? (compareState.findBigger ? '>' : '<') : (compareState.findBigger ? '<' : '>');
+          const relation = compareState.findBigger ? '大' : '小';
+          questionEl.textContent = `${bigNum} 比 ${smallNum} ${relation}！`;
+          numState.compareCorrect++;
+          numState.compareRoundHistory.push('correct');
+          playBigCheerSound();
+          speak(`答对了，${bigNum}比${smallNum}${relation}`);
+        } else {
+          const relation = compareState.findBigger ? '大' : '小';
+          feedback.textContent = '😊 不对哦，再想想';
+          feedback.className = 'compare-feedback wrong';
+          questionEl.textContent = compareState.findBigger
+            ? `最大的数字是 ${bigNum}`
+            : `最小的数字是 ${smallNum}`;
+          numState.compareRoundHistory.push('wrong');
+          speak(`不对哦，${bigNum}比${smallNum}${relation}`);
+        }
+
+        nextBtn.style.display = 'inline-block';
+        cardLeft.classList.add('disabled');
+        cardRight.classList.add('disabled');
+        updateDots();
+      }
+
+      function checkRoundComplete() {
+        numState.compareRound++;
+        if (numState.compareRound >= 10) {
+          // Round is complete
+          const allCorrect = numState.compareRoundHistory.every(h => h === 'correct');
+          if (allCorrect) {
+            showTrophy();
+            speak('太棒了！全部答对，一百分！');
+          } else {
+            const correctCount = numState.compareRoundHistory.filter(h => h === 'correct').length;
+            speak(`本轮答对了${correctCount}题，再来一组吧`);
+          }
+          // Start a new game, with a new random mode
+          startNewGame();
+        } else {
+          renderQuestion();
+          if (numState.compareRound < 3) {
+            const prompt = compareState.findBigger ? '比一比，哪个更大' : '比一比，哪个更小';
+            speak(prompt);
+          }
+        }
+      }
+
+      cardLeft.addEventListener('click', () => handleClick('left'));
+      cardRight.addEventListener('click', () => handleClick('right'));
+
+      document.getElementById('compareNext').addEventListener('click', () => {
+        checkRoundComplete();
+      });
+
+      document.getElementById('backHomeFromCompare').addEventListener('click', () => {
+        showPage('home');
+        speak('今天真棒');
+      });
+
+      // Entry point
+      document.getElementById('entryCompare').addEventListener('click', () => {
+        showPage('compare');
+        // Small delay to ensure DOM is fully visible before speech
+        setTimeout(() => startNewGame(), 100);
+      });
     }
 
     function init() {
@@ -5449,6 +5980,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       step("initTraceNum", () => initTraceNum());
       step("initCount", () => initCount());
       step("initAdd", () => initAdd());
+      step("initCompare", () => initCompare());
       step("setupAppHistory", () => setupAppHistory());
     }
 
