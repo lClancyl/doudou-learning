@@ -5282,59 +5282,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         ctx.lineJoin = 'round';
       }
 
-      // Draw one 田字格 cell at position (cx, cy) with given size
-      function drawTianZiGeCell(cx, cy, cellSize) {
-        ctx.strokeStyle = 'rgba(180, 170, 160, 0.5)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([]);
-        ctx.strokeRect(cx, cy, cellSize, cellSize);
 
-        // Dashed cross lines
-        ctx.setLineDash([6, 8]);
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = 'rgba(180, 170, 160, 0.3)';
-        ctx.beginPath();
-        ctx.moveTo(cx + cellSize / 2, cy);
-        ctx.lineTo(cx + cellSize / 2, cy + cellSize);
-        ctx.moveTo(cx, cy + cellSize / 2);
-        ctx.lineTo(cx + cellSize, cy + cellSize / 2);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
-
-      // Draw 田字格 cells — one per digit
-      function drawTianZiGe(num) {
-        if (!ctx) return;
-        const digits = String(num);
-        const count = digits.length;
-        const box = display.getBoundingClientRect();
-        const w = box.width;
-        const h = box.height;
-        const margin = Math.min(w, h) * 0.02;
-
-        ctx.save();
-
-        if (count === 1) {
-          // Single digit: maximize to fill nearly entire area
-          const maxSize = Math.min(w, h);
-          const cellSize = maxSize - margin * 2;
-          drawTianZiGeCell((w - cellSize) / 2, (h - cellSize) / 2, cellSize);
-        } else {
-          // Two digits: two squares side by side, touching
-          const gap = 0;
-          const cellSize = (w - margin * 2 - gap) / 2;
-          const totalW = cellSize * 2 + gap;
-          const startX = (w - totalW) / 2;
-          const startY = (h - cellSize) / 2;
-          for (let i = 0; i < count; i++) {
-            drawTianZiGeCell(startX + i * (cellSize + gap), startY, cellSize);
-          }
-        }
-
-        ctx.restore();
-      }
-
-      // Draw the guide number (large, light-colored, for tracing over)
+      // Draw the guide number — fill entire canvas, no grid
       function drawGuide(num) {
         if (!ctx) return;
         const digits = String(num);
@@ -5342,7 +5291,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         const box = display.getBoundingClientRect();
         const w = box.width;
         const h = box.height;
-        const margin = Math.min(w, h) * 0.02;
+        const margin = Math.min(w, h) * 0.03;
 
         ctx.save();
         ctx.fontWeight = '700';
@@ -5351,22 +5300,16 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         ctx.fillStyle = 'rgba(255, 107, 157, 0.2)';
 
         if (count === 1) {
-          const maxSize = Math.min(w, h);
-          const cellSize = maxSize - margin * 2;
-          const fontSize = cellSize * 0.95;
+          const fontSize = Math.min(w, h) - margin * 2;
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
           ctx.fillText(digits[0], w / 2, h / 2 + fontSize * 0.04);
         } else {
-          const gap = 0;
-          const cellSize = (w - margin * 2 - gap) / 2;
-          const totalW = cellSize * 2 + gap;
-          const startX = (w - totalW) / 2;
-          const startY = h / 2;
-          const fontSize = cellSize * 0.95;
+          const cellW = w / count;
+          const fontSize = Math.min(cellW - margin, h - margin * 2);
           ctx.font = `700 ${fontSize}px "Comfortaa", "Baloo 2", sans-serif`;
           for (let i = 0; i < count; i++) {
-            const cx = startX + i * (cellSize + gap) + cellSize / 2;
-            ctx.fillText(digits[i], cx, startY + fontSize * 0.04);
+            const cx = cellW * i + cellW / 2;
+            ctx.fillText(digits[i], cx, h / 2 + fontSize * 0.04);
           }
         }
 
@@ -5381,17 +5324,15 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         hasDrawn = false;
         userStrokes = [];
         currentStroke = [];
-        drawTianZiGe(currentNum);
         drawGuide(currentNum);
       }
 
-      // Redraw everything: grid + guide + all user strokes
+      // Redraw everything: guide + all user strokes
       function redraw() {
         if (!ctx) return;
         const w = canvas.width / (window.devicePixelRatio || 1);
         const h = canvas.height / (window.devicePixelRatio || 1);
         ctx.clearRect(0, 0, w, h);
-        drawTianZiGe(currentNum);
         drawGuide(currentNum);
 
         const penWidth = Math.max(3, display.getBoundingClientRect().width * 0.018);
