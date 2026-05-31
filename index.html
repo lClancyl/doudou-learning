@@ -1687,73 +1687,243 @@
     .num-nav button:hover { transform: translateY(-2px); }
     .num-nav button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-    /* 数数练习 */
-    .count-scene {
+    /* 快乐小鸡 - 数数练习 */
+    #countPage {
+      position: fixed; inset: 0;
+      z-index: 100;
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      justify-content: center;
       align-items: center;
-      min-height: 200px;
-      padding: 20px;
-      margin: 10px 0;
-      background: linear-gradient(180deg, #e8f8fd 0%, #f0fff0 100%);
-      border-radius: 20px;
-      border: 2px dashed var(--sky-blue);
+      justify-content: center;
     }
-    .count-item {
-      font-size: 48px;
-      animation: popInSimple 0.3s ease;
+    #countPage.hidden { display: none; }
+    .chicken-scene {
+      width: 100%; height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, #4db8ff 0%, #87ceeb 40%, #b8e4f9 65%, #7bc67e 78%, #5aad5e 100%);
       cursor: pointer;
-      transition: transform 0.15s;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
     }
-    .count-item:hover { transform: scale(1.15); }
-    .count-item.selected {
-      filter: brightness(0.6);
-      transform: scale(0.9);
+    .chicken-sky {
+      position: absolute; top: 0; left: 0; right: 0; height: 70%;
+      pointer-events: none;
     }
-    @keyframes popInSimple {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    .chicken-cloud {
+      position: absolute;
+      font-size: 48px;
+      animation: cloudDrift 8s ease-in-out infinite;
+      opacity: 0.85;
     }
-    .count-answer-area {
+    .chicken-cloud:nth-child(2) { animation-delay: 2s; }
+    .chicken-cloud:nth-child(3) { animation-delay: 5s; }
+    @keyframes cloudDrift {
+      0%,100% { transform: translateX(0); }
+      50% { transform: translateX(30px); }
+    }
+    .chicken-instruction {
+      position: absolute;
+      top: 10%;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 3px 8px rgba(0,0,0,0.25);
+      z-index: 2;
+      pointer-events: none;
+      padding: 0 16px;
+    }
+    .chicken-hen-wrap {
+      position: absolute;
+      bottom: 38%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      pointer-events: none;
+    }
+    .chicken-hen {
+      font-size: clamp(80px, 14vw, 130px);
+      animation: henBounce 0.25s ease;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2));
+    }
+    .chicken-hen.laying {
+      animation: henLay 0.4s ease;
+    }
+    @keyframes henBounce {
+      0% { transform: translateY(-10px); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+    @keyframes henLay {
+      0% { transform: translateY(0) scale(1); }
+      40% { transform: translateY(-12px) scale(1.05); }
+      70% { transform: translateY(6px) scale(0.95); }
+      100% { transform: translateY(0) scale(1); }
+    }
+    .chicken-hen-shadow {
+      width: 70px; height: 14px;
+      margin: 0 auto;
+      background: radial-gradient(ellipse, rgba(0,0,0,0.15), transparent);
+      border-radius: 50%;
+    }
+    .chicken-nest {
+      position: absolute;
+      bottom: 22%;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       gap: 10px;
-      justify-content: center;
-      align-items: center;
-      margin: 14px 0;
       flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-end;
+      min-width: 200px;
+      max-width: 90vw;
+      padding: 18px 12px 10px;
+      background: radial-gradient(ellipse at center, #c4956a 20%, #a0764f 60%, transparent 72%);
+      border-radius: 50% 50% 40% 40%;
+      z-index: 2;
+      pointer-events: none;
+      min-height: 60px;
     }
-    .count-num-btn {
-      width: 56px; height: 56px;
-      font-size: 28px;
-      font-weight: 800;
-      border: 2px solid var(--sky-blue);
-      border-radius: 14px;
-      background: #fff;
-      color: #2c7fb8;
-      cursor: pointer;
-      transition: all 0.15s;
+    .chicken-egg {
+      font-size: clamp(32px, 6vw, 48px);
+      animation: eggDrop 0.35s ease;
+      transition: transform 0.3s, opacity 0.3s;
     }
-    .count-num-btn:hover { background: #e8f4fd; transform: scale(1.08); }
-    .count-num-btn.correct { background: var(--good); color: #fff; border-color: var(--good); }
-    .count-num-btn.wrong { background: var(--bad); color: #fff; border-color: var(--bad); animation: shake 0.4s; }
+    @keyframes eggDrop {
+      0% { transform: translateY(-60px) scale(0.3); opacity: 0; }
+      60% { transform: translateY(4px) scale(1.1); }
+      80% { transform: translateY(-2px) scale(0.95); }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .chicken-egg.hatched {
+      animation: eggHatch 0.6s ease forwards;
+    }
+    @keyframes eggHatch {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.2); }
+      60% { transform: scale(0.5); opacity: 0.5; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+    .chicken-chick {
+      font-size: clamp(28px, 5vw, 42px);
+      animation: chickPop 0.5s ease;
+      position: absolute;
+    }
+    @keyframes chickPop {
+      0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+      70% { transform: scale(1.3) rotate(5deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    .chicken-counter {
+      position: absolute;
+      bottom: 16%;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .chicken-tap-hint {
+      position: absolute;
+      bottom: 10%;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: clamp(16px, 3vw, 22px);
+      color: rgba(255,255,255,0.8);
+      font-weight: 700;
+      z-index: 2;
+      pointer-events: none;
+      animation: hintPulse 2s ease-in-out infinite;
+    }
+    @keyframes hintPulse {
+      0%,100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
     @keyframes shake {
       0%,100% { transform: translateX(0); }
       25% { transform: translateX(-6px); }
       75% { transform: translateX(6px); }
     }
-    .count-feedback {
+    .chicken-feedback {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(32px, 7vw, 56px);
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      z-index: 10;
+      pointer-events: none;
       text-align: center;
-      font-size: 28px;
-      font-weight: 800;
-      min-height: 40px;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
-    .count-score {
+    .chicken-feedback.show {
+      opacity: 1;
+    }
+    .chicken-round {
+      position: absolute;
+      top: 4%;
+      left: 0; right: 0;
       text-align: center;
-      font-size: 20px;
+      font-size: 18px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 700;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .chicken-back {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 20;
+      font-size: 16px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.85);
+      border: none;
       color: var(--ink);
-      margin-top: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .chicken-trophy-overlay {
+      position: fixed; inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chicken-trophy-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+      max-width: 340px;
+      width: 90%;
+    }
+    .chicken-trophy-card .icon { font-size: 72px; }
+    .chicken-trophy-card .text { font-size: 26px; font-weight: 900; color: var(--ink); margin: 8px 0; }
+    .chicken-trophy-card .score { font-size: 20px; color: #888; }
+    .chicken-trophy-card button {
+      margin-top: 16px;
+      font-size: 20px;
+      padding: 12px 36px;
+      border-radius: 999px;
+      background: var(--peppa-pink);
+      color: #fff;
+      border: none;
+      font-weight: 800;
+      cursor: pointer;
     }
 
     /* 加减练习 */
@@ -2018,7 +2188,7 @@
         <p class="home-subtitle">来学数字吧！</p>
         <div class="num-sub-grid">
           <button class="num-sub-btn" id="entryTraceNum"><span class="sub-icon">✏️</span>描红数字</button>
-          <button class="num-sub-btn" id="entryCount"><span class="sub-icon">🔢</span>数数练习</button>
+          <button class="num-sub-btn" id="entryCount"><span class="sub-icon">🐔</span>快乐小鸡</button>
           <button class="num-sub-btn" id="entryAdd"><span class="sub-icon">➕➖</span>加减练习</button>
           <button class="num-sub-btn" id="entryCompare"><span class="sub-icon">📏</span>比大小</button>
         </div>
@@ -2282,22 +2452,33 @@
     </div>
 
     <div id="countPage" class="hidden">
-      <section class="card top">
-        <div class="row">
-          <h1 style="margin-right:auto;">数数练习</h1>
-          <button id="backHomeFromCount">返回首页</button>
+      <div class="chicken-scene" id="chickenScene">
+        <!-- Sky + clouds -->
+        <div class="chicken-sky">
+          <span class="chicken-cloud" style="top:8%;left:10%;">☁️</span>
+          <span class="chicken-cloud" style="top:4%;right:12%;">☁️</span>
+          <span class="chicken-cloud" style="top:16%;left:60%;font-size:38px;">☁️</span>
         </div>
-      </section>
-      <section class="card">
-        <p style="text-align:center;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px;" id="countQuestion">数一数，下面有几个？</p>
-        <div class="count-scene" id="countScene"></div>
-        <div class="count-answer-area" id="countOptions"></div>
-        <div class="count-feedback" id="countFeedback"></div>
-        <div class="count-score" id="countScore">第 1/10 题</div>
-        <div style="text-align:center;margin-top:12px;">
-          <button class="subtab primary" id="countNext" style="display:none;">下一题</button>
+        <!-- Instruction -->
+        <div class="chicken-instruction" id="chickenInstruction">请下蛋吧！</div>
+        <!-- Hen area -->
+        <div class="chicken-hen-wrap">
+          <div class="chicken-hen" id="chickenHen">🐔</div>
+          <div class="chicken-hen-shadow"></div>
         </div>
-      </section>
+        <!-- Nest + eggs -->
+        <div class="chicken-nest" id="chickenNest"></div>
+        <!-- Counter -->
+        <div class="chicken-counter" id="chickenCounter">0 / 0</div>
+        <!-- Tap hint -->
+        <div class="chicken-tap-hint" id="chickenTapHint">👆 点击屏幕下蛋</div>
+        <!-- Feedback -->
+        <div class="chicken-feedback" id="chickenFeedback"></div>
+        <!-- Round info -->
+        <div class="chicken-round" id="chickenRound">第 1/10 轮</div>
+        <!-- Back button -->
+        <button class="chicken-back" id="backHomeFromCount">← 返回</button>
+      </div>
     </div>
 
     <div id="addPage" class="hidden">
@@ -5571,132 +5752,198 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       renderNum();
     }
 
-    // --- 数数练习 ---
-    const COUNT_EMOJIS = ['🍎','🍊','🍋','🍇','🍓','🌟','🎈','🐱','🐶','🐰','🦋','🌺','🌻','🍄','🚗','🎈','🍪','🧁','🎁','🌈'];
-
+    // --- 快乐小鸡 - 数数练习 ---
     function initCount() {
-      function startCountRound() {
-        numState.countRound = 0;
-        numState.countRoundHistory = [];
-        numState.countCorrect = 0;
-        document.getElementById('countScore').textContent = `第 1/10 题`;
-        genCountProblem();
+      const scene = document.getElementById('chickenScene');
+      const instructionEl = document.getElementById('chickenInstruction');
+      const henEl = document.getElementById('chickenHen');
+      const nestEl = document.getElementById('chickenNest');
+      const counterEl = document.getElementById('chickenCounter');
+      const tapHintEl = document.getElementById('chickenTapHint');
+      const feedbackEl = document.getElementById('chickenFeedback');
+      const roundEl = document.getElementById('chickenRound');
+
+      let eggState = {
+        target: 0,
+        current: 0,
+        round: 0,
+        roundHistory: [],
+        correctCount: 0,
+        locked: false,
+      };
+
+      const eggEmoji = '\uD83E\uDD5A'; // 🥚
+      const chickEmoji = '\uD83D\uDC23'; // 🐣
+
+      function speakCount(n) {
+        if (n === 2) return '两';
+        return String(n);
       }
 
-      function genCountProblem() {
-        numState.countLocked = false;
-        const count = 1 + Math.floor(Math.random() * 9); // 1-9
-        const emoji = COUNT_EMOJIS[Math.floor(Math.random() * COUNT_EMOJIS.length)];
-        const scene = document.getElementById('countScene');
-        scene.innerHTML = '';
-        for (let i = 0; i < count; i++) {
-          const span = document.createElement('span');
-          span.className = 'count-item';
-          span.textContent = emoji;
-          span.style.animationDelay = (i * 0.08) + 's';
-          scene.appendChild(span);
-        }
-        document.getElementById('countFeedback').textContent = '';
-        document.getElementById('countQuestion').textContent = '数一数，下面有几个？';
-        document.getElementById('countNext').style.display = 'none';
+      function animHen() {
+        henEl.classList.remove('laying');
+        void henEl.offsetWidth; // reflow
+        henEl.classList.add('laying');
+      }
 
-        // Generate options: correct + 3 wrong (nearby)
-        const options = new Set([count]);
-        while (options.size < 4) {
-          const delta = Math.floor(Math.random() * 3) + 1;
-          const c = count + (Math.random() < 0.5 ? delta : -delta);
-          if (c >= 1 && c <= 9 && c !== count) options.add(c);
-        }
-        for (let d = 1; options.size < 4; d++) {
-          if (count + d <= 9) options.add(count + d);
-          if (options.size < 4 && count - d >= 1) options.add(count - d);
-        }
-        const optArr = [...options].sort(() => Math.random() - 0.5);
-        const optArea = document.getElementById('countOptions');
-        optArea.innerHTML = '';
-        optArr.forEach(n => {
-          const btn = document.createElement('button');
-          btn.className = 'count-num-btn';
-          btn.textContent = n;
-          btn.addEventListener('click', () => {
-            if (numState.countLocked) return;
-            numState.countLocked = true;
-            const countText = count === 2 ? '两' : count;
-            if (n === count) {
-              btn.classList.add('correct');
-              document.getElementById('countFeedback').textContent = `🎉 答对了！是${countText}个！`;
-              document.getElementById('countFeedback').style.color = 'var(--good)';
-              numState.countCorrect++;
-              numState.countRoundHistory.push('correct');
-              speak(`答对了，是${countText}个`);
-              playBigCheerSound();
-            } else {
-              btn.classList.add('wrong');
-              // Highlight correct answer
-              optArea.querySelectorAll('button').forEach(b => {
-                if (Number(b.textContent) === count) b.classList.add('correct');
-              });
-              document.getElementById('countFeedback').textContent = `😊 不对哦，是${countText}个`;
-              document.getElementById('countFeedback').style.color = 'var(--bad)';
-              numState.countRoundHistory.push('wrong');
-              speak(`不对哦，是${countText}个`);
-            }
-            numState.countRound++;
-            document.getElementById('countScore').textContent =
-              numState.countRound < 10
-                ? `第 ${numState.countRound + 1}/10 题`
-                : `答对：${numState.countCorrect}/10 题`;
-            document.getElementById('countNext').style.display = 'inline-block';
-          });
-          optArea.appendChild(btn);
+      function spawnEgg() {
+        animHen();
+        const egg = document.createElement('span');
+        egg.className = 'chicken-egg';
+        egg.textContent = eggEmoji;
+        nestEl.appendChild(egg);
+        return egg;
+      }
+
+      function clearEggs() {
+        nestEl.innerHTML = '';
+      }
+
+      function showFeedback(text, duration = 1500) {
+        feedbackEl.textContent = text;
+        feedbackEl.classList.add('show');
+        clearTimeout(feedbackEl._timeout);
+        feedbackEl._timeout = setTimeout(() => {
+          feedbackEl.classList.remove('show');
+        }, duration);
+      }
+
+      function startRound() {
+        eggState.round = 0;
+        eggState.roundHistory = [];
+        eggState.correctCount = 0;
+        eggState.target = 1 + Math.floor(Math.random() * 20); // 1-20
+        beginProblem();
+      }
+
+      function beginProblem() {
+        eggState.current = 0;
+        eggState.locked = false;
+        clearEggs();
+        nestEl.querySelectorAll('.chicken-chick').forEach(c => c.remove());
+        roundEl.textContent = `第 ${eggState.round + 1}/10 轮`;
+        instructionEl.textContent = `请下 ${speakCount(eggState.target)} 个蛋！`;
+        counterEl.textContent = `0 / ${speakCount(eggState.target)}`;
+        tapHintEl.style.display = '';
+        feedbackEl.classList.remove('show');
+        speak(`请下${speakCount(eggState.target)}个蛋`);
+      }
+
+      function onCorrect() {
+        eggState.locked = true;
+        tapHintEl.style.display = 'none';
+        eggState.correctCount++;
+        eggState.roundHistory.push('correct');
+        showFeedback('\uD83C\uDF89 太棒了！', 2000);
+        speak(`太棒了！${speakCount(eggState.target)}个蛋，都对啦！`);
+        playBigCheerSound();
+
+        // Hatch all eggs into chicks
+        const eggs = nestEl.querySelectorAll('.chicken-egg');
+        eggs.forEach((egg, i) => {
+          setTimeout(() => {
+            egg.classList.add('hatched');
+            setTimeout(() => {
+              const chick = document.createElement('span');
+              chick.className = 'chicken-chick';
+              chick.textContent = chickEmoji;
+              chick.style.left = (Math.random() * 60 - 30) + 'px';
+              chick.style.bottom = (Math.random() * 30) + 'px';
+              egg.replaceWith(chick);
+            }, 500);
+          }, i * 100);
         });
+
+        setTimeout(() => advanceRound(), 2500);
       }
 
-      document.getElementById('entryCount').addEventListener('click', () => {
-        speak('数数练习');
-        showPage('count');
-        startCountRound();
-      });
-      document.getElementById('backHomeFromCount').addEventListener('click', () => showPage('home'));
-      document.getElementById('countNext').addEventListener('click', () => {
-        if (numState.countRound >= 10) {
-          // Show result: trophy or score
-          const allCorrect = numState.countRoundHistory.every(h => h === 'correct');
+      function onOver() {
+        eggState.locked = true;
+        showFeedback('\uD83D\uDE0A 多了！再数一数哦', 1800);
+        speak('多了！再数一数哦');
+
+        // Shake eggs
+        const eggs = nestEl.querySelectorAll('.chicken-egg');
+        eggs.forEach(e => {
+          e.style.animation = 'shake 0.4s';
+        });
+
+        setTimeout(() => {
+          eggState.roundHistory.push('wrong');
+          beginProblem();
+        }, 2000);
+      }
+
+      function advanceRound() {
+        eggState.round++;
+        if (eggState.round >= 10) {
+          const allCorrect = eggState.roundHistory.every(h => h === 'correct');
           if (allCorrect) {
-            showCountTrophy();
+            showChickenTrophy();
             speak('太棒了！全部答对，一百分！');
           } else {
-            speak(`本轮答对了${numState.countCorrect}题，再来一组吧`);
-            startCountRound();
+            const correct = eggState.roundHistory.filter(h => h === 'correct').length;
+            speak(`本轮答对了${correct}轮，再来一组吧`);
+            startRound();
           }
         } else {
-          genCountProblem();
+          eggState.target = 1 + Math.floor(Math.random() * 20);
+          beginProblem();
         }
-      });
+      }
 
-      function showCountTrophy() {
+      function showChickenTrophy() {
         const overlay = document.createElement('div');
-        overlay.className = 'compare-trophy-overlay';
+        overlay.className = 'chicken-trophy-overlay';
         overlay.innerHTML = `
-          <div class="compare-trophy-card">
-            <span class="compare-trophy-icon">🏆</span>
-            <div class="compare-trophy-text">太棒了！全部答对！</div>
-            <div class="compare-trophy-score">💯 100分</div>
-            <div class="compare-trophy-sub">连续答对 10 题</div>
-            <button class="primary compare-trophy-btn" id="countTrophyOk">继续挑战</button>
+          <div class="chicken-trophy-card">
+            <div class="icon">\uD83D\uDC23\uD83C\uDFC6\uD83D\uDC23</div>
+            <div class="text">小鸡们都孵出来啦！</div>
+            <div class="score">\uD83D\uDCAF 10轮全部正确！</div>
+            <button id="chickenTrophyOk">继续下蛋</button>
           </div>
         `;
         document.body.appendChild(overlay);
         overlay.addEventListener('click', (e) => {
-          if (e.target === overlay || e.target.id === 'countTrophyOk') {
+          if (e.target === overlay || e.target.id === 'chickenTrophyOk') {
             overlay.remove();
-            startCountRound();
+            startRound();
           }
         });
       }
+
+      // Tap handler
+      scene.addEventListener('click', (e) => {
+        if (eggState.locked) return;
+        if (e.target.closest('.chicken-back')) return;
+
+        eggState.current++;
+        spawnEgg();
+        counterEl.textContent = `${eggState.current} / ${speakCount(eggState.target)}`;
+
+        if (eggState.current === eggState.target) {
+          onCorrect();
+        } else if (eggState.current > eggState.target) {
+          onOver();
+        } else {
+          // Still counting - brief audio feedback every few taps
+          if (eggState.current % 3 === 0) {
+            speak(String(eggState.current));
+          }
+        }
+      });
+
+      // Entry + back
+      document.getElementById('entryCount').addEventListener('click', () => {
+        speak('快乐小鸡，数数下蛋');
+        showPage('count');
+        startRound();
+      });
+      document.getElementById('backHomeFromCount').addEventListener('click', () => showPage('home'));
     }
 
     // --- 加减练习 ---
+    const COUNT_EMOJIS = ['🍎','🍊','🍋','🍇','🍓','🌟','🎈','🐱','🐶','🐰','🦋','🌺','🌻','🍄','🚗','🎈','🍪','🧁','🎁','🌈'];
     function initAdd() {
       function startAddRound() {
         numState.addRound = 0;
