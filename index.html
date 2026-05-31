@@ -2269,7 +2269,7 @@
         <div class="count-scene" id="countScene"></div>
         <div class="count-answer-area" id="countOptions"></div>
         <div class="count-feedback" id="countFeedback"></div>
-        <div class="count-score" id="countScore">答对：0 题</div>
+        <div class="count-score" id="countScore">第 1/10 题</div>
         <div style="text-align:center;margin-top:12px;">
           <button class="subtab primary" id="countNext" style="display:none;">下一题</button>
         </div>
@@ -2288,7 +2288,7 @@
         <div class="add-problem" id="addProblem"></div>
         <div class="add-options" id="addOptions"></div>
         <div class="add-feedback" id="addFeedback"></div>
-        <div class="add-score" id="addScore">答对：0 题</div>
+        <div class="add-score" id="addScore">第 1/10 题</div>
         <div style="text-align:center;margin-top:12px;">
           <button class="subtab primary" id="addNext" style="display:none;">下一题</button>
         </div>
@@ -5204,10 +5204,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     // ===== 数字学习模块 =====
     const numState = {
       countCorrect: 0,
+      countRound: 0,
+      countRoundHistory: [],
       addCorrect: 0,
+      addRound: 0,
+      addRoundHistory: [],
       compareCorrect: 0,
       compareRound: 0,
-      compareRoundHistory: [], // 'correct' | 'wrong' for current round
+      compareRoundHistory: [],
       countAnswer: -1,
       addAnswer: -1,
       countLocked: false,
@@ -5477,7 +5481,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       });
       document.getElementById('traceNumClear').addEventListener('click', () => {
         clearUserStrokes();
-        speak('擦掉了，再写一遍');
       });
 
       document.getElementById('entryTraceNum').addEventListener('click', () => {
@@ -5495,6 +5498,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     const COUNT_EMOJIS = ['🍎','🍊','🍋','🍇','🍓','🌟','🎈','🐱','🐶','🐰','🦋','🌺','🌻','🍄','🚗','🎈','🍪','🧁','🎁','🌈'];
 
     function initCount() {
+      function startCountRound() {
+        numState.countRound = 0;
+        numState.countRoundHistory = [];
+        numState.countCorrect = 0;
+        document.getElementById('countScore').textContent = `第 1/10 题`;
+        genCountProblem();
+      }
+
       function genCountProblem() {
         numState.countLocked = false;
         const count = 1 + Math.floor(Math.random() * 9); // 1-9
@@ -5512,11 +5523,16 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         document.getElementById('countQuestion').textContent = '数一数，下面有几个？';
         document.getElementById('countNext').style.display = 'none';
 
-        // Generate options: correct + 3 wrong
+        // Generate options: correct + 3 wrong (nearby)
         const options = new Set([count]);
         while (options.size < 4) {
-          const w = Math.floor(Math.random() * 10);
-          if (w >= 1 && w !== count) options.add(w);
+          const delta = Math.floor(Math.random() * 3) + 1;
+          const c = count + (Math.random() < 0.5 ? delta : -delta);
+          if (c >= 1 && c <= 9 && c !== count) options.add(c);
+        }
+        for (let d = 1; options.size < 4; d++) {
+          if (count + d <= 9) options.add(count + d);
+          if (options.size < 4 && count - d >= 1) options.add(count - d);
         }
         const optArr = [...options].sort(() => Math.random() - 0.5);
         const optArea = document.getElementById('countOptions');
@@ -5528,21 +5544,31 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           btn.addEventListener('click', () => {
             if (numState.countLocked) return;
             numState.countLocked = true;
+            const countText = count === 2 ? '两' : count;
             if (n === count) {
               btn.classList.add('correct');
-              const countText = count === 2 ? '两' : count;
               document.getElementById('countFeedback').textContent = `🎉 答对了！是${countText}个！`;
               document.getElementById('countFeedback').style.color = 'var(--good)';
               numState.countCorrect++;
+              numState.countRoundHistory.push('correct');
               speak(`答对了，是${countText}个`);
               playBigCheerSound();
             } else {
               btn.classList.add('wrong');
-              document.getElementById('countFeedback').textContent = `😊 不对哦，再数数看`;
+              // Highlight correct answer
+              optArea.querySelectorAll('button').forEach(b => {
+                if (Number(b.textContent) === count) b.classList.add('correct');
+              });
+              document.getElementById('countFeedback').textContent = `😊 不对哦，是${countText}个`;
               document.getElementById('countFeedback').style.color = 'var(--bad)';
-              speak(`不对哦，再数数`);
+              numState.countRoundHistory.push('wrong');
+              speak(`不对哦，是${countText}个`);
             }
-            document.getElementById('countScore').textContent = `答对：${numState.countCorrect} 题`;
+            numState.countRound++;
+            document.getElementById('countScore').textContent =
+              numState.countRound < 10
+                ? `第 ${numState.countRound + 1}/10 题`
+                : `答对：${numState.countCorrect}/10 题`;
             document.getElementById('countNext').style.display = 'inline-block';
           });
           optArea.appendChild(btn);
@@ -5552,14 +5578,57 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       document.getElementById('entryCount').addEventListener('click', () => {
         speak('数数练习');
         showPage('count');
-        genCountProblem();
+        startCountRound();
       });
       document.getElementById('backHomeFromCount').addEventListener('click', () => showPage('home'));
-      document.getElementById('countNext').addEventListener('click', genCountProblem);
+      document.getElementById('countNext').addEventListener('click', () => {
+        if (numState.countRound >= 10) {
+          // Show result: trophy or score
+          const allCorrect = numState.countRoundHistory.every(h => h === 'correct');
+          if (allCorrect) {
+            showCountTrophy();
+            speak('太棒了！全部答对，一百分！');
+          } else {
+            speak(`本轮答对了${numState.countCorrect}题，再来一组吧`);
+            startCountRound();
+          }
+        } else {
+          genCountProblem();
+        }
+      });
+
+      function showCountTrophy() {
+        const overlay = document.createElement('div');
+        overlay.className = 'compare-trophy-overlay';
+        overlay.innerHTML = `
+          <div class="compare-trophy-card">
+            <span class="compare-trophy-icon">🏆</span>
+            <div class="compare-trophy-text">太棒了！全部答对！</div>
+            <div class="compare-trophy-score">💯 100分</div>
+            <div class="compare-trophy-sub">连续答对 10 题</div>
+            <button class="primary compare-trophy-btn" id="countTrophyOk">继续挑战</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay || e.target.id === 'countTrophyOk') {
+            overlay.remove();
+            startCountRound();
+          }
+        });
+      }
     }
 
     // --- 加减练习 ---
     function initAdd() {
+      function startAddRound() {
+        numState.addRound = 0;
+        numState.addRoundHistory = [];
+        numState.addCorrect = 0;
+        document.getElementById('addScore').textContent = `第 1/10 题`;
+        genAddProblem();
+      }
+
       function genAddProblem() {
         numState.addLocked = false;
         // Randomly choose addition or subtraction (50/50)
@@ -5567,16 +5636,20 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         let a, b, answer, opSymbol, opWord;
 
         if (isAdd) {
-          // Addition: a + b <= 10
-          a = Math.floor(Math.random() * 11); // 0-10
-          b = Math.floor(Math.random() * (11 - a)); // 0 to (10-a)
+          // Addition: a + b <= 10, avoid 0+0
+          do {
+            a = Math.floor(Math.random() * 11); // 0-10
+            b = Math.floor(Math.random() * (11 - a)); // 0 to (10-a)
+          } while (a === 0 && b === 0);
           answer = a + b;
           opSymbol = '+';
           opWord = '加';
         } else {
-          // Subtraction: a - b >= 0, a,b in 0-10
-          a = Math.floor(Math.random() * 11); // 0-10
-          b = Math.floor(Math.random() * (a + 1)); // 0 to a
+          // Subtraction: a - b >= 0, a,b in 0-10, avoid 0-0
+          do {
+            a = Math.floor(Math.random() * 11); // 0-10
+            b = Math.floor(Math.random() * (a + 1)); // 0 to a
+          } while (a === 0 && b === 0);
           answer = a - b;
           opSymbol = '−';
           opWord = '减';
@@ -5681,12 +5754,20 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         document.getElementById('addFeedback').textContent = '';
         document.getElementById('addNext').style.display = 'none';
 
-        // Options: generate 4 choices, ensure answer is among them
+        // Options: generate 4 choices close to the answer (±3), ensure answer is among them
         const options = new Set([answer]);
         const maxVal = isAdd ? 20 : 10;
-        while (options.size < 4) {
-          const w = Math.floor(Math.random() * (maxVal + 1));
-          if (w !== answer) options.add(w);
+        let attempts = 0;
+        while (options.size < 4 && attempts < 100) {
+          attempts++;
+          const delta = Math.floor(Math.random() * 3) + 1; // 1, 2, or 3
+          const candidate = answer + (Math.random() < 0.5 ? delta : -delta);
+          if (candidate >= 0 && candidate <= maxVal && candidate !== answer) options.add(candidate);
+        }
+        // Fallback: fill any remaining with nearby values
+        for (let d = 1; options.size < 4; d++) {
+          if (answer + d <= maxVal) options.add(answer + d);
+          if (options.size < 4 && answer - d >= 0) options.add(answer - d);
         }
         const optArr = [...options].sort(() => Math.random() - 0.5);
         const optArea = document.getElementById('addOptions');
@@ -5704,15 +5785,26 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
               document.getElementById('addFeedback').style.color = 'var(--good)';
               document.querySelector('.add-problem .blank').textContent = answer;
               numState.addCorrect++;
+              numState.addRoundHistory.push('correct');
               speak(`${a}${opWord}${b}等于${answer}，答对了`);
               playBigCheerSound();
             } else {
               btn.classList.add('wrong');
-              document.getElementById('addFeedback').textContent = `😊 不对哦，再想想`;
+              // Highlight correct answer button
+              optArea.querySelectorAll('button').forEach(b => {
+                if (Number(b.textContent) === answer) b.classList.add('correct');
+              });
+              document.querySelector('.add-problem .blank').textContent = answer;
+              document.getElementById('addFeedback').textContent = `😊 不对哦，答案是 ${answer}`;
               document.getElementById('addFeedback').style.color = 'var(--bad)';
-              speak(`${a}${opWord}${b}等于${answer}哦，记住了吗`);
+              numState.addRoundHistory.push('wrong');
+              speak(`不对哦，${a}${opWord}${b}等于${answer}`);
             }
-            document.getElementById('addScore').textContent = `答对：${numState.addCorrect} 题`;
+            numState.addRound++;
+            document.getElementById('addScore').textContent =
+              numState.addRound < 10
+                ? `第 ${numState.addRound + 1}/10 题`
+                : `答对：${numState.addCorrect}/10 题`;
             document.getElementById('addNext').style.display = 'inline-block';
           });
           optArea.appendChild(btn);
@@ -5722,10 +5814,44 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       document.getElementById('entryAdd').addEventListener('click', () => {
         speak('加减法练习');
         showPage('add');
-        genAddProblem();
+        startAddRound();
       });
       document.getElementById('backHomeFromAdd').addEventListener('click', () => showPage('home'));
-      document.getElementById('addNext').addEventListener('click', genAddProblem);
+      document.getElementById('addNext').addEventListener('click', () => {
+        if (numState.addRound >= 10) {
+          const allCorrect = numState.addRoundHistory.every(h => h === 'correct');
+          if (allCorrect) {
+            showAddTrophy();
+            speak('太棒了！全部答对，一百分！');
+          } else {
+            speak(`本轮答对了${numState.addCorrect}题，再来一组吧`);
+            startAddRound();
+          }
+        } else {
+          genAddProblem();
+        }
+      });
+
+      function showAddTrophy() {
+        const overlay = document.createElement('div');
+        overlay.className = 'compare-trophy-overlay';
+        overlay.innerHTML = `
+          <div class="compare-trophy-card">
+            <span class="compare-trophy-icon">🏆</span>
+            <div class="compare-trophy-text">太棒了！全部答对！</div>
+            <div class="compare-trophy-score">💯 100分</div>
+            <div class="compare-trophy-sub">连续答对 10 题</div>
+            <button class="primary compare-trophy-btn" id="addTrophyOk">继续挑战</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay || e.target.id === 'addTrophyOk') {
+            overlay.remove();
+            startAddRound();
+          }
+        });
+      }
     }
 
     // --- 比大小游戏 ---
@@ -5816,20 +5942,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }
 
       function startNewGame() {
-        compareState.findBigger = Math.random() > 0.5;
         numState.compareRound = 0;
         numState.compareRoundHistory = [];
-
-        const icon = compareState.findBigger ? '🔍' : '🔎';
-        const text = compareState.findBigger ? '找最大的' : '找最小的';
-        modeEl.textContent = `${icon} ${text}`;
-        questionEl.textContent = compareState.findBigger ? '哪个数字更大？点一下！' : '哪个数字更小？点一下！';
 
         updateDots();
         scoreEl.textContent = `第 1/10 题`;
         renderQuestion();
 
-        // Voice prompt for current mode
+        // Voice prompt based on first question's mode (set by renderQuestion)
         if (compareState.findBigger) {
           speak('找一找，哪个数字更大？点一下更大的那个');
         } else {
@@ -5839,6 +5959,13 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       function renderQuestion() {
         generate();
+        // Randomly decide find bigger or smaller for each question
+        compareState.findBigger = Math.random() > 0.5;
+        const icon = compareState.findBigger ? '🔍' : '🔎';
+        const text = compareState.findBigger ? '找最大的' : '找最小的';
+        modeEl.textContent = `${icon} ${text}`;
+        questionEl.textContent = compareState.findBigger ? '哪个数字更大？点一下！' : '哪个数字更小？点一下！';
+
         numLeftEl.textContent = compareState.currentLeft;
         numRightEl.textContent = compareState.currentRight;
         feedback.textContent = '';
@@ -5888,21 +6015,27 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           feedback.textContent = '🎉 答对了！真棒！';
           feedback.className = 'compare-feedback correct';
           vsEl.textContent = side === 'left' ? (compareState.findBigger ? '>' : '<') : (compareState.findBigger ? '<' : '>');
-          const relation = compareState.findBigger ? '大' : '小';
-          questionEl.textContent = `${bigNum} 比 ${smallNum} ${relation}！`;
+          if (compareState.findBigger) {
+            questionEl.textContent = `${bigNum} 比 ${smallNum} 大！`;
+            speak(`答对了，${bigNum}比${smallNum}大`);
+          } else {
+            questionEl.textContent = `${smallNum} 比 ${bigNum} 小！`;
+            speak(`答对了，${smallNum}比${bigNum}小`);
+          }
           numState.compareCorrect++;
           numState.compareRoundHistory.push('correct');
           playBigCheerSound();
-          speak(`答对了，${bigNum}比${smallNum}${relation}`);
         } else {
-          const relation = compareState.findBigger ? '大' : '小';
           feedback.textContent = '😊 不对哦，再想想';
           feedback.className = 'compare-feedback wrong';
-          questionEl.textContent = compareState.findBigger
-            ? `最大的数字是 ${bigNum}`
-            : `最小的数字是 ${smallNum}`;
+          if (compareState.findBigger) {
+            questionEl.textContent = `最大的数字是 ${bigNum}`;
+            speak(`不对哦，${bigNum}比${smallNum}大`);
+          } else {
+            questionEl.textContent = `最小的数字是 ${smallNum}`;
+            speak(`不对哦，${smallNum}比${bigNum}小`);
+          }
           numState.compareRoundHistory.push('wrong');
-          speak(`不对哦，${bigNum}比${smallNum}${relation}`);
         }
 
         nextBtn.style.display = 'inline-block';
@@ -5914,7 +6047,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       function checkRoundComplete() {
         numState.compareRound++;
         if (numState.compareRound >= 10) {
-          // Round is complete
           const allCorrect = numState.compareRoundHistory.every(h => h === 'correct');
           if (allCorrect) {
             showTrophy();
@@ -5923,7 +6055,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
             const correctCount = numState.compareRoundHistory.filter(h => h === 'correct').length;
             speak(`本轮答对了${correctCount}题，再来一组吧`);
           }
-          // Start a new game, with a new random mode
           startNewGame();
         } else {
           renderQuestion();
