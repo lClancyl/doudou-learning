@@ -2861,13 +2861,23 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     function saveProgress() {
       try {
         ensureReviewMetaForLearned();
+        const learnArr = [...state.learned];
+        // Guard: never save an empty learned set when we have defaults available
+        // (prevents data loss if saveProgress fires before state is ready)
+        if (learnArr.length === 0 && DEFAULT_LEARNED.length > 0) {
+          console.warn("saveProgress: learned set is empty, preserving defaults");
+          learnArr.push(...DEFAULT_LEARNED.filter(ch => !DEFAULT_UNLEARNED.includes(ch)));
+        }
         const payload = {
           lessons: state.lessons,
-          learned: [...state.learned],
+          learned: learnArr,
           reviewMeta: state.reviewMeta,
-          trophyTotal: state.trophyTotal
+          trophyTotal: state.trophyTotal,
+          savedAt: Date.now(),
+          version: 2
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        console.log("saveProgress: ok, learned=" + learnArr.length + ", lessons=" + state.lessons.length);
       } catch (err) {
         console.warn("saveProgress failed", err);
       }
@@ -2901,13 +2911,18 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     function hydrateProgress() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
+        if (!raw) {
+          console.log("hydrateProgress: no saved data, using defaults");
+          return;
+        }
         const data = JSON.parse(raw);
+        const dataVersion = Number(data.version) || 0;
         const savedLessons = Array.isArray(data.lessons) ? data.lessons : null;
         const savedLearned = Array.isArray(data.learned) ? data.learned : null;
         const savedReviewMeta = data.reviewMeta && typeof data.reviewMeta === "object" ? data.reviewMeta : null;
         state.trophyTotal = Math.max(0, Math.floor(Number(data.trophyTotal) || 0));
 
+        // Restore lessons from saved data
         if (savedLessons && savedLessons.length) {
           const cleaned = savedLessons
             .map(item => normalizeLessonItem(item))
@@ -2917,12 +2932,22 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           }
         }
 
-        if (savedLearned && savedLearned.length) {
+        // Restore learned: use saved data if available and non-empty.
+        // If savedLearned exists but is empty AND we have old data (version<2 or savedLessons exist),
+        // that's likely data corruption — keep defaults and warn.
+        if (savedLearned && savedLearned.length > 0) {
           state.learned = new Set(
             savedLearned
               .filter(ch => typeof ch === "string" && /[\u3400-\u9fff]/.test(ch))
               .map(ch => ch.charAt(0))
           );
+          console.log("hydrateProgress: restored learned=" + state.learned.size + ", lessons=" + state.lessons.length);
+        } else if (savedLearned && savedLearned.length === 0 && savedLessons && savedLessons.length > 0) {
+          // Data exists but learned is empty — possible corruption, keep defaults
+          console.warn("hydrateProgress: saved learned is empty but lessons exist, keeping defaults");
+          state.trophyTotal = 0;
+        } else {
+          console.log("hydrateProgress: no saved learned, using defaults");
         }
 
         if (savedReviewMeta) {
