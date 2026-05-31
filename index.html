@@ -5242,6 +5242,21 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       });
     }
 
+    // Convert number to Chinese spoken form, e.g. 86 → "八十六", 10 → "十", 20 → "二十"
+    function numToChinese(n) {
+      const units = ['', '十', '百'];
+      const digits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+      if (n === 0) return '零';
+      if (n < 10) return digits[n];
+      const tens = Math.floor(n / 10);
+      const ones = n % 10;
+      let result = '';
+      if (tens === 1) result = '十'; // 10-19: 十, 十一...
+      else result = digits[tens] + '十';
+      if (ones !== 0) result += digits[ones];
+      return result;
+    }
+
     // --- 描红数字 ---
     function initTraceNum() {
       const canvas = document.getElementById('traceNumCanvas');
@@ -5477,7 +5492,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       document.getElementById('traceNumRandom').addEventListener('click', () => {
         renderNum();
-        speak(currentNum);
+        speak(numToChinese(currentNum));
       });
       document.getElementById('traceNumClear').addEventListener('click', () => {
         clearUserStrokes();
