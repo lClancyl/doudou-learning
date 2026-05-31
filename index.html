@@ -1700,102 +1700,87 @@
       width: 100%; height: 100%;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(180deg, #4db8ff 0%, #87ceeb 40%, #b8e4f9 65%, #7bc67e 78%, #5aad5e 100%);
+      background: #6BB8E0;
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
     }
-    .chicken-sky {
-      position: absolute; top: 0; left: 0; right: 0; height: 70%;
-      pointer-events: none;
-    }
+    /* Clouds */
     .chicken-cloud {
       position: absolute;
-      font-size: 48px;
-      animation: cloudDrift 8s ease-in-out infinite;
-      opacity: 0.85;
+      font-size: 52px;
+      animation: cloudDrift 10s ease-in-out infinite;
+      opacity: 0.75;
+      z-index: 1;
+      pointer-events: none;
     }
-    .chicken-cloud:nth-child(2) { animation-delay: 2s; }
-    .chicken-cloud:nth-child(3) { animation-delay: 5s; }
+    .chicken-cloud:nth-child(2) { animation-delay: 3s; animation-duration: 9s; }
+    .chicken-cloud:nth-child(3) { animation-delay: 6s; animation-duration: 11s; font-size: 40px; }
     @keyframes cloudDrift {
       0%,100% { transform: translateX(0); }
-      50% { transform: translateX(30px); }
+      25% { transform: translateX(20px); }
+      75% { transform: translateX(-15px); }
     }
+    /* Instruction */
     .chicken-instruction {
       position: absolute;
-      top: 10%;
+      top: 5%;
       left: 0; right: 0;
       text-align: center;
-      font-size: clamp(28px, 5vw, 42px);
+      font-size: clamp(26px, 4.5vw, 38px);
       font-weight: 900;
       color: #fff;
-      text-shadow: 0 3px 8px rgba(0,0,0,0.25);
-      z-index: 2;
+      text-shadow: -1px -1px 0 rgba(0,0,0,0.08), 1px 1px 0 rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 10;
       pointer-events: none;
       padding: 0 16px;
     }
+    /* Chicken */
     .chicken-hen-wrap {
       position: absolute;
-      bottom: 38%;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 6%;
+      left: 8%;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .chicken-hen-svg {
+      display: block;
+      width: clamp(140px, 28vw, 200px);
+      height: auto;
+    }
+    .chicken-hen-svg.laying {
+      animation: henLaySquash 0.4s ease;
+    }
+    @keyframes henLaySquash {
+      0% { transform: translateY(0) scale(1,1); }
+      40% { transform: translateY(-8px) scale(0.98,1.04); }
+      70% { transform: translateY(4px) scale(1.03,0.96); }
+      100% { transform: translateY(0) scale(1,1); }
+    }
+    /* Eggs area - spans full screen */
+    .chicken-eggs-area {
+      position: absolute;
+      inset: 0;
       z-index: 3;
       pointer-events: none;
     }
-    .chicken-hen {
-      font-size: clamp(80px, 14vw, 130px);
-      animation: henBounce 0.25s ease;
-      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.2));
-    }
-    .chicken-hen.laying {
-      animation: henLay 0.4s ease;
-    }
-    @keyframes henBounce {
-      0% { transform: translateY(-10px); }
-      50% { transform: translateY(-20px); }
-      100% { transform: translateY(0); }
-    }
-    @keyframes henLay {
-      0% { transform: translateY(0) scale(1); }
-      40% { transform: translateY(-12px) scale(1.05); }
-      70% { transform: translateY(6px) scale(0.95); }
-      100% { transform: translateY(0) scale(1); }
-    }
-    .chicken-hen-shadow {
-      width: 70px; height: 14px;
-      margin: 0 auto;
-      background: radial-gradient(ellipse, rgba(0,0,0,0.15), transparent);
-      border-radius: 50%;
-    }
-    .chicken-nest {
-      position: absolute;
-      bottom: 22%;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: flex-end;
-      min-width: 200px;
-      max-width: 90vw;
-      padding: 18px 12px 10px;
-      background: radial-gradient(ellipse at center, #c4956a 20%, #a0764f 60%, transparent 72%);
-      border-radius: 50% 50% 40% 40%;
-      z-index: 2;
-      pointer-events: none;
-      min-height: 60px;
-    }
+    /* Egg - CSS drawn oval */
     .chicken-egg {
-      font-size: clamp(32px, 6vw, 48px);
+      position: absolute;
+      width: 34px;
+      height: 44px;
+      background: radial-gradient(ellipse at 38% 32%, #ffffff 0%, #faf7f0 50%, #f0e8d5 100%);
+      border: 2.5px solid #c4a265;
+      border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+      box-shadow: inset 0 -4px 8px rgba(180,140,80,0.15), 0 2px 6px rgba(0,0,0,0.1);
       animation: eggDrop 0.35s ease;
       transition: transform 0.3s, opacity 0.3s;
     }
     @keyframes eggDrop {
-      0% { transform: translateY(-60px) scale(0.3); opacity: 0; }
-      60% { transform: translateY(4px) scale(1.1); }
-      80% { transform: translateY(-2px) scale(0.95); }
+      0% { transform: translateY(-40px) scale(0.2); opacity: 0; }
+      55% { transform: translateY(6px) scale(1.08); }
+      75% { transform: translateY(-3px) scale(0.94); }
       100% { transform: translateY(0) scale(1); opacity: 1; }
     }
     .chicken-egg.hatched {
@@ -1803,46 +1788,50 @@
     }
     @keyframes eggHatch {
       0% { transform: scale(1); }
-      30% { transform: scale(1.2); }
-      60% { transform: scale(0.5); opacity: 0.5; }
-      100% { transform: scale(1.3); opacity: 0; }
+      30% { transform: scale(1.15); }
+      60% { transform: scale(0.4); opacity: 0.4; }
+      100% { transform: scale(1.2); opacity: 0; }
     }
+    /* Chick (hatched) */
     .chicken-chick {
-      font-size: clamp(28px, 5vw, 42px);
+      font-size: clamp(26px, 5vw, 38px);
       animation: chickPop 0.5s ease;
       position: absolute;
+      z-index: 4;
     }
     @keyframes chickPop {
       0% { transform: scale(0) rotate(-20deg); opacity: 0; }
       70% { transform: scale(1.3) rotate(5deg); }
       100% { transform: scale(1) rotate(0); opacity: 1; }
     }
+    /* Counter */
     .chicken-counter {
       position: absolute;
-      bottom: 16%;
+      bottom: 14%;
       left: 0; right: 0;
       text-align: center;
-      font-size: clamp(24px, 4vw, 36px);
+      font-size: clamp(26px, 5vw, 40px);
       font-weight: 900;
       color: #fff;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      z-index: 2;
+      text-shadow: 0 3px 8px rgba(0,0,0,0.25);
+      z-index: 10;
       pointer-events: none;
     }
+    /* Tap hint */
     .chicken-tap-hint {
       position: absolute;
-      bottom: 10%;
+      bottom: 8%;
       left: 0; right: 0;
       text-align: center;
-      font-size: clamp(16px, 3vw, 22px);
-      color: rgba(255,255,255,0.8);
+      font-size: clamp(15px, 2.5vw, 20px);
+      color: rgba(255,255,255,0.75);
       font-weight: 700;
-      z-index: 2;
+      z-index: 10;
       pointer-events: none;
       animation: hintPulse 2s ease-in-out infinite;
     }
     @keyframes hintPulse {
-      0%,100% { opacity: 0.6; }
+      0%,100% { opacity: 0.5; }
       50% { opacity: 1; }
     }
     @keyframes shake {
@@ -1850,16 +1839,17 @@
       25% { transform: translateX(-6px); }
       75% { transform: translateX(6px); }
     }
+    /* Feedback popup */
     .chicken-feedback {
       position: absolute;
-      top: 40%;
+      top: 35%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: clamp(32px, 7vw, 56px);
       font-weight: 900;
       color: #fff;
-      text-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      z-index: 10;
+      text-shadow: 0 4px 14px rgba(0,0,0,0.35);
+      z-index: 20;
       pointer-events: none;
       text-align: center;
       opacity: 0;
@@ -1870,13 +1860,13 @@
     }
     .chicken-round {
       position: absolute;
-      top: 4%;
-      left: 0; right: 0;
-      text-align: center;
-      font-size: 18px;
-      color: rgba(255,255,255,0.85);
+      top: 3%;
+      right: 16px;
+      text-align: right;
+      font-size: 16px;
+      color: rgba(255,255,255,0.8);
       font-weight: 700;
-      z-index: 2;
+      z-index: 10;
       pointer-events: none;
     }
     .chicken-back {
@@ -1884,15 +1874,15 @@
       top: 12px;
       right: 12px;
       z-index: 20;
-      font-size: 16px;
-      padding: 8px 16px;
+      font-size: 15px;
+      padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.82);
       border: none;
-      color: var(--ink);
+      color: #555;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .chicken-trophy-overlay {
       position: fixed; inset: 0;
@@ -2453,21 +2443,51 @@
 
     <div id="countPage" class="hidden">
       <div class="chicken-scene" id="chickenScene">
-        <!-- Sky + clouds -->
-        <div class="chicken-sky">
-          <span class="chicken-cloud" style="top:8%;left:10%;">☁️</span>
-          <span class="chicken-cloud" style="top:4%;right:12%;">☁️</span>
-          <span class="chicken-cloud" style="top:16%;left:60%;font-size:38px;">☁️</span>
+        <!-- Clouds -->
+        <span class="chicken-cloud" style="top:6%;left:8%;">☁️</span>
+        <span class="chicken-cloud" style="top:3%;right:10%;">☁️</span>
+        <span class="chicken-cloud" style="top:14%;left:55%;">☁️</span>
+        <!-- SVG Chicken -->
+        <div class="chicken-hen-wrap" id="chickenHenWrap">
+          <svg class="chicken-hen-svg" id="chickenHen" viewBox="0 0 200 210">
+            <!-- Shadow -->
+            <ellipse cx="100" cy="202" rx="50" ry="6" fill="rgba(0,0,0,0.12)"/>
+            <!-- Legs -->
+            <line x1="80" y1="172" x2="72" y2="198" stroke="#8D6E63" stroke-width="4" stroke-linecap="round"/>
+            <line x1="120" y1="172" x2="128" y2="198" stroke="#8D6E63" stroke-width="4" stroke-linecap="round"/>
+            <!-- Feet -->
+            <line x1="66" y1="198" x2="62" y2="205" stroke="#8D6E63" stroke-width="3" stroke-linecap="round"/>
+            <line x1="72" y1="198" x2="76" y2="205" stroke="#8D6E63" stroke-width="3" stroke-linecap="round"/>
+            <line x1="124" y1="198" x2="120" y2="205" stroke="#8D6E63" stroke-width="3" stroke-linecap="round"/>
+            <line x1="132" y1="198" x2="136" y2="205" stroke="#8D6E63" stroke-width="3" stroke-linecap="round"/>
+            <!-- Tail -->
+            <path d="M145 100 Q175 70 170 120 Q165 85 145 105Z" fill="#F9A825" stroke="#F57C00" stroke-width="1"/>
+            <path d="M148 108 Q180 90 168 135 Q163 100 148 115Z" fill="#FBC02D" stroke="#F57C00" stroke-width="1"/>
+            <!-- Body -->
+            <ellipse cx="95" cy="130" rx="58" ry="52" fill="#FEE440" stroke="#F9A825" stroke-width="1.5"/>
+            <!-- Wing -->
+            <ellipse cx="55" cy="130" rx="18" ry="24" fill="#FFD54F" stroke="#F9A825" stroke-width="1" transform="rotate(10,55,130)"/>
+            <!-- Neck -->
+            <ellipse cx="120" cy="100" rx="32" ry="34" fill="#FEE440"/>
+            <!-- Head -->
+            <circle cx="130" cy="75" r="30" fill="#FEE440" stroke="#F9A825" stroke-width="1"/>
+            <!-- Comb -->
+            <path d="M118 50 Q120 30 126 48 Q130 28 134 48 Q140 32 142 50 Q138 55 134 52 Q130 58 126 52 Q120 56 118 50Z" fill="#E53935"/>
+            <!-- Eye -->
+            <circle cx="125" cy="70" r="4.5" fill="#333"/>
+            <circle cx="126.5" cy="68.5" r="1.5" fill="#fff"/>
+            <!-- Beak -->
+            <path d="M150 72 L170 76 L150 80Z" fill="#F57C00"/>
+            <!-- Wattle -->
+            <ellipse cx="145" cy="88" rx="7" ry="9" fill="#E53935"/>
+            <!-- Blush -->
+            <circle cx="118" cy="82" r="6" fill="#FF8A80" opacity="0.45"/>
+          </svg>
         </div>
+        <!-- Eggs container (positions absolute) -->
+        <div class="chicken-eggs-area" id="chickenEggsArea"></div>
         <!-- Instruction -->
         <div class="chicken-instruction" id="chickenInstruction">请下蛋吧！</div>
-        <!-- Hen area -->
-        <div class="chicken-hen-wrap">
-          <div class="chicken-hen" id="chickenHen">🐔</div>
-          <div class="chicken-hen-shadow"></div>
-        </div>
-        <!-- Nest + eggs -->
-        <div class="chicken-nest" id="chickenNest"></div>
         <!-- Counter -->
         <div class="chicken-counter" id="chickenCounter">0 / 0</div>
         <!-- Tap hint -->
@@ -5756,8 +5776,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     function initCount() {
       const scene = document.getElementById('chickenScene');
       const instructionEl = document.getElementById('chickenInstruction');
-      const henEl = document.getElementById('chickenHen');
-      const nestEl = document.getElementById('chickenNest');
+      const henSvgEl = document.getElementById('chickenHen');
+      const eggsArea = document.getElementById('chickenEggsArea');
       const counterEl = document.getElementById('chickenCounter');
       const tapHintEl = document.getElementById('chickenTapHint');
       const feedbackEl = document.getElementById('chickenFeedback');
@@ -5772,8 +5792,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         locked: false,
       };
 
-      const eggEmoji = '\uD83E\uDD5A'; // 🥚
       const chickEmoji = '\uD83D\uDC23'; // 🐣
+      // Track last tap position for egg placement
+      let lastTapX = 0;
+      let lastTapY = 0;
 
       function speakCount(n) {
         if (n === 2) return '两';
@@ -5781,22 +5803,32 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }
 
       function animHen() {
-        henEl.classList.remove('laying');
-        void henEl.offsetWidth; // reflow
-        henEl.classList.add('laying');
+        henSvgEl.classList.remove('laying');
+        void henSvgEl.offsetWidth; // reflow
+        henSvgEl.classList.add('laying');
       }
 
-      function spawnEgg() {
+      function spawnEgg(tapX, tapY) {
         animHen();
-        const egg = document.createElement('span');
+        const egg = document.createElement('div');
         egg.className = 'chicken-egg';
-        egg.textContent = eggEmoji;
-        nestEl.appendChild(egg);
+        // Random offset from tap position to scatter naturally
+        const offsetX = (Math.random() - 0.5) * 70;
+        const offsetY = (Math.random() - 0.3) * 40;
+        // Clamp positions inside screen with padding
+        const areaW = scene.clientWidth;
+        const areaH = scene.clientHeight;
+        const pad = 60;
+        let x = Math.min(Math.max(tapX + offsetX, pad), areaW - pad - 34);
+        let y = Math.min(Math.max(tapY + offsetY, 80), areaH - pad - 44);
+        egg.style.left = x + 'px';
+        egg.style.top = y + 'px';
+        eggsArea.appendChild(egg);
         return egg;
       }
 
       function clearEggs() {
-        nestEl.innerHTML = '';
+        eggsArea.innerHTML = '';
       }
 
       function showFeedback(text, duration = 1500) {
@@ -5820,7 +5852,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         eggState.current = 0;
         eggState.locked = false;
         clearEggs();
-        nestEl.querySelectorAll('.chicken-chick').forEach(c => c.remove());
+        eggsArea.querySelectorAll('.chicken-chick').forEach(c => c.remove());
         roundEl.textContent = `第 ${eggState.round + 1}/10 轮`;
         instructionEl.textContent = `请下 ${speakCount(eggState.target)} 个蛋！`;
         counterEl.textContent = `0 / ${speakCount(eggState.target)}`;
@@ -5839,17 +5871,19 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         playBigCheerSound();
 
         // Hatch all eggs into chicks
-        const eggs = nestEl.querySelectorAll('.chicken-egg');
+        const eggs = eggsArea.querySelectorAll('.chicken-egg');
         eggs.forEach((egg, i) => {
           setTimeout(() => {
             egg.classList.add('hatched');
+            const eggStyle = getComputedStyle(egg);
             setTimeout(() => {
               const chick = document.createElement('span');
               chick.className = 'chicken-chick';
               chick.textContent = chickEmoji;
-              chick.style.left = (Math.random() * 60 - 30) + 'px';
-              chick.style.bottom = (Math.random() * 30) + 'px';
-              egg.replaceWith(chick);
+              chick.style.left = eggStyle.left;
+              chick.style.top = eggStyle.top;
+              eggsArea.appendChild(chick);
+              egg.remove();
             }, 500);
           }, i * 100);
         });
@@ -5863,7 +5897,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         speak('多了！再数一数哦');
 
         // Shake eggs
-        const eggs = nestEl.querySelectorAll('.chicken-egg');
+        const eggs = eggsArea.querySelectorAll('.chicken-egg');
         eggs.forEach(e => {
           e.style.animation = 'shake 0.4s';
         });
@@ -5917,8 +5951,13 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         if (eggState.locked) return;
         if (e.target.closest('.chicken-back')) return;
 
+        // Get tap position relative to scene
+        const rect = scene.getBoundingClientRect();
+        lastTapX = e.clientX - rect.left;
+        lastTapY = e.clientY - rect.top;
+
         eggState.current++;
-        spawnEgg();
+        spawnEgg(lastTapX, lastTapY);
         counterEl.textContent = `${eggState.current} / ${speakCount(eggState.target)}`;
 
         if (eggState.current === eggState.target) {
@@ -5926,7 +5965,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         } else if (eggState.current > eggState.target) {
           onOver();
         } else {
-          // Still counting - brief audio feedback every few taps
           if (eggState.current % 3 === 0) {
             speak(String(eggState.current));
           }
