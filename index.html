@@ -5760,12 +5760,21 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       let eggState = {
         target: 0,
+        prevTarget: 0,
         current: 0,
         round: 0,
         roundHistory: [],
         correctCount: 0,
         locked: false,
       };
+
+      function newTarget() {
+        let t;
+        do { t = 1 + Math.floor(Math.random() * 20); }
+        while (t === eggState.prevTarget);
+        eggState.prevTarget = t;
+        return t;
+      }
 
       const chickEmoji = '\uD83D\uDC23'; // 🐣
       let lastTapX = 0;
@@ -5816,7 +5825,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         eggState.round = 0;
         eggState.roundHistory = [];
         eggState.correctCount = 0;
-        eggState.target = 1 + Math.floor(Math.random() * 20);
+        eggState.target = newTarget();
         beginProblem();
       }
 
@@ -5899,7 +5908,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
             startRound();
           }
         } else {
-          eggState.target = 1 + Math.floor(Math.random() * 20);
+          eggState.target = newTarget();
           beginProblem();
         }
       }
@@ -5951,9 +5960,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       // Entry + back
       document.getElementById('entryCount').addEventListener('click', () => {
-        speak('快乐小鸡，数数下蛋');
         showPage('count');
-        startRound();
+        speak('快乐小鸡');
+        setTimeout(() => startRound(), 1200);
       });
       document.getElementById('backHomeFromCount').addEventListener('click', () => showPage('home'));
     }
