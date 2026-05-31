@@ -1262,12 +1262,24 @@
       border-radius: 50%;
       border: 3px solid #ffffff;
       box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3), 0 2px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
+      overflow: visible;
       flex: 0 0 auto;
       background: radial-gradient(circle at 30% 25%, #ffd7e6, #ffb9d0);
       position: relative;
       cursor: pointer;
       transition: transform 0.2s ease;
+    }
+
+    /* Camera badge */
+    .home-avatar::before {
+      content: "📷";
+      position: absolute;
+      bottom: -2px;
+      right: -4px;
+      font-size: 18px;
+      z-index: 2;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+      pointer-events: none;
     }
 
     .home-avatar:hover {
@@ -1279,6 +1291,9 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      border-radius: 50%;
+      position: relative;
+      z-index: 1;
     }
 
     .home-avatar.no-photo::after {
@@ -1290,6 +1305,9 @@
       color: var(--peppa-pink-dark);
       font-size: 18px;
       font-weight: 900;
+      border-radius: 50%;
+      overflow: hidden;
+      z-index: 0;
     }
 
     .avatar-tip {
@@ -5067,6 +5085,19 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     function bindEvents(clearTrace) {
       document.addEventListener("pointerdown", unlockSpeechIfNeeded, { once: true });
       el.homeTitle.addEventListener("click", () => speak("豆豆学习"));
+      // Avatar click → camera / file picker
+      el.homeAvatar.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.capture = "environment"; // mobile: rear camera; desktop: ignored, opens file picker
+        input.onchange = () => {
+          const file = input.files && input.files[0];
+          if (file) handleAvatarFile(file);
+        };
+        input.click();
+      });
       document.querySelectorAll("#homePage .sticker").forEach(node => {
         node.addEventListener("click", (e) => {
           e.stopPropagation();
