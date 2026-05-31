@@ -5946,11 +5946,12 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const dotsEl = document.getElementById('compareDots');
 
       let compareState = {
-        findBigger: true,        // randomly set each new game
+        findBigger: true,        // set each new game, alternates
         currentLeft: 0,
         currentRight: 0,
         locked: false,
       };
+      let compareNextModeIsFindBigger = true; // alternates each game
 
       const cardColors = [
         ['#ffe8f2', '#e91e89'], // pink
@@ -6021,8 +6022,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       function startNewGame() {
         numState.compareRound = 0;
         numState.compareRoundHistory = [];
-        // Randomly decide once for the whole 10-question group
-        compareState.findBigger = Math.random() > 0.5;
+        // Alternate between find-bigger and find-smaller each game
+        compareState.findBigger = compareNextModeIsFindBigger;
+        compareNextModeIsFindBigger = !compareNextModeIsFindBigger;
 
         updateDots();
         scoreEl.textContent = `第 1/10 题`;
@@ -6038,7 +6040,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       function renderQuestion() {
         generate();
-        // Mode is fixed for the whole group (set in startNewGame)
+        // Mode is fixed for the whole group, alternates each game
         const icon = compareState.findBigger ? '🔍 找大' : '🔎 找小';
         modeEl.textContent = icon;
         modeEl.className = 'compare-mode' + (compareState.findBigger ? '' : ' find-smaller');
