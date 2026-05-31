@@ -1864,14 +1864,20 @@
     .compare-mode {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: var(--peppa-pink-light);
-      color: var(--peppa-pink-dark);
-      padding: 6px 18px;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--peppa-pink-dark), #c0392b);
+      color: #fff;
+      padding: 10px 28px;
       border-radius: 999px;
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 8px;
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 16px rgba(233, 30, 99, 0.45);
+      letter-spacing: 2px;
+    }
+    .compare-mode.find-smaller {
+      background: linear-gradient(135deg, #2196F3, #1565C0);
+      box-shadow: 0 4px 16px rgba(33, 150, 243, 0.45);
     }
     .compare-round-progress {
       display: flex;
@@ -5984,26 +5990,27 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       function startNewGame() {
         numState.compareRound = 0;
         numState.compareRoundHistory = [];
+        // Randomly decide once for the whole 10-question group
+        compareState.findBigger = Math.random() > 0.5;
 
         updateDots();
         scoreEl.textContent = `第 1/10 题`;
         renderQuestion();
 
-        // Voice prompt based on first question's mode (set by renderQuestion)
+        // Voice prompt
         if (compareState.findBigger) {
-          speak('找一找，哪个数字更大？点一下更大的那个');
+          speak('这一轮，找更大的数字！哪个数字更大？点一下它！');
         } else {
-          speak('找一找，哪个数字更小？点一下更小的那个');
+          speak('这一轮，找更小的数字！哪个数字更小？点一下它！');
         }
       }
 
       function renderQuestion() {
         generate();
-        // Randomly decide find bigger or smaller for each question
-        compareState.findBigger = Math.random() > 0.5;
-        const icon = compareState.findBigger ? '🔍' : '🔎';
-        const text = compareState.findBigger ? '找最大的' : '找最小的';
-        modeEl.textContent = `${icon} ${text}`;
+        // Mode is fixed for the whole group (set in startNewGame)
+        const icon = compareState.findBigger ? '🔍 找大' : '🔎 找小';
+        modeEl.textContent = icon;
+        modeEl.className = 'compare-mode' + (compareState.findBigger ? '' : ' find-smaller');
         questionEl.textContent = compareState.findBigger ? '哪个数字更大？点一下！' : '哪个数字更小？点一下！';
 
         numLeftEl.textContent = compareState.currentLeft;
