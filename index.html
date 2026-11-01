@@ -44,6 +44,8 @@
       --cloud-white: #ffffff;
       --mud-brown: #c4956a;
       --perspective: 800px;
+      /* 英文字母专用：标准印刷体字形（Comfortaa 的小写太圆润，a/g/l 等容易认错） */
+      --font-letter: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
     }
 
     * { box-sizing: border-box; }
@@ -2237,7 +2239,7 @@
       font-weight: 900;
       line-height: 1;
       color: var(--peppa-pink-dark);
-      font-family: "Comfortaa", "Baloo 2", sans-serif;
+      font-family: var(--font-letter);
       text-shadow: 0 6px 0 rgba(255,179,208,0.45);
       animation: popInSimple 0.35s ease;
     }
@@ -2250,7 +2252,7 @@
       font-weight: 900;
       letter-spacing: 0.06em;
       color: #2c7fb8;
-      font-family: "Comfortaa", "Baloo 2", sans-serif;
+      font-family: var(--font-letter);
     }
     .abc-seq .gap {
       color: var(--peppa-pink);
@@ -2262,7 +2264,7 @@
       font-size: clamp(26px, 6vw, 40px);
       font-weight: 900;
       color: #2c7fb8;
-      font-family: "Comfortaa", "Baloo 2", sans-serif;
+      font-family: var(--font-letter);
       letter-spacing: 0.04em;
     }
     .abc-word .missing {
@@ -2285,7 +2287,7 @@
       color: #2c7fb8;
       cursor: pointer;
       transition: all 0.2s;
-      font-family: "Comfortaa", "Baloo 2", sans-serif;
+      font-family: var(--font-letter);
     }
     .abc-opt-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(135,206,235,0.4); }
     .abc-opt-btn.correct { background: var(--good); color: #fff; border-color: var(--good); }
@@ -2330,11 +2332,11 @@
     .abc-chart-item:active { transform: scale(0.94); }
     .abc-chart-item .up {
       font-size: 30px; font-weight: 900; color: var(--peppa-pink-dark);
-      font-family: "Comfortaa", "Baloo 2", sans-serif;
+      font-family: var(--font-letter);
     }
     .abc-chart-item .low {
       font-size: 22px; font-weight: 800; color: #2c7fb8;
-      font-family: "Comfortaa", "Baloo 2", sans-serif;
+      font-family: var(--font-letter);
     }
 
   </style>
