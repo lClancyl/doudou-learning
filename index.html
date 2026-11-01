@@ -2150,6 +2150,192 @@
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.25); }
     }
+    @keyframes popInSimple {
+      0% { opacity: 0; transform: scale(0.4); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* ===== 难度切换 ===== */
+    .level-switch {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .level-btn {
+      padding: 8px 20px;
+      font-size: 18px;
+      font-weight: 800;
+      border-radius: 999px;
+      border: 2px solid var(--peppa-pink-light);
+      background: #fff;
+      color: var(--peppa-pink-dark);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .level-btn.active {
+      background: linear-gradient(180deg, var(--peppa-pink) 0%, var(--peppa-pink-dark) 100%);
+      color: #fff;
+      border-color: var(--peppa-pink-dark);
+      box-shadow: 0 4px 14px rgba(255,107,157,0.35);
+    }
+    .level-btn:hover { transform: translateY(-2px); }
+    .visual-toggle {
+      padding: 8px 20px;
+      font-size: 18px;
+      font-weight: 800;
+      border-radius: 999px;
+      border: 2px dashed var(--sky-blue);
+      background: #fff;
+      color: #2c7fb8;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .visual-toggle.on {
+      background: linear-gradient(180deg, #4fb3e8, #2c7fb8);
+      color: #fff;
+      border-style: solid;
+      border-color: #2c7fb8;
+      box-shadow: 0 4px 14px rgba(44,127,184,0.35);
+    }
+    .visual-toggle:hover { transform: translateY(-2px); }
+    .compare-card-num.four-digit { font-size: clamp(34px, 8vw, 54px); }
+
+    /* ===== 英语 ABC 乐园 ===== */
+    .abc-mode-tabs {
+      display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .abc-mode {
+      padding: 8px 18px; font-size: 17px; font-weight: 800;
+      border-radius: 999px; border: 2px solid var(--sky-blue);
+      background: linear-gradient(180deg, #fff, #e8f4fd); color: #2c7fb8;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .abc-mode.active {
+      background: linear-gradient(180deg, #4fb3e8, #2c7fb8);
+      color: #fff; border-color: #2c7fb8;
+      box-shadow: 0 4px 14px rgba(44,127,184,0.35);
+    }
+    .abc-prompt {
+      text-align: center;
+      font-size: clamp(20px, 4vw, 26px);
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 6px;
+      min-height: 34px;
+    }
+    .abc-stage {
+      display: flex; align-items: center; justify-content: center; gap: 18px;
+      min-height: clamp(110px, 22vw, 160px);
+      margin: 4px 0;
+      flex-wrap: wrap;
+    }
+    .abc-big-letter {
+      font-size: clamp(72px, 17vw, 130px);
+      font-weight: 900;
+      line-height: 1;
+      color: var(--peppa-pink-dark);
+      font-family: "Comfortaa", "Baloo 2", sans-serif;
+      text-shadow: 0 6px 0 rgba(255,179,208,0.45);
+      animation: popInSimple 0.35s ease;
+    }
+    .abc-big-letter.lower {
+      color: #2c7fb8;
+      text-shadow: 0 6px 0 rgba(135,206,235,0.45);
+    }
+    .abc-seq {
+      font-size: clamp(34px, 8vw, 58px);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #2c7fb8;
+      font-family: "Comfortaa", "Baloo 2", sans-serif;
+    }
+    .abc-seq .gap {
+      color: var(--peppa-pink);
+      border-bottom: 6px solid var(--peppa-pink-light);
+      padding: 0 10px;
+    }
+    .abc-emoji { font-size: clamp(62px, 15vw, 104px); line-height: 1; animation: popInSimple 0.35s ease; }
+    .abc-word {
+      font-size: clamp(26px, 6vw, 40px);
+      font-weight: 900;
+      color: #2c7fb8;
+      font-family: "Comfortaa", "Baloo 2", sans-serif;
+      letter-spacing: 0.04em;
+    }
+    .abc-word .missing {
+      color: var(--peppa-pink);
+      border-bottom: 4px solid var(--peppa-pink-light);
+      padding: 0 8px;
+    }
+    .abc-options {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+      margin: 12px 0 6px;
+    }
+    .abc-opt-btn {
+      width: clamp(64px, 14vw, 86px);
+      height: clamp(64px, 14vw, 86px);
+      font-size: clamp(30px, 7vw, 42px);
+      font-weight: 900;
+      border: 3px solid var(--sky-blue);
+      border-radius: 20px;
+      background: linear-gradient(180deg, #fff, #e8f4fd);
+      color: #2c7fb8;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Comfortaa", "Baloo 2", sans-serif;
+    }
+    .abc-opt-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(135,206,235,0.4); }
+    .abc-opt-btn.correct { background: var(--good); color: #fff; border-color: var(--good); }
+    .abc-opt-btn.wrong { background: var(--bad); color: #fff; border-color: var(--bad); animation: shake 0.4s; }
+    .abc-opt-btn.small { font-size: clamp(20px, 4.5vw, 28px); }
+    .abc-feedback {
+      text-align: center; font-size: 24px; font-weight: 800;
+      min-height: 36px; margin: 6px 0;
+    }
+    .abc-feedback.correct { color: var(--grass-green); }
+    .abc-feedback.wrong { color: var(--peppa-pink); }
+    .abc-score { text-align: center; font-size: 20px; color: var(--ink); margin-top: 4px; }
+    .abc-replay {
+      display: none;
+      margin: 0 auto 6px;
+      padding: 8px 22px;
+      font-size: 20px;
+      font-weight: 800;
+      border-radius: 999px;
+      border: 2px solid var(--sun-yellow);
+      background: linear-gradient(180deg, #fff, #fff8d6);
+      color: #b8860b;
+      cursor: pointer;
+    }
+    .abc-replay.show { display: block; }
+    .abc-chart {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .abc-chart-item {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 10px 6px;
+      border-radius: 16px;
+      cursor: pointer;
+      background: linear-gradient(180deg, #fff, #eef7ff);
+      border: 2px solid var(--sky-blue);
+      box-shadow: 0 4px 12px rgba(135,206,235,0.22);
+      transition: transform 0.18s;
+    }
+    .abc-chart-item:active { transform: scale(0.94); }
+    .abc-chart-item .up {
+      font-size: 30px; font-weight: 900; color: var(--peppa-pink-dark);
+      font-family: "Comfortaa", "Baloo 2", sans-serif;
+    }
+    .abc-chart-item .low {
+      font-size: 22px; font-weight: 800; color: #2c7fb8;
+      font-family: "Comfortaa", "Baloo 2", sans-serif;
+    }
 
   </style>
 </head>
@@ -2171,6 +2357,7 @@
       <div class="module-tabs" id="moduleTabs">
         <button class="module-tab active" id="moduleTabLiterate">识字</button>
         <button class="module-tab" id="moduleTabNumber">数字</button>
+        <button class="module-tab" id="moduleTabEnglish">英语</button>
       </div>
       <div id="literateEntries">
         <p class="home-subtitle">点一点开始今天的识字冒险</p>
@@ -2190,7 +2377,18 @@
           <button class="num-sub-btn" id="entryAdd"><span class="sub-icon">➕➖</span>加减练习</button>
           <button class="num-sub-btn" id="entryCompare"><span class="sub-icon">📏</span>比大小</button>
         </div>
-        <p class="feature-hint">10以内加减法 &amp; 三位数比大小，轻松掌握</p>
+        <p class="feature-hint">10/20以内加减法 &amp; 三位数、四位数比大小</p>
+      </div>
+      <div id="englishEntries" class="hidden">
+        <p class="home-subtitle">ABC 乐园，玩转 26 个字母</p>
+        <div class="num-sub-grid">
+          <button class="num-sub-btn abc-entry" data-abc="case"><span class="sub-icon">🔠</span>大小写配对</button>
+          <button class="num-sub-btn abc-entry" data-abc="order"><span class="sub-icon">🔢</span>字母顺序</button>
+          <button class="num-sub-btn abc-entry" data-abc="listen"><span class="sub-icon">👂</span>听音找字母</button>
+          <button class="num-sub-btn abc-entry" data-abc="word"><span class="sub-icon">🍎</span>单词首字母</button>
+          <button class="num-sub-btn abc-entry" data-abc="chart"><span class="sub-icon">📖</span>字母表</button>
+        </div>
+        <p class="feature-hint" id="abcHomeStars">每关 10 题，全对拿奖杯</p>
       </div>
       <div class="home-hero">
         <div class="home-stickers">
@@ -2377,10 +2575,11 @@
           <span class="tag tag-new">未学</span>
         </div>
         <div class="library-actions">
-          <button class="subtab" id="libraryToggleSelect">开启勾选跳过</button>
-          <button class="subtab primary" id="libraryMarkLearned" disabled>标记已学并跳过</button>
+          <button class="subtab" id="libraryToggleSelect">开启勾选</button>
+          <button class="subtab primary" id="libraryMarkLearned" disabled>跳过</button>
+          <button class="subtab" id="libraryRestoreUnlearned" disabled>恢复未学</button>
         </div>
-        <p class="tip library-select-status" id="librarySelectStatus">未开启勾选跳过模式</p>
+        <p class="tip library-select-status" id="librarySelectStatus">未开启勾选模式</p>
         <div class="library-grid" id="libraryGrid"></div>
       </section>
 
@@ -2484,6 +2683,11 @@
         </div>
       </section>
       <section class="card">
+        <div class="level-switch" id="addLevelSwitch">
+          <button class="level-btn active" data-level="10">10 以内</button>
+          <button class="level-btn" data-level="20">20 以内</button>
+          <button class="visual-toggle" id="addVisualToggle">🖼 图形提示：关</button>
+        </div>
         <div class="add-visual" id="addVisual"></div>
         <div class="add-problem" id="addProblem"></div>
         <div class="add-options" id="addOptions"></div>
@@ -2504,6 +2708,10 @@
         </div>
       </section>
       <section class="card">
+        <div class="level-switch" id="compareLevelSwitch">
+          <button class="level-btn active" data-level="1000">三位数</button>
+          <button class="level-btn" data-level="10000">四位数（最大 9999）</button>
+        </div>
         <div style="text-align:center;">
           <div class="compare-mode" id="compareMode">🔍 找最大的</div>
         </div>
@@ -2522,6 +2730,43 @@
         <div class="compare-score" id="compareScore">第 1/10 题</div>
         <div style="text-align:center;margin-top:12px;">
           <button class="subtab primary" id="compareNext" style="display:none;">下一题</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== 英语 ABC 乐园 ===== -->
+    <div id="englishPage" class="hidden">
+      <section class="card top">
+        <div class="row">
+          <h1 style="margin-right:auto;">ABC 乐园</h1>
+          <button id="backHomeFromEnglish">返回首页</button>
+        </div>
+      </section>
+      <section class="card">
+        <div class="abc-mode-tabs" id="abcModeTabs">
+          <button class="abc-mode active" data-mode="case">大小写</button>
+          <button class="abc-mode" data-mode="order">顺序</button>
+          <button class="abc-mode" data-mode="listen">听音</button>
+          <button class="abc-mode" data-mode="word">首字母</button>
+          <button class="abc-mode" data-mode="chart">字母表</button>
+        </div>
+
+        <div id="abcGame">
+          <div class="abc-prompt" id="abcPrompt"></div>
+          <div class="abc-stage" id="abcStage"></div>
+          <button class="abc-replay" id="abcReplay">🔊 再听一遍</button>
+          <div class="abc-options" id="abcOptions"></div>
+          <div class="abc-feedback" id="abcFeedback"></div>
+          <div class="compare-round-progress" id="abcDots"></div>
+          <div class="abc-score" id="abcScore">第 1/10 题</div>
+          <div style="text-align:center;margin-top:12px;">
+            <button class="subtab primary" id="abcNext" style="display:none;">下一题</button>
+          </div>
+        </div>
+
+        <div id="abcChart" class="hidden">
+          <p class="tip" style="text-align:center;">点一点字母，听听它的读音</p>
+          <div class="abc-chart" id="abcChartGrid"></div>
         </div>
       </section>
     </div>
@@ -3040,6 +3285,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       libraryTabUnlearned: document.getElementById("libraryTabUnlearned"),
       libraryToggleSelect: document.getElementById("libraryToggleSelect"),
       libraryMarkLearned: document.getElementById("libraryMarkLearned"),
+      libraryRestoreUnlearned: document.getElementById("libraryRestoreUnlearned"),
       librarySelectStatus: document.getElementById("librarySelectStatus"),
       radicalSearch: document.getElementById("radicalSearch"),
       radicalCount: document.getElementById("radicalCount"),
@@ -3920,7 +4166,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const pages = [
         ['homePage','home'],['learnPage','learn'],['reviewPage','review'],
         ['libraryPage','library'],['radicalsPage','radicals'],
-        ['traceNumPage','traceNum'],['countPage','count'],['addPage','add'],['comparePage','compare']
+        ['traceNumPage','traceNum'],['countPage','count'],['addPage','add'],['comparePage','compare'],
+        ['englishPage','english']
       ];
       for (const [id, name] of pages) {
         if (!document.getElementById(id).classList.contains('hidden')) return name;
@@ -3932,7 +4179,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       if (page !== "review") {
         clearReviewRuntime();
       }
-      const allPages = ['homePage','learnPage','reviewPage','libraryPage','radicalsPage','traceNumPage','countPage','addPage','comparePage'];
+      const allPages = ['homePage','learnPage','reviewPage','libraryPage','radicalsPage','traceNumPage','countPage','addPage','comparePage','englishPage'];
       allPages.forEach(id => document.getElementById(id).classList.add('hidden'));
       if (page === "home") document.getElementById('homePage').classList.remove('hidden');
       if (page === "learn") document.getElementById('learnPage').classList.remove('hidden');
@@ -3943,6 +4190,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       if (page === "count") document.getElementById('countPage').classList.remove('hidden');
       if (page === "add") document.getElementById('addPage').classList.remove('hidden');
       if (page === "compare") document.getElementById('comparePage').classList.remove('hidden');
+      if (page === "english") document.getElementById('englishPage').classList.remove('hidden');
       if (syncHistory && historyReady && window.history && window.history.pushState) {
         const curr = window.history.state;
         if (!curr || curr[APP_HISTORY_KEY] !== page) {
@@ -4391,8 +4639,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       // Unlock Audio element (critical for iOS/async audio playback)
       try {
         audioPlayer.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+        const unlockSrc = audioPlayer.src;
         const p = audioPlayer.play();
-        if (p) p.then(() => { audioPlayer.pause(); audioPlayer.currentTime = 0; }).catch(() => {});
+        if (p) p.then(() => {
+          // 若已有新的音频接管（例如英文 TTS），不要把它暂停掉
+          if (audioPlayer.src !== unlockSrc) return;
+          audioPlayer.pause();
+          audioPlayer.currentTime = 0;
+        }).catch(() => {});
       } catch (e) {}
       try {
         const ctx = getGameAudioCtx();
@@ -4460,6 +4714,123 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         }
         // Desktop: iFlytek already handled everything internally
       });
+    }
+
+    // ===== 英文发音（字母 / 单词）=====
+    // 主链路：音频元素播放在线英文 TTS（和中文同一条链路，WebView / iPad 也能出声）
+    // 兜底：系统 speechSynthesis 英文语音
+    function isIOSDevice() {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 1 && navigator.platform === "MacIntel");
+    }
+
+    function englishAudioUrls(text) {
+      const q = encodeURIComponent(text);
+      return [
+        `https://fanyi.baidu.com/gettts?lan=en&text=${q}&spd=3&source=web`,
+        `https://dict.youdao.com/dictvoice?type=2&audio=${q}`,
+        `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${q}`
+      ];
+    }
+
+    let enAudioToken = 0;
+    function playEnAudio(text, onFail) {
+      const token = ++enAudioToken;
+      const urls = englishAudioUrls(text);
+      let idx = 0;
+
+      const tryNext = () => {
+        if (token !== enAudioToken) return; // 已被新的朗读取代
+        if (idx >= urls.length) {
+          if (onFail) onFail();
+          return;
+        }
+        const url = urls[idx++];
+        let settled = false;
+        let timer = null;
+
+        const cleanup = () => {
+          audioPlayer.removeEventListener("playing", onPlaying);
+          audioPlayer.removeEventListener("error", onError);
+          clearTimeout(timer);
+        };
+        const onPlaying = () => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+        };
+        const onError = () => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          tryNext();
+        };
+
+        audioPlayer.addEventListener("playing", onPlaying);
+        audioPlayer.addEventListener("error", onError, { once: true });
+        timer = setTimeout(() => {
+          if (settled) return;
+          // 有些环境不派发 playing 事件，用播放状态兜底判断
+          if (!audioPlayer.paused && audioPlayer.currentTime > 0) {
+            settled = true;
+            cleanup();
+            return;
+          }
+          settled = true;
+          cleanup();
+          tryNext();
+        }, 2200);
+
+        try {
+          clearAudioBlobUrl();
+          audioPlayer.pause();
+          audioPlayer.src = url;
+          audioPlayer.load();
+          const p = audioPlayer.play();
+          if (p && p.catch) {
+            p.catch(err => {
+              // 自动播放被拦截时立刻走兜底，不必等超时
+              if (err && err.name === "NotAllowedError") onError();
+            });
+          }
+        } catch (err) {
+          onError();
+        }
+      };
+
+      tryNext();
+    }
+
+    function speakEnWithSynth(text, rate) {
+      if (!window.speechSynthesis) return;
+      try {
+        const u = new SpeechSynthesisUtterance(String(text));
+        u.lang = "en-US";
+        u.rate = rate || 0.75;
+        u.pitch = 1.05;
+        u.volume = 1;
+        const voices = state.voices || [];
+        const enVoice =
+          voices.find(v => /en[-_]US/i.test(v.lang) && v.localService) ||
+          voices.find(v => /en[-_]US/i.test(v.lang)) ||
+          voices.find(v => /^en/i.test(v.lang));
+        if (enVoice) u.voice = enVoice;
+        window.speechSynthesis.speak(u);
+      } catch (err) {
+        console.warn("speakEn synth failed", err);
+      }
+    }
+
+    function speakEn(text, rate = 0.75) {
+      if (!text) return;
+      const clean = String(text).trim();
+      if (!clean) return;
+      unlockSpeechIfNeeded();
+      state.speechReqId++; // 让挂起的中文语音请求失效
+      try {
+        if (window.speechSynthesis && !isIOSDevice()) window.speechSynthesis.cancel();
+      } catch (err) {}
+      playEnAudio(clean, () => speakEnWithSynth(clean, rate));
     }
 
     function sceneTypeForChar(char) {
@@ -4968,15 +5339,17 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       pruneLibrarySelection();
       const selected = [...state.librarySelected];
       const selectedUnlearned = selected.filter(ch => state.unlearned.has(ch)).length;
+      const selectedLearned = selected.filter(ch => state.learned.has(ch)).length;
       const hasMode = state.librarySelectMode;
       el.libraryToggleSelect.classList.toggle("primary", hasMode);
-      el.libraryToggleSelect.textContent = hasMode ? "关闭勾选跳过" : "开启勾选跳过";
+      el.libraryToggleSelect.textContent = hasMode ? "关闭勾选" : "开启勾选";
       el.libraryMarkLearned.disabled = !hasMode || selectedUnlearned === 0;
+      el.libraryRestoreUnlearned.disabled = !hasMode || selectedLearned === 0;
       if (!hasMode) {
-        el.librarySelectStatus.textContent = "未开启勾选跳过模式";
+        el.librarySelectStatus.textContent = "未开启勾选模式";
         return;
       }
-      el.librarySelectStatus.textContent = `已勾选 ${selected.length} 个字，可跳过 ${selectedUnlearned} 个未学字`;
+      el.librarySelectStatus.textContent = `已勾选 ${selected.length} 个字，可跳过 ${selectedUnlearned} 个未学字，可恢复 ${selectedLearned} 个已学字`;
     }
 
     function renderLibraryGrid() {
@@ -5115,6 +5488,29 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         renderLearnPanel();
       }
       speak(`已跳过${done}个字`);
+    }
+
+    function markSelectedLibraryCharsAsUnlearned() {
+      const list = [...new Set([...state.librarySelected])].filter(ch => state.learned.has(ch));
+      if (!list.length) {
+        speak("先勾选已学字");
+        return;
+      }
+      list.forEach(char => {
+        state.learned.delete(char);
+        state.unlearned.add(char);
+        delete state.reviewMeta[char];
+      });
+      state.librarySelected.clear();
+      saveProgress();
+      syncStatusUI();
+      if (!el.learnPage.classList.contains("hidden")) {
+        resetCharFlow();
+        renderLearnPanel();
+      }
+      renderLibraryGrid();
+      renderLibrarySelectStatus();
+      speak(`已恢复${list.length}个字为未学`);
     }
 
     function createWriter(char) {
@@ -5431,6 +5827,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         renderLibraryGrid();
       });
       el.libraryMarkLearned.addEventListener("click", markSelectedLibraryCharsAsLearned);
+      el.libraryRestoreUnlearned.addEventListener("click", markSelectedLibraryCharsAsUnlearned);
 
       el.radicalSearch.addEventListener("input", () => {
         state.radicalFilter = el.radicalSearch.value || "";
@@ -5447,9 +5844,12 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       addCorrect: 0,
       addRound: 0,
       addRoundHistory: [],
+      addMax: 10,
+      addShowVisual: false,
       compareCorrect: 0,
       compareRound: 0,
       compareRoundHistory: [],
+      compareMax: 1000,
       countAnswer: -1,
       addAnswer: -1,
       countLocked: false,
@@ -5461,22 +5861,37 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     function initModuleTabs() {
       const tabLiterate = document.getElementById('moduleTabLiterate');
       const tabNumber = document.getElementById('moduleTabNumber');
+      const tabEnglish = document.getElementById('moduleTabEnglish');
       const literateEntries = document.getElementById('literateEntries');
       const numberEntries = document.getElementById('numberEntries');
+      const englishEntries = document.getElementById('englishEntries');
+
+      function select(mod) {
+        [tabLiterate, tabNumber, tabEnglish].forEach(t => t.classList.remove('active'));
+        [literateEntries, numberEntries, englishEntries].forEach(p => p.classList.add('hidden'));
+        if (mod === 'literate') {
+          tabLiterate.classList.add('active');
+          literateEntries.classList.remove('hidden');
+        } else if (mod === 'number') {
+          tabNumber.classList.add('active');
+          numberEntries.classList.remove('hidden');
+        } else {
+          tabEnglish.classList.add('active');
+          englishEntries.classList.remove('hidden');
+        }
+      }
 
       tabLiterate.addEventListener('click', () => {
-        tabLiterate.classList.add('active');
-        tabNumber.classList.remove('active');
-        literateEntries.classList.remove('hidden');
-        numberEntries.classList.add('hidden');
+        select('literate');
         speak('识字');
       });
       tabNumber.addEventListener('click', () => {
-        tabNumber.classList.add('active');
-        tabLiterate.classList.remove('active');
-        numberEntries.classList.remove('hidden');
-        literateEntries.classList.add('hidden');
+        select('number');
         speak('数字');
+      });
+      tabEnglish.addEventListener('click', () => {
+        select('english');
+        speak('英语');
       });
     }
 
@@ -5839,6 +6254,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         submitBtn.style.display = 'none';
         tapHintEl.style.display = '';
         feedbackEl.classList.remove('show');
+      }
+
+      function speakInstruction() {
         speak(`请下${speakCount(eggState.target)}个蛋`);
       }
 
@@ -5905,11 +6323,12 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
             speak('太棒了！全部答对，一百分！');
           } else {
             speak(`本轮答对了${correct}轮，再来一组吧`);
-            startRound();
+            setTimeout(() => { startRound(); setTimeout(() => speakInstruction(), 600); }, 2500);
           }
         } else {
           eggState.target = newTarget();
           beginProblem();
+          setTimeout(() => speakInstruction(), 600);
         }
       }
 
@@ -5962,7 +6381,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       document.getElementById('entryCount').addEventListener('click', () => {
         showPage('count');
         speak('快乐小鸡');
-        setTimeout(() => startRound(), 1200);
+        setTimeout(() => {
+          startRound();
+          setTimeout(() => speakInstruction(), 300);
+        }, 2000);
       });
       document.getElementById('backHomeFromCount').addEventListener('click', () => showPage('home'));
     }
@@ -5982,32 +6404,38 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         numState.addLocked = false;
         // Randomly choose addition or subtraction (50/50)
         const isAdd = Math.random() > 0.5;
+        const maxLimit = numState.addMax || 10; // 10 or 20
         let a, b, answer, opSymbol, opWord;
 
         if (isAdd) {
-          // Addition: a + b <= 10, avoid 0+0
+          // Addition: a + b <= maxLimit, avoid 0+0
           do {
-            a = Math.floor(Math.random() * 11); // 0-10
-            b = Math.floor(Math.random() * (11 - a)); // 0 to (10-a)
+            a = Math.floor(Math.random() * (maxLimit + 1)); // 0..maxLimit
+            b = Math.floor(Math.random() * (maxLimit + 1 - a)); // 0..(maxLimit-a)
           } while (a === 0 && b === 0);
           answer = a + b;
           opSymbol = '+';
           opWord = '加';
         } else {
-          // Subtraction: a - b >= 0, a,b in 0-10, avoid 0-0
+          // Subtraction: a - b >= 0, a in 0..maxLimit, avoid 0-0
           do {
-            a = Math.floor(Math.random() * 11); // 0-10
-            b = Math.floor(Math.random() * (a + 1)); // 0 to a
+            a = Math.floor(Math.random() * (maxLimit + 1)); // 0..maxLimit
+            b = Math.floor(Math.random() * (a + 1)); // 0..a
           } while (a === 0 && b === 0);
           answer = a - b;
           opSymbol = '−';
           opWord = '减';
         }
 
-        // Visual: show items with operation
+        // Visual: show items with operation（默认不展示图形，由开关控制）
         const emojis = [...Array(2)].map(() => COUNT_EMOJIS[Math.floor(Math.random() * COUNT_EMOJIS.length)]);
         const visual = document.getElementById('addVisual');
         visual.innerHTML = '';
+
+        if (!numState.addShowVisual) {
+          visual.style.display = 'none';
+        } else {
+        visual.style.display = '';
 
         if (isAdd) {
           // Show a emojis (or "0" placeholder) + b emojis (or "0" placeholder)
@@ -6098,14 +6526,15 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           };
           setTimeout(() => vanish(), 600); // Start after pop-in
         }
+        }
 
         document.getElementById('addProblem').innerHTML = `${a} ${opSymbol} ${b} = <span class="blank"></span>`;
         document.getElementById('addFeedback').textContent = '';
         document.getElementById('addNext').style.display = 'none';
 
-        // Options: generate 4 choices close to the answer (±3), ensure answer is among them
+        // Options: generate 4 choices close to the answer, ensure answer is among them
         const options = new Set([answer]);
-        const maxVal = isAdd ? 20 : 10;
+        const maxVal = maxLimit;
         let attempts = 0;
         while (options.size < 4 && attempts < 100) {
           attempts++;
@@ -6164,6 +6593,39 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         speak('加减法练习');
         showPage('add');
         startAddRound();
+      });
+      // 图形提示开关（默认关闭）
+      const visualToggle = document.getElementById('addVisualToggle');
+      function renderVisualToggle() {
+        visualToggle.classList.toggle('on', numState.addShowVisual);
+        visualToggle.textContent = numState.addShowVisual ? '🖼 图形提示：开' : '🖼 图形提示：关';
+      }
+      visualToggle.addEventListener('click', () => {
+        numState.addShowVisual = !numState.addShowVisual;
+        renderVisualToggle();
+        const visualEl = document.getElementById('addVisual');
+        if (!numState.addShowVisual) {
+          visualEl.innerHTML = '';
+          visualEl.style.display = 'none';
+          speak('不显示图形');
+        } else {
+          speak('显示图形，下一题开始');
+        }
+      });
+      renderVisualToggle();
+
+      // 难度切换：10以内 / 20以内
+      document.querySelectorAll('#addLevelSwitch .level-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lv = Number(btn.dataset.level) || 10;
+          if (lv === numState.addMax) return;
+          numState.addMax = lv;
+          document.querySelectorAll('#addLevelSwitch .level-btn').forEach(b => {
+            b.classList.toggle('active', b === btn);
+          });
+          speak(lv === 20 ? '二十以内的加减法' : '十以内的加减法');
+          startAddRound();
+        });
       });
       document.getElementById('backHomeFromAdd').addEventListener('click', () => showPage('home'));
       document.getElementById('addNext').addEventListener('click', () => {
@@ -6235,14 +6697,29 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       ];
 
       function generate() {
-        let a = Math.floor(Math.random() * 1000);
-        let b = Math.floor(Math.random() * 1000);
-        let attempts = 0;
-        while ((a === b || Math.abs(a - b) < 3) && attempts < 50) {
-          b = Math.floor(Math.random() * 1000);
-          attempts++;
+        const maxVal = numState.compareMax || 1000;
+        let a, b;
+        if (maxVal >= 10000) {
+          // 四位数：两边都是 1000-9999，差值控制在 1-99，练数位比较
+          a = 1000 + Math.floor(Math.random() * 9000);
+          const bigGap = Math.random() < 0.45;
+          const delta = 1 + Math.floor(Math.random() * (bigGap ? 999 : 99));
+          b = Math.random() < 0.5 ? a - delta : a + delta;
+          if (b < 1000 || b > 9999) b = a > 5500 ? a - delta : a + delta;
+          if (b < 1000 || b > 9999) b = a > 5500 ? a - 1 : a + 1;
+          if (b === a) b = a + 1;
+        } else {
+          a = Math.floor(Math.random() * maxVal);
+          b = Math.floor(Math.random() * maxVal);
+          let attempts = 0;
+          while ((a === b || Math.abs(a - b) < 3) && attempts < 50) {
+            b = Math.floor(Math.random() * maxVal);
+            attempts++;
+          }
+          if (a === b) b = (a + 137) % maxVal;
         }
-        if (a === b) b = (a + 137) % 1000;
+        // 随机左右，避免正确答案总在同一边
+        if (Math.random() < 0.5) { const t = a; a = b; b = t; }
         compareState.currentLeft = a;
         compareState.currentRight = b;
       }
@@ -6320,6 +6797,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
         numLeftEl.textContent = compareState.currentLeft;
         numRightEl.textContent = compareState.currentRight;
+        const isFourDigit = compareState.currentLeft >= 1000 || compareState.currentRight >= 1000;
+        numLeftEl.classList.toggle('four-digit', isFourDigit);
+        numRightEl.classList.toggle('four-digit', isFourDigit);
         feedback.textContent = '';
         feedback.className = 'compare-feedback';
         nextBtn.style.display = 'none';
@@ -6435,6 +6915,410 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         // Small delay to ensure DOM is fully visible before speech
         setTimeout(() => startNewGame(), 100);
       });
+
+      // 难度切换：三位数 / 四位数
+      document.querySelectorAll('#compareLevelSwitch .level-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lv = Number(btn.dataset.level) || 1000;
+          if (lv === numState.compareMax) return;
+          numState.compareMax = lv;
+          document.querySelectorAll('#compareLevelSwitch .level-btn').forEach(b => {
+            b.classList.toggle('active', b === btn);
+          });
+          speak(lv === 10000 ? '这次比较四位数，最大九千九百九十九' : '这次比较三位数');
+          startNewGame();
+        });
+      });
+    }
+
+    // ===== 英语 ABC 乐园 =====
+    const ABC_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const ABC_PROGRESS_KEY = 'doudou-abc-progress-v1';
+    // 容易看混的字母对（大小写混淆 / 镜像字母）
+    const ABC_CONFUSE = {
+      b: ['d', 'p', 'q'], d: ['b', 'p', 'q'], p: ['b', 'd', 'q'], q: ['b', 'd', 'p'],
+      m: ['w', 'n'], w: ['m', 'v'], n: ['h', 'u', 'm'], u: ['n', 'v'], h: ['n', 'b'],
+      i: ['l', 'j'], l: ['i', 't'], t: ['f', 'l'], f: ['t', 'r'], v: ['u', 'w', 'y'],
+      a: ['o', 'e'], e: ['c', 'a'], o: ['c', 'a', 'q'], c: ['o', 'e', 'g'], g: ['q', 'c', 'j'],
+      s: ['z', 'c'], z: ['s', 'x'], x: ['k', 'z'], k: ['x', 'h'], r: ['n', 'f'],
+      j: ['i', 'g'], y: ['v', 'g']
+    };
+    const ABC_WORDS = [
+      { letter: 'A', word: 'apple', zh: '苹果', emoji: '🍎' },
+      { letter: 'B', word: 'ball', zh: '球', emoji: '⚽' },
+      { letter: 'C', word: 'cat', zh: '猫', emoji: '🐱' },
+      { letter: 'D', word: 'dog', zh: '小狗', emoji: '🐶' },
+      { letter: 'E', word: 'egg', zh: '鸡蛋', emoji: '🥚' },
+      { letter: 'F', word: 'fish', zh: '鱼', emoji: '🐟' },
+      { letter: 'G', word: 'grape', zh: '葡萄', emoji: '🍇' },
+      { letter: 'H', word: 'hat', zh: '帽子', emoji: '👒' },
+      { letter: 'I', word: 'ice cream', zh: '冰淇淋', emoji: '🍦' },
+      { letter: 'J', word: 'juice', zh: '果汁', emoji: '🧃' },
+      { letter: 'K', word: 'kite', zh: '风筝', emoji: '🪁' },
+      { letter: 'L', word: 'lion', zh: '狮子', emoji: '🦁' },
+      { letter: 'M', word: 'moon', zh: '月亮', emoji: '🌙' },
+      { letter: 'N', word: 'nose', zh: '鼻子', emoji: '👃' },
+      { letter: 'O', word: 'orange', zh: '橙子', emoji: '🍊' },
+      { letter: 'P', word: 'pig', zh: '小猪', emoji: '🐷' },
+      { letter: 'Q', word: 'queen', zh: '女王', emoji: '👑' },
+      { letter: 'R', word: 'rabbit', zh: '兔子', emoji: '🐰' },
+      { letter: 'S', word: 'sun', zh: '太阳', emoji: '☀️' },
+      { letter: 'T', word: 'tiger', zh: '老虎', emoji: '🐯' },
+      { letter: 'U', word: 'umbrella', zh: '雨伞', emoji: '☂️' },
+      { letter: 'V', word: 'van', zh: '小货车', emoji: '🚐' },
+      { letter: 'W', word: 'water', zh: '水', emoji: '💧' },
+      { letter: 'X', word: 'xylophone', zh: '木琴', emoji: '🎹' },
+      { letter: 'Y', word: 'yoyo', zh: '悠悠球', emoji: '🪀' },
+      { letter: 'Z', word: 'zebra', zh: '斑马', emoji: '🦓' }
+    ];
+
+    function initEnglish() {
+      const promptEl = document.getElementById('abcPrompt');
+      const stageEl = document.getElementById('abcStage');
+      const optionsEl = document.getElementById('abcOptions');
+      const feedbackEl = document.getElementById('abcFeedback');
+      const dotsEl = document.getElementById('abcDots');
+      const scoreEl = document.getElementById('abcScore');
+      const nextBtn = document.getElementById('abcNext');
+      const replayBtn = document.getElementById('abcReplay');
+      const gameEl = document.getElementById('abcGame');
+      const chartEl = document.getElementById('abcChart');
+      const chartGrid = document.getElementById('abcChartGrid');
+      const tabs = Array.prototype.slice.call(document.querySelectorAll('#abcModeTabs .abc-mode'));
+      const homeStars = document.getElementById('abcHomeStars');
+
+      const ROUND_SIZE = 10;
+      const MODE_LABEL = { case: '大小写', order: '顺序', listen: '听音', word: '首字母', chart: '字母表' };
+      const abcState = {
+        mode: 'case',
+        round: 0,
+        history: [],
+        correct: 0,
+        locked: true,
+        answer: '',
+        audioText: '',
+        explain: '',
+        stars: { case: 0, order: 0, listen: 0, word: 0 }
+      };
+      let chartBuilt = false;
+
+      function randInt(n) { return Math.floor(Math.random() * n); }
+
+      function loadStars() {
+        try {
+          const raw = localStorage.getItem(ABC_PROGRESS_KEY);
+          if (!raw) return;
+          const parsed = JSON.parse(raw) || {};
+          Object.keys(abcState.stars).forEach(k => {
+            const v = Math.floor(Number(parsed[k]) || 0);
+            abcState.stars[k] = v > 0 ? v : 0;
+          });
+        } catch (err) { console.warn('load abc stars failed', err); }
+      }
+
+      function saveStars() {
+        try { localStorage.setItem(ABC_PROGRESS_KEY, JSON.stringify(abcState.stars)); } catch (err) {}
+      }
+
+      function renderStars() {
+        let total = 0;
+        tabs.forEach(tab => {
+          const m = tab.dataset.mode;
+          const n = abcState.stars[m] || 0;
+          if (m !== 'chart') total += n;
+          if (m === 'chart') {
+            tab.textContent = MODE_LABEL.chart;
+          } else {
+            tab.textContent = n > 0 ? `${MODE_LABEL[m]} ⭐${n}` : MODE_LABEL[m];
+          }
+        });
+        if (homeStars) homeStars.textContent = `每关 10 题，全对拿奖杯 · 已收集 ⭐${total}`;
+      }
+
+      // 从混淆字库里挑干扰项
+      function pickConfuseUpper(letter, count) {
+        const used = new Set([letter]);
+        const out = [];
+        (ABC_CONFUSE[letter.toLowerCase()] || []).forEach(c => {
+          const up = c.toUpperCase();
+          if (!used.has(up) && out.length < count) { used.add(up); out.push(up); }
+        });
+        let guard = 0;
+        while (out.length < count && guard++ < 300) {
+          const c = ABC_LETTERS[randInt(26)];
+          if (!used.has(c)) { used.add(c); out.push(c); }
+        }
+        return out;
+      }
+
+      function buildCaseQuestion() {
+        const letter = ABC_LETTERS[randInt(26)];
+        const askLower = Math.random() < 0.6;
+        const correct = askLower ? letter.toLowerCase() : letter;
+        const source = askLower ? letter : letter.toLowerCase();
+        const pool = askLower ? ABC_LETTERS.map(c => c.toLowerCase()) : ABC_LETTERS.slice();
+        const used = new Set([correct]);
+        const distractors = [];
+        (ABC_CONFUSE[letter.toLowerCase()] || []).forEach(c => {
+          const ch = askLower ? c : c.toUpperCase();
+          if (!used.has(ch) && distractors.length < 3) { used.add(ch); distractors.push(ch); }
+        });
+        let guard = 0;
+        while (distractors.length < 3 && guard++ < 300) {
+          const ch = pool[randInt(pool.length)];
+          if (!used.has(ch)) { used.add(ch); distractors.push(ch); }
+        }
+        return {
+          prompt: askLower ? `大写 ${letter} 的小写是哪个？` : `小写 ${letter.toLowerCase()} 的大写是哪个？`,
+          stageHTML: `<span class="abc-big-letter${askLower ? '' : ' lower'}">${source}</span>`,
+          options: distractors.concat([correct]),
+          correct,
+          audio: letter.toLowerCase(),
+          explain: `大写 ${letter}，小写 ${letter.toLowerCase()}`,
+          replay: false,
+          silent: false
+        };
+      }
+
+      function buildOrderQuestion() {
+        const start = randInt(ABC_LETTERS.length - 3);
+        const seq = [0, 1, 2, 3].map(i => ABC_LETTERS[start + i]);
+        const gapIdx = randInt(4);
+        const correct = seq[gapIdx];
+        const shown = seq.map((c, i) => (i === gapIdx ? '<span class="gap">?</span>' : c)).join(' ');
+        const used = new Set([correct]);
+        const distractors = [];
+        [-1, 1, -2, 2, -3, 3].sort(() => Math.random() - 0.5).forEach(off => {
+          const idx = ABC_LETTERS.indexOf(correct) + off;
+          if (idx >= 0 && idx < ABC_LETTERS.length && distractors.length < 3) {
+            const c = ABC_LETTERS[idx];
+            if (!used.has(c)) { used.add(c); distractors.push(c); }
+          }
+        });
+        let guard = 0;
+        while (distractors.length < 3 && guard++ < 300) {
+          const c = ABC_LETTERS[randInt(26)];
+          if (!used.has(c)) { used.add(c); distractors.push(c); }
+        }
+        return {
+          prompt: '按顺序排一排，缺了哪个字母？',
+          stageHTML: `<div class="abc-seq">${shown}</div>`,
+          options: distractors.concat([correct]),
+          correct,
+          audio: correct.toLowerCase(),
+          explain: `缺的是 ${correct}`,
+          replay: false,
+          silent: true
+        };
+      }
+
+      function buildListenQuestion() {
+        const letter = ABC_LETTERS[randInt(26)];
+        return {
+          prompt: '听一听，是哪个字母？',
+          stageHTML: '<span class="abc-emoji">👂</span>',
+          options: pickConfuseUpper(letter, 3).concat([letter]),
+          correct: letter,
+          audio: letter.toLowerCase(),
+          explain: `是字母 ${letter}`,
+          replay: true,
+          silent: false
+        };
+      }
+
+      function buildWordQuestion() {
+        const item = ABC_WORDS[randInt(ABC_WORDS.length)];
+        return {
+          prompt: `「${item.zh}」的英文首字母是哪个？`,
+          stageHTML: `<span class="abc-emoji">${item.emoji}</span><span class="abc-word"><span class="missing">?</span>${item.word.slice(1)}</span>`,
+          options: pickConfuseUpper(item.letter, 3).concat([item.letter]),
+          correct: item.letter,
+          audio: item.word,
+          explain: `${item.word} 的首字母是 ${item.letter}`,
+          replay: true,
+          silent: false
+        };
+      }
+
+      function updateDots() {
+        dotsEl.innerHTML = '';
+        for (let i = 0; i < ROUND_SIZE; i++) {
+          const dot = document.createElement('span');
+          dot.className = 'compare-round-dot';
+          if (i < abcState.history.length) {
+            dot.classList.add(abcState.history[i] === 'correct' ? 'done' : 'wrong-dot');
+          }
+          if (i === abcState.round) dot.classList.add('current');
+          dotsEl.appendChild(dot);
+        }
+      }
+
+      function fillOptions(list, correct) {
+        optionsEl.innerHTML = '';
+        list.slice().sort(() => Math.random() - 0.5).forEach(text => {
+          const btn = document.createElement('button');
+          btn.className = 'abc-opt-btn' + (String(text).length > 1 ? ' small' : '');
+          btn.textContent = text;
+          btn.addEventListener('click', () => handleAnswer(text, btn, correct));
+          optionsEl.appendChild(btn);
+        });
+      }
+
+      function handleAnswer(chosen, btn, correct) {
+        if (abcState.locked) return;
+        abcState.locked = true;
+        const ok = chosen === correct;
+        if (ok) {
+          btn.classList.add('correct');
+          feedbackEl.textContent = abcState.explain ? `🎉 答对了！${abcState.explain}` : '🎉 答对了！';
+          feedbackEl.className = 'abc-feedback correct';
+          abcState.correct++;
+          abcState.history.push('correct');
+          playBigCheerSound();
+          setTimeout(() => speakEn(abcState.audioText, 0.72), 250);
+        } else {
+          btn.classList.add('wrong');
+          optionsEl.querySelectorAll('.abc-opt-btn').forEach(b => {
+            if (b.textContent === correct) b.classList.add('correct');
+          });
+          feedbackEl.textContent = abcState.explain ? `😊 ${abcState.explain}` : `😊 正确答案是 ${correct}`;
+          feedbackEl.className = 'abc-feedback wrong';
+          abcState.history.push('wrong');
+          setTimeout(() => speakEn(abcState.audioText, 0.7), 500);
+        }
+        updateDots();
+        nextBtn.style.display = 'inline-block';
+      }
+
+      function renderQuestion() {
+        abcState.locked = false;
+        nextBtn.style.display = 'none';
+        replayBtn.classList.remove('show');
+        feedbackEl.textContent = '';
+        feedbackEl.className = 'abc-feedback';
+
+        let q;
+        if (abcState.mode === 'order') q = buildOrderQuestion();
+        else if (abcState.mode === 'listen') q = buildListenQuestion();
+        else if (abcState.mode === 'word') q = buildWordQuestion();
+        else q = buildCaseQuestion();
+
+        abcState.answer = q.correct;
+        abcState.audioText = q.audio;
+        abcState.explain = q.explain || '';
+        promptEl.textContent = q.prompt;
+        stageEl.innerHTML = q.stageHTML;
+        fillOptions(q.options, q.correct);
+
+        if (q.replay) {
+          replayBtn.classList.add('show');
+          replayBtn.onclick = () => speakEn(abcState.audioText, 0.65);
+          setTimeout(() => speakEn(abcState.audioText, 0.65), 320);
+        } else if (!q.silent) {
+          setTimeout(() => speakEn(abcState.audioText, 0.72), 220);
+        }
+
+        updateDots();
+        scoreEl.textContent = `第 ${abcState.round + 1}/${ROUND_SIZE} 题`;
+      }
+
+      function startRound() {
+        abcState.round = 0;
+        abcState.history = [];
+        abcState.correct = 0;
+        updateDots();
+        renderQuestion();
+      }
+
+      function addStars(count) {
+        if (!count || abcState.mode === 'chart') return;
+        abcState.stars[abcState.mode] = (abcState.stars[abcState.mode] || 0) + count;
+        saveStars();
+        renderStars();
+      }
+
+      function showTrophy() {
+        const overlay = document.createElement('div');
+        overlay.className = 'compare-trophy-overlay';
+        overlay.innerHTML = `
+          <div class="compare-trophy-card">
+            <span class="compare-trophy-icon">🏆</span>
+            <div class="compare-trophy-text">Perfect！全对啦！</div>
+            <div class="compare-trophy-score">💯 10 / 10</div>
+            <div class="compare-trophy-sub">ABC 小达人，太厉害了</div>
+            <button class="primary compare-trophy-btn" id="abcTrophyOk">再来一组</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        speak('太棒了！全部答对，一百分！');
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay || e.target.id === 'abcTrophyOk') {
+            overlay.remove();
+            startRound();
+          }
+        });
+      }
+
+      function checkRoundComplete() {
+        abcState.round++;
+        if (abcState.round >= ROUND_SIZE) {
+          const correctCount = abcState.history.filter(h => h === 'correct').length;
+          addStars(correctCount);
+          nextBtn.style.display = 'none';
+          if (correctCount >= ROUND_SIZE) {
+            showTrophy();
+          } else {
+            feedbackEl.textContent = `本轮答对 ${correctCount}/${ROUND_SIZE} 题`;
+            speak(`本轮答对${correctCount}题，再来一组吧`);
+            setTimeout(() => startRound(), 1400);
+          }
+          return;
+        }
+        renderQuestion();
+      }
+
+      function buildChart() {
+        if (chartBuilt) return;
+        chartBuilt = true;
+        chartGrid.innerHTML = '';
+        ABC_LETTERS.forEach(up => {
+          const item = document.createElement('div');
+          item.className = 'abc-chart-item';
+          item.innerHTML = `<span class="up">${up}</span><span class="low">${up.toLowerCase()}</span>`;
+          item.addEventListener('click', () => speakEn(up.toLowerCase(), 0.65));
+          chartGrid.appendChild(item);
+        });
+      }
+
+      function setMode(mode) {
+        abcState.mode = mode;
+        abcState.locked = true;
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+        if (mode === 'chart') {
+          gameEl.classList.add('hidden');
+          chartEl.classList.remove('hidden');
+          buildChart();
+          speak('字母表');
+          return;
+        }
+        chartEl.classList.add('hidden');
+        gameEl.classList.remove('hidden');
+        startRound();
+      }
+
+      tabs.forEach(tab => tab.addEventListener('click', () => setMode(tab.dataset.mode)));
+      nextBtn.addEventListener('click', checkRoundComplete);
+      document.getElementById('backHomeFromEnglish').addEventListener('click', () => showPage('home'));
+
+      document.querySelectorAll('.abc-entry').forEach(btn => {
+        btn.addEventListener('click', () => {
+          showPage('english');
+          setMode(btn.dataset.abc || 'case');
+        });
+      });
+
+      loadStars();
+      renderStars();
     }
 
     function init() {
@@ -6473,6 +7357,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       step("initCount", () => initCount());
       step("initAdd", () => initAdd());
       step("initCompare", () => initCompare());
+      step("initEnglish", () => initEnglish());
       step("setupAppHistory", () => setupAppHistory());
     }
 
