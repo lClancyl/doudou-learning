@@ -4724,28 +4724,54 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         (navigator.maxTouchPoints > 1 && navigator.platform === "MacIntel");
     }
 
-    function englishAudioUrls(text) {
+    // 音源列表：只保留两个稳定的中文可访问音源，且记住上次成功的那个
+    // 之前会跳百度/有道/Google 三家轮询，一旦失败就换源，导致同一个字母表里
+    // 一会儿男声一会儿女声（Google 在国内不通，最后还会掉到系统合成音）
+    const EN_SOURCES = [
+      { key: "baidu", make: q => `https://fanyi.baidu.com/gettts?lan=en&text=${q}&spd=3&source=web` },
+      { key: "youdao", make: q => `https://dict.youdao.com/dictvoice?type=2&audio=${q}` }
+    ];
+    let enPreferredSrc = 0; // 上次播成功的音源下标，固定下来音色就一致
+
+    function englishAudioSources(text) {
       const q = encodeURIComponent(text);
-      return [
-        `https://fanyi.baidu.com/gettts?lan=en&text=${q}&spd=3&source=web`,
-        `https://dict.youdao.com/dictvoice?type=2&audio=${q}`,
-        `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${q}`
-      ];
+      const all = EN_SOURCES.map((s, i) => ({ i, url: s.make(q) }));
+      const first = all[enPreferredSrc] || all[0];
+      return [first].concat(all.filter(o => o !== first));
+    }
+
+    // 预热缓存：字母表这类「一次要念很多个」的场景，先把音频都下到浏览器缓存，
+    // 之后点击直接从缓存播放，不用现场等网络，也就不会因为超时掉到别的音源换音色
+    const enWarmCache = new Map();
+    function warmEnAudioCache(texts) {
+      const mk = EN_SOURCES[enPreferredSrc] || EN_SOURCES[0];
+      texts.forEach(t => {
+        const key = String(t || "").trim();
+        if (!key || enWarmCache.has(key)) return;
+        try {
+          const a = new Audio();
+          a.preload = "auto";
+          a.src = mk.make(encodeURIComponent(key));
+          a.load();
+          enWarmCache.set(key, a);
+        } catch (err) {}
+      });
     }
 
     let enAudioToken = 0;
     function playEnAudio(text, onFail) {
       const token = ++enAudioToken;
-      const urls = englishAudioUrls(text);
+      const sources = englishAudioSources(text);
       let idx = 0;
 
       const tryNext = () => {
         if (token !== enAudioToken) return; // 已被新的朗读取代
-        if (idx >= urls.length) {
+        if (idx >= sources.length) {
           if (onFail) onFail();
           return;
         }
-        const url = urls[idx++];
+        const src = sources[idx++];
+        const url = src.url;
         let settled = false;
         let timer = null;
 
@@ -4758,6 +4784,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           if (settled) return;
           settled = true;
           cleanup();
+          // 记住这次成功的音源，后面的朗读都走同一家，音色就统一了
+          enPreferredSrc = src.i;
         };
         const onError = () => {
           if (settled) return;
@@ -4774,12 +4802,13 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           if (!audioPlayer.paused && audioPlayer.currentTime > 0) {
             settled = true;
             cleanup();
+            enPreferredSrc = src.i;
             return;
           }
           settled = true;
           cleanup();
           tryNext();
-        }, 2200);
+        }, 3200);
 
         try {
           clearAudioBlobUrl();
@@ -4801,6 +4830,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       tryNext();
     }
 
+    // 系统合成音兜底时，优先挑女声，避免和在线音源（女声）来回切换听起来忽男忽女
+    const EN_FEMALE_HINT = /samantha|karen|moira|tessa|zira|susan|serena|ava|allison|victoria|kate|martha|google us english|female/i;
+
     function speakEnWithSynth(text, rate) {
       if (!window.speechSynthesis) return;
       try {
@@ -4809,11 +4841,13 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         u.rate = rate || 0.75;
         u.pitch = 1.05;
         u.volume = 1;
-        const voices = state.voices || [];
+        const voices = (state.voices || []).filter(v => /^en/i.test(v.lang || ""));
         const enVoice =
+          voices.find(v => EN_FEMALE_HINT.test(v.name) && /en[-_]US/i.test(v.lang)) ||
+          voices.find(v => EN_FEMALE_HINT.test(v.name)) ||
           voices.find(v => /en[-_]US/i.test(v.lang) && v.localService) ||
           voices.find(v => /en[-_]US/i.test(v.lang)) ||
-          voices.find(v => /^en/i.test(v.lang));
+          voices[0];
         if (enVoice) u.voice = enVoice;
         window.speechSynthesis.speak(u);
       } catch (err) {
@@ -7301,6 +7335,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           item.addEventListener('click', () => speakEn(letterAudioName(up), 0.65));
           chartGrid.appendChild(item);
         });
+        // 先把 26 个字母的读音都下到缓存，点谁都是同一个音色、立刻出声
+        warmEnAudioCache(ABC_LETTERS.map(up => letterAudioName(up)));
       }
 
       function setMode(mode) {
