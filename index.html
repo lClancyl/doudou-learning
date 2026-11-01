@@ -6934,6 +6934,19 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     // ===== 英语 ABC 乐园 =====
     const ABC_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
     const ABC_PROGRESS_KEY = 'doudou-abc-progress-v1';
+
+    // 字母名称读音表：直接喂单字母给 TTS，常被读成单词里的音（如 b 读成 /b/、w 读成 "www"）
+    // 这里用能拼出字母名称的写法，TTS 念出来就是 A /eɪ/、B /biː/ … 已逐个试听校音
+    const LETTER_NAME = {
+      a: 'ay', b: 'bee', c: 'see', d: 'dee', e: 'ee', f: 'eff', g: 'gee',
+      h: 'aitch', i: 'eye', j: 'jay', k: 'kay', l: 'el', m: 'em', n: 'en',
+      o: 'oh', p: 'pee', q: 'cue', r: 'ar', s: 'ess', t: 'tee', u: 'you',
+      v: 'vee', w: 'double u', x: 'eks', y: 'why', z: 'zee'
+    };
+    function letterAudioName(letter) {
+      const k = String(letter || '').trim().toLowerCase();
+      return LETTER_NAME[k] || String(letter || '');
+    }
     // 容易看混的字母对（大小写混淆 / 镜像字母）
     const ABC_CONFUSE = {
       b: ['d', 'p', 'q'], d: ['b', 'p', 'q'], p: ['b', 'd', 'q'], q: ['b', 'd', 'p'],
@@ -7073,7 +7086,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           stageHTML: `<span class="abc-big-letter${askLower ? '' : ' lower'}">${source}</span>`,
           options: distractors.concat([correct]),
           correct,
-          audio: letter.toLowerCase(),
+          audio: letterAudioName(letter),
           explain: `大写 ${letter}，小写 ${letter.toLowerCase()}`,
           replay: false,
           silent: false
@@ -7105,7 +7118,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           stageHTML: `<div class="abc-seq">${shown}</div>`,
           options: distractors.concat([correct]),
           correct,
-          audio: correct.toLowerCase(),
+          audio: letterAudioName(correct),
           explain: `缺的是 ${correct}`,
           replay: false,
           silent: true
@@ -7119,7 +7132,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           stageHTML: '<span class="abc-emoji">👂</span>',
           options: pickConfuseUpper(letter, 3).concat([letter]),
           correct: letter,
-          audio: letter.toLowerCase(),
+          audio: letterAudioName(letter),
           explain: `是字母 ${letter}`,
           replay: true,
           silent: false
@@ -7285,7 +7298,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           const item = document.createElement('div');
           item.className = 'abc-chart-item';
           item.innerHTML = `<span class="up">${up}</span><span class="low">${up.toLowerCase()}</span>`;
-          item.addEventListener('click', () => speakEn(up.toLowerCase(), 0.65));
+          item.addEventListener('click', () => speakEn(letterAudioName(up), 0.65));
           chartGrid.appendChild(item);
         });
       }
