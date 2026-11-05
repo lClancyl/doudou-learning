@@ -46,6 +46,8 @@
       --perspective: 800px;
       /* 英文字母专用：标准印刷体字形（Comfortaa 的小写太圆润，a/g/l 等容易认错） */
       --font-letter: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      /* 汉字专用：清晰黑体，避免圆体影响字形辨认 */
+      --font-hanzi: "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
     }
 
     * { box-sizing: border-box; }
@@ -943,6 +945,306 @@
       font-weight: 700;
       color: #35587b;
       line-height: 1.25;
+    }
+
+    /* ---------- 新版复习 ---------- */
+    .rv-start {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      text-align: center;
+      padding: 18px 14px 22px;
+      border-radius: 22px;
+      border: 2px solid #ffd9e8;
+      background: radial-gradient(circle at 50% 0%, #fff8fc 0%, #ffeaf3 60%, #ffdcec 100%);
+    }
+    .rv-start-hero {
+      font-size: 58px;
+      line-height: 1;
+      animation: floatBob 2.6s ease-in-out infinite;
+    }
+    @keyframes floatBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .rv-start-title {
+      margin: 0;
+      font-size: clamp(22px, 3.4vw, 30px);
+      color: var(--peppa-pink-dark);
+    }
+    .rv-start-title strong {
+      font-size: 1.5em;
+      color: #e35d8e;
+    }
+    .rv-start-sub {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #8a5a70;
+      line-height: 1.5;
+      max-width: 30em;
+    }
+    .rv-start-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .rv-chip {
+      font-size: 15px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 2px solid #ffd0e3;
+      color: #a04a6d;
+    }
+    .rv-chip.weak { border-color: #ffc9a3; color: #b5652a; background: #fff6ee; }
+    .rv-start-btn {
+      font-size: 24px;
+      padding: 14px 46px;
+      border-radius: 999px;
+      margin-top: 4px;
+    }
+    .rv-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .rv-pill {
+      font-size: 16px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #fff;
+      border: 2px solid #cfe5ff;
+      color: #2f5f8c;
+    }
+    .rv-pill.star { border-color: #ffe08a; color: #a97b00; background: #fffdf2; }
+    .rv-pill.combo { border-color: #ffc0da; color: #c7366b; background: #fff5fa; animation: comboPop .4s ease; }
+    .rv-ghost {
+      margin-left: auto;
+      font-size: 15px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: #fff;
+      border: 2px dashed #cfd8e3;
+      color: #6b7c8f;
+    }
+    .rv-progress {
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(144, 193, 255, 0.28);
+      overflow: hidden;
+    }
+    .rv-progress > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #61d6ff 0%, #7adf98 50%, #ffd57a 100%);
+      transition: width .3s ease;
+    }
+    .rv-task {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(19px, 2.8vw, 24px);
+      font-weight: 900;
+      color: #5b3b57;
+    }
+    .rv-stage {
+      min-height: 320px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      padding: 6px 0 2px;
+    }
+    .rv-listen-head {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+    }
+    .rv-speak-btn {
+      font-size: 30px;
+      line-height: 1;
+      padding: 16px 30px;
+      border-radius: 999px;
+      border: 3px solid #ffc2dd;
+      background: linear-gradient(180deg, #fff 0%, #ffeaf4 100%);
+      box-shadow: 0 8px 18px rgba(233, 30, 137, 0.16);
+      animation: speakPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes speakPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+    .rv-hint-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #96778f;
+    }
+    .rv-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .rv-card {
+      font-family: var(--font-hanzi, inherit);
+      font-size: clamp(56px, 9vw, 86px);
+      line-height: 1.1;
+      font-weight: 700;
+      color: #3f3230;
+      padding: 14px 6px 18px;
+      border-radius: 24px;
+      border: 3px solid #ffd2e4;
+      background: linear-gradient(180deg, #ffffff 0%, #fff6fa 100%);
+      box-shadow: 0 10px 0 rgba(255, 197, 220, 0.45), 0 14px 24px rgba(233, 30, 137, 0.12);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .rv-card:active { transform: translateY(4px); box-shadow: 0 5px 0 rgba(255,197,220,0.45); }
+    .rv-card.correct {
+      border-color: #6fd48b;
+      background: linear-gradient(180deg, #f4fff6 0%, #dcf9e4 100%);
+      animation: rvPop .35s ease;
+    }
+    .rv-card.wrong { animation: rvShake .38s ease; border-color: #ffb3c0; background: #fff4f6; }
+    .rv-card.dim { opacity: .45; }
+    @keyframes rvPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+    @keyframes rvShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-9px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(4px); }
+    }
+    .rv-find-head {
+      display: grid;
+      justify-items: center;
+      gap: 4px;
+    }
+    .rv-find-target {
+      font-family: var(--font-hanzi, inherit);
+      font-size: clamp(64px, 11vw, 96px);
+      line-height: 1.05;
+      font-weight: 700;
+      color: #e2538a;
+      text-shadow: 0 4px 0 rgba(255, 203, 224, 0.7);
+    }
+    .rv-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .rv-cell {
+      font-family: var(--font-hanzi, inherit);
+      font-size: clamp(38px, 6.4vw, 56px);
+      font-weight: 700;
+      color: #3f3230;
+      padding: 12px 4px;
+      border-radius: 18px;
+      border: 2px solid #d9e6ff;
+      background: linear-gradient(180deg, #ffffff 0%, #f4f9ff 100%);
+      box-shadow: 0 6px 0 rgba(203, 224, 255, 0.5);
+      transition: transform .1s ease;
+    }
+    .rv-cell:active { transform: translateY(3px); }
+    .rv-cell.found {
+      border-color: #6fd48b;
+      background: linear-gradient(180deg, #f3fff6 0%, #d8f8e1 100%);
+      color: #2f8a4c;
+      box-shadow: 0 6px 0 rgba(157, 226, 178, 0.6);
+    }
+    .rv-cell.wrong { animation: rvShake .38s ease; border-color: #ffb3c0; background: #fff4f6; }
+    .rv-pairs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .rv-pair {
+      aspect-ratio: 1/1;
+      border-radius: 18px;
+      border: 3px solid #ffd2e4;
+      background: linear-gradient(160deg, #ffd7e9 0%, #ffc2dd 100%);
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      color: #fff;
+      box-shadow: 0 6px 0 rgba(247, 176, 207, 0.55);
+      transition: transform .16s ease, background .16s ease;
+      transform-style: preserve-3d;
+    }
+    .rv-pair .rv-pair-face { display: none; }
+    .rv-pair.open, .rv-pair.matched {
+      background: linear-gradient(180deg, #ffffff 0%, #fdf6ff 100%);
+      border-color: #cbb6ff;
+      color: #3f3230;
+      transform: rotateY(0deg);
+    }
+    .rv-pair.open .rv-pair-face, .rv-pair.matched .rv-pair-face { display: block; font-family: var(--font-hanzi, inherit); font-size: clamp(44px, 7.6vw, 66px); font-weight: 700; }
+    .rv-pair.open .rv-pair-back, .rv-pair.matched .rv-pair-back { display: none; }
+    .rv-pair.matched { border-color: #6fd48b; box-shadow: 0 6px 0 rgba(157, 226, 178, 0.6); }
+    .rv-feedback {
+      min-height: 30px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 900;
+      color: #7a8ba0;
+    }
+    .rv-feedback.ok { color: #2f9e56; }
+    .rv-feedback.bad { color: #d2607a; }
+    .rv-tip {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #8d7b96;
+    }
+    .rv-result {
+      display: grid;
+      justify-items: center;
+      gap: 10px;
+      text-align: center;
+      padding: 18px 14px 22px;
+      border-radius: 22px;
+      border: 2px solid #ffe0a8;
+      background: linear-gradient(165deg, #fffdf4 0%, #fff2d6 100%);
+      animation: popIn .32s ease;
+    }
+    .rv-result-icon { font-size: 62px; line-height: 1; }
+    .rv-result-title { margin: 0; font-size: clamp(22px, 3.4vw, 28px); color: #a8620f; }
+    .rv-result-stars { font-size: 26px; letter-spacing: 2px; }
+    .rv-result-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-width: 34em;
+    }
+    .rv-result-char {
+      font-family: var(--font-hanzi, inherit);
+      font-size: 30px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 14px;
+      background: #fff;
+      border: 2px solid #ffd9a0;
+      color: #6b4a1a;
+    }
+    .rv-result-char.weak { border-color: #ffbfae; color: #b04a2e; background: #fff7f4; }
+    .rv-result-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .rv-confetti {
+      position: absolute;
+      font-size: 26px;
+      pointer-events: none;
+      animation: rvFly .9s ease-out forwards;
+    }
+    @keyframes rvFly {
+      0% { opacity: 1; transform: translate(0, 0) scale(.6); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.1); }
     }
 
     .ok { color: var(--good); }
@@ -2489,67 +2791,29 @@
       </section>
 
       <section class="card review-board">
-        <div class="review-mode-gate" id="reviewModeGate">
-          <div class="review-entry-grid">
-            <button class="review-entry-btn" id="reviewEntryArcher">
-              <span class="review-entry-icon">🏹</span>
-              <span>射箭模式</span>
-            </button>
-            <button class="review-entry-btn" id="reviewEntryTank">
-              <span class="review-entry-icon">🪖</span>
-              <span>坦克模式</span>
-            </button>
-          </div>
+        <div class="rv-start" id="reviewStartPanel">
+          <div class="rv-start-hero">🐷</div>
+          <h2 class="rv-start-title">今天要复习 <strong id="reviewDueCount">0</strong> 个字</h2>
+          <p class="rv-start-sub" id="reviewStartSub">按记忆曲线挑出来的，都是快要忘记的字。</p>
+          <div class="rv-start-chips" id="reviewStartChips"></div>
+          <button class="primary rv-start-btn" id="reviewStartBtn">开始闯关</button>
         </div>
+
         <div class="review-game-wrap hidden" id="reviewGameWrap">
-          <div class="review-task-bar">
-            <strong id="reviewTaskText">小任务：听字音，找到正确汉字</strong>
-            <div class="review-progress-track">
-              <span class="review-progress-fill" id="reviewTopProgress"></span>
-            </div>
+          <div class="rv-topbar">
+            <span class="rv-pill" id="reviewProgress">第1/8关</span>
+            <span class="rv-pill star" id="reviewStars">⭐ 0</span>
+            <span class="rv-pill combo hidden" id="reviewCombo">连对 x2</span>
+            <button id="reviewRestart" class="rv-ghost">换一批</button>
           </div>
-          <div class="row">
-            <span class="pill" id="reviewProgress">第0/15关</span>
-            <span class="pill" id="reviewScore">分数：0</span>
-            <span class="pill" id="reviewStars">星星：0</span>
-            <span class="pill" id="reviewTrophyTotal">奖杯：0</span>
-            <button id="reviewRestart">重新生成15关</button>
-          </div>
-          <div class="review-summary" id="reviewSummary">将根据艾宾浩斯记忆曲线，从已学字中挑选15个进行复习。</div>
-          <div class="listen-target" id="reviewHint">听声音，选出正确汉字</div>
-          <div class="row" style="justify-content:center;">
-            <button class="primary" id="reviewPlay">再听一次</button>
-          </div>
-          <div class="review-arena" id="reviewArena">
-            <div class="review-hud" id="reviewHud">
-              <div class="review-hud-head">
-                <span id="reviewHudMode">射箭任务</span>
-                <span id="reviewHudCombo">连击 x0</span>
-              </div>
-              <div class="review-timer"><span id="reviewTimerBar"></span></div>
-              <div class="review-hud-foot" id="reviewHudFoot">听音后命中正确汉字</div>
-            </div>
-            <div class="review-theme" id="reviewTheme">射箭训练场</div>
-            <div class="review-lanes">
-              <div class="review-lane"></div>
-              <div class="review-lane"></div>
-              <div class="review-lane"></div>
-              <div class="review-lane"></div>
-            </div>
-            <div class="options review-targets" id="reviewOptions"></div>
-            <div class="review-launcher" id="reviewLauncher">🏹</div>
-            <div class="review-crosshair" id="reviewCrosshair"></div>
-            <div class="review-projectile" id="reviewProjectile" aria-hidden="true">➶</div>
-            <div class="review-impact" id="reviewImpact" aria-hidden="true">💥</div>
-            <div class="review-fx-layer" id="reviewFxLayer" aria-hidden="true"></div>
-          </div>
-          <div class="feedback" id="reviewFeedback"></div>
-          <div class="review-result hidden" id="reviewResult"></div>
-          <div class="review-mascot">
-            <div class="review-mascot-icon" id="reviewMascotIcon">🐼</div>
-            <div class="review-mascot-line" id="reviewMascotLine">准备好了吗？听清楚声音再点汉字哦。</div>
-          </div>
+          <div class="rv-progress"><span id="reviewTopProgress"></span></div>
+          <p class="rv-task" id="reviewTaskText">听一听，点出这个字</p>
+          <div class="rv-stage" id="reviewStage"></div>
+          <div class="rv-feedback" id="reviewFeedback"></div>
+          <div class="rv-tip" id="reviewMascotLine">慢慢来，不着急，想清楚再点。</div>
         </div>
+
+        <div class="rv-result hidden" id="reviewResult"></div>
       </section>
     </div>
 
@@ -2785,8 +3049,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     const STORAGE_KEY = "doudou-literacy-progress-v1";
     const AVATAR_STORAGE_KEY = "doudou-avatar-dataurl-v1";
     const REVIEW_INTERVAL_DAYS = [1, 2, 4, 7, 15, 30, 60, 120, 240];
-    const REVIEW_SESSION_SIZE = 15;
-    const REVIEW_LEVEL_MAX = 10;
+    const REVIEW_SESSION_SIZE = 8;
+    const REVIEW_MAX_EXTRA = 3;
+    const REVIEW_LEVEL_TYPES = ["listen", "find", "listen", "pair", "listen", "find", "listen", "pair"];
     const DAY_MS = 24 * 60 * 60 * 1000;
     const IFLYTEK_TTS = {
       enabled: true,
@@ -3178,21 +3443,17 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       reviewMeta: {},
       reviewQueue: [],
       reviewLevel: 0,
-      reviewRawScore: 0,
-      reviewLevelPenalty: 0,
+      reviewLevelPlan: [],
       reviewCurrentTarget: "",
       reviewAwardedInSession: false,
-      reviewGameMode: "archer",
       reviewBusy: false,
       reviewCombo: 0,
       reviewBestCombo: 0,
       reviewRoundStars: 0,
-      reviewTimeLeftMs: 0,
-      reviewLevelDurationMs: 0,
-      reviewLevelTimer: 0,
-      reviewMotionRaf: 0,
-      reviewMotionData: [],
-      reviewLastFrameTs: 0,
+      reviewPerfectCount: 0,
+      reviewMistakeChars: [],
+      reviewExtraQueue: [],
+      reviewCharResults: {},
       traceHasInk: false,
       trophyTotal: 0,
       writer: null,
@@ -3246,33 +3507,19 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       listenOptions: document.getElementById("listenOptions"),
       listenFeedback: document.getElementById("listenFeedback"),
       reviewProgress: document.getElementById("reviewProgress"),
-      reviewScore: document.getElementById("reviewScore"),
       reviewStars: document.getElementById("reviewStars"),
-      reviewTrophyTotal: document.getElementById("reviewTrophyTotal"),
+      reviewCombo: document.getElementById("reviewCombo"),
       reviewTaskText: document.getElementById("reviewTaskText"),
       reviewTopProgress: document.getElementById("reviewTopProgress"),
-      reviewModeGate: document.getElementById("reviewModeGate"),
+      reviewStartPanel: document.getElementById("reviewStartPanel"),
+      reviewDueCount: document.getElementById("reviewDueCount"),
+      reviewStartSub: document.getElementById("reviewStartSub"),
+      reviewStartChips: document.getElementById("reviewStartChips"),
+      reviewStartBtn: document.getElementById("reviewStartBtn"),
       reviewGameWrap: document.getElementById("reviewGameWrap"),
-      reviewSummary: document.getElementById("reviewSummary"),
-      reviewHint: document.getElementById("reviewHint"),
-      reviewEntryArcher: document.getElementById("reviewEntryArcher"),
-      reviewEntryTank: document.getElementById("reviewEntryTank"),
-      reviewPlay: document.getElementById("reviewPlay"),
-      reviewArena: document.getElementById("reviewArena"),
-      reviewHudMode: document.getElementById("reviewHudMode"),
-      reviewHudCombo: document.getElementById("reviewHudCombo"),
-      reviewTimerBar: document.getElementById("reviewTimerBar"),
-      reviewHudFoot: document.getElementById("reviewHudFoot"),
-      reviewTheme: document.getElementById("reviewTheme"),
-      reviewOptions: document.getElementById("reviewOptions"),
-      reviewLauncher: document.getElementById("reviewLauncher"),
-      reviewCrosshair: document.getElementById("reviewCrosshair"),
-      reviewProjectile: document.getElementById("reviewProjectile"),
-      reviewImpact: document.getElementById("reviewImpact"),
-      reviewFxLayer: document.getElementById("reviewFxLayer"),
+      reviewStage: document.getElementById("reviewStage"),
       reviewFeedback: document.getElementById("reviewFeedback"),
       reviewResult: document.getElementById("reviewResult"),
-      reviewMascotIcon: document.getElementById("reviewMascotIcon"),
       reviewMascotLine: document.getElementById("reviewMascotLine"),
       trophyModal: document.getElementById("trophyModal"),
       trophyModalScore: document.getElementById("trophyModalScore"),
@@ -3338,11 +3585,41 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
     function defaultReviewMetaForChar(char) {
       const daysAgo = seedDaysAgo(char);
+      const firstLearnedAt = Date.now() - daysAgo * DAY_MS;
       return {
-        firstLearnedAt: Date.now() - daysAgo * DAY_MS,
+        firstLearnedAt,
         lastReviewedAt: null,
-        reviewCount: 0
+        reviewCount: 0,
+        stage: 0,
+        interval: 1,
+        ease: 2.5,
+        due: firstLearnedAt + REVIEW_INTERVAL_DAYS[0] * DAY_MS,
+        lapses: 0,
+        streak: 0
       };
+    }
+
+    // 兼容旧数据：补齐记忆曲线字段（stage/interval/ease/due/lapses/streak）
+    function normalizeReviewMeta(char, item) {
+      const fallback = defaultReviewMetaForChar(char);
+      const meta = {
+        firstLearnedAt: Number(item && item.firstLearnedAt) || fallback.firstLearnedAt,
+        lastReviewedAt: item && item.lastReviewedAt ? Number(item.lastReviewedAt) : null,
+        reviewCount: Math.max(0, Math.floor(Number(item && item.reviewCount) || 0)),
+        lapses: Math.max(0, Math.floor(Number(item && item.lapses) || 0)),
+        streak: Math.max(0, Math.floor(Number(item && item.streak) || 0)),
+        ease: Math.min(3, Math.max(1.3, Number(item && item.ease) || 2.5))
+      };
+      const seededStage = Math.min(REVIEW_INTERVAL_DAYS.length - 1, meta.reviewCount);
+      meta.stage = item && Number.isFinite(Number(item.stage))
+        ? Math.min(REVIEW_INTERVAL_DAYS.length - 1, Math.max(0, Math.floor(Number(item.stage))))
+        : seededStage;
+      meta.interval = Number(item && item.interval) > 0
+        ? Number(item.interval)
+        : REVIEW_INTERVAL_DAYS[meta.stage];
+      const base = meta.lastReviewedAt || meta.firstLearnedAt;
+      meta.due = Number(item && item.due) > 0 ? Number(item.due) : base + meta.interval * DAY_MS;
+      return meta;
     }
 
     function ensureReviewMetaForLearned() {
@@ -3402,10 +3679,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           const meta = {};
           Object.entries(savedReviewMeta).forEach(([ch, item]) => {
             if (typeof ch !== "string" || !/[\u3400-\u9fff]/.test(ch) || !item) return;
-            const firstLearnedAt = Number(item.firstLearnedAt) || defaultReviewMetaForChar(ch).firstLearnedAt;
-            const lastReviewedAt = item.lastReviewedAt ? Number(item.lastReviewedAt) : null;
-            const reviewCount = Math.max(0, Math.floor(Number(item.reviewCount) || 0));
-            meta[ch.charAt(0)] = { firstLearnedAt, lastReviewedAt, reviewCount };
+            meta[ch.charAt(0)] = normalizeReviewMeta(ch.charAt(0), item);
           });
           state.reviewMeta = meta;
         }
@@ -3421,121 +3695,190 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }
     }
 
+    // ---------- 记忆曲线调度（近似 SM-2）----------
+    function reviewMetaOf(ch) {
+      let meta = state.reviewMeta[ch];
+      if (!meta) {
+        meta = defaultReviewMetaForChar(ch);
+        state.reviewMeta[ch] = meta;
+      }
+      return meta;
+    }
+
     function buildReviewCandidates() {
       const now = Date.now();
       ensureReviewMetaForLearned();
       return [...state.learned].map(ch => {
-        const meta = state.reviewMeta[ch] || defaultReviewMetaForChar(ch);
-        const interval = REVIEW_INTERVAL_DAYS[Math.min(meta.reviewCount, REVIEW_INTERVAL_DAYS.length - 1)];
-        const base = meta.lastReviewedAt || meta.firstLearnedAt;
-        const elapsedDays = Math.max(0, (now - base) / DAY_MS);
-        const dueRatio = elapsedDays / interval;
-        const overdueBoost = Math.max(0, dueRatio - 1) * 1.5;
-        return { char: ch, score: dueRatio + overdueBoost };
+        const meta = reviewMetaOf(ch);
+        const overdueDays = (now - meta.due) / DAY_MS;
+        const due = overdueDays >= 0;
+        const neverReviewed = !meta.lastReviewedAt;
+        // 逾期越久越优先；错过越多的"薄弱字"也往前提
+        const score = (due ? 100 + Math.min(60, overdueDays * 3) : 0)
+          + meta.lapses * 6
+          + (neverReviewed ? 4 : 0)
+          - meta.stage * 0.5;
+        return { char: ch, due, overdueDays, stage: meta.stage, lapses: meta.lapses, neverReviewed, score };
       });
     }
 
+    function pickReviewChars() {
+      const candidates = buildReviewCandidates();
+      if (!candidates.length) return [];
+      const limit = Math.min(REVIEW_SESSION_SIZE, candidates.length);
+      const dueList = candidates.filter(c => c.due).sort((a, b) => b.overdueDays - a.overdueDays);
+      const rest = candidates.filter(c => !c.due)
+        .sort((a, b) => (b.score - a.score));
+      const picked = dueList.slice(0, limit).map(c => c.char);
+      // 到期字不够 → 用最薄弱的字补上，保证一轮有得玩
+      if (picked.length < limit) {
+        rest.slice(0, limit - picked.length).forEach(c => picked.push(c.char));
+      }
+      return picked;
+    }
+
     function buildReviewSession() {
-      const ranked = buildReviewCandidates().sort((a, b) => b.score - a.score);
-      const poolSize = Math.min(ranked.length, Math.max(REVIEW_SESSION_SIZE, REVIEW_SESSION_SIZE * 2));
-      const pool = ranked.slice(0, poolSize).map(x => x.char);
-      const picked = randomPick(pool, Math.min(REVIEW_SESSION_SIZE, pool.length));
-      el.reviewModeGate.classList.add("hidden");
+      const picked = pickReviewChars();
+      if (!picked.length) {
+        prepareReviewStartPanel();
+        return;
+      }
+      startReviewRound(picked);
+    }
+
+    function startReviewRound(chars) {
+      clearReviewRuntime();
+      el.reviewStartPanel.classList.add("hidden");
+      el.reviewResult.classList.add("hidden");
       el.reviewGameWrap.classList.remove("hidden");
-      state.reviewQueue = picked;
+      state.reviewQueue = chars;
+      state.reviewLevelPlan = chars.map((ch, i) => ({ char: ch, type: REVIEW_LEVEL_TYPES[i % REVIEW_LEVEL_TYPES.length], extra: false }));
       state.reviewLevel = 0;
-      state.reviewRawScore = 0;
-      state.reviewLevelPenalty = 0;
       state.reviewCurrentTarget = "";
       state.reviewAwardedInSession = false;
       state.reviewCombo = 0;
       state.reviewBestCombo = 0;
       state.reviewRoundStars = 0;
-      renderReviewSession();
+      state.reviewPerfectCount = 0;
+      state.reviewMistakeChars = [];
+      state.reviewExtraQueue = [];
+      state.reviewCharResults = {};
+      renderReviewLevel();
     }
 
-    function prepareReviewModePick() {
+    function prepareReviewStartPanel() {
       clearReviewRuntime();
-      el.reviewModeGate.classList.remove("hidden");
+      el.reviewStartPanel.classList.remove("hidden");
       el.reviewGameWrap.classList.add("hidden");
+      el.reviewResult.classList.add("hidden");
       state.reviewQueue = [];
+      state.reviewLevelPlan = [];
       state.reviewLevel = 0;
-      state.reviewRawScore = 0;
-      state.reviewLevelPenalty = 0;
       state.reviewCurrentTarget = "";
+      state.reviewExtraQueue = [];
+      state.reviewCharResults = {};
       state.reviewCombo = 0;
       state.reviewBestCombo = 0;
       state.reviewRoundStars = 0;
-      state.reviewTimeLeftMs = 0;
-      state.reviewLevelDurationMs = 0;
-      if (el.reviewTopProgress) el.reviewTopProgress.style.width = "0%";
-      if (el.reviewStars) el.reviewStars.textContent = "星星：0";
-      updateReviewModeUI();
+
+      const candidates = buildReviewCandidates();
+      const dueList = candidates.filter(c => c.due);
+      const weakList = candidates.filter(c => c.lapses > 0 || c.stage <= 1);
+      const willReview = Math.min(REVIEW_SESSION_SIZE, candidates.length);
+      el.reviewDueCount.textContent = String(willReview);
+      el.reviewStartChips.innerHTML = "";
+      if (!candidates.length) {
+        el.reviewStartSub.textContent = "还没有学过的字，先去「认字」学几个，明天就能复习啦。";
+        el.reviewStartBtn.textContent = "去认字";
+        el.reviewStartBtn.dataset.mode = "learn";
+        return;
+      }
+      el.reviewStartBtn.dataset.mode = "review";
+      el.reviewStartBtn.textContent = "开始闯关";
+      if (dueList.length > willReview) {
+        el.reviewStartSub.textContent = `有 ${dueList.length} 个字到期了，今天先把最容易忘的 ${willReview} 个练掉。`;
+      } else if (dueList.length === willReview) {
+        el.reviewStartSub.textContent = "这些都是今天该复习的字，按记忆曲线排好了顺序。";
+      } else if (dueList.length > 0) {
+        el.reviewStartSub.textContent = `今天到期的有 ${dueList.length} 个字，再补上几个容易混的字，一起练一练。`;
+      } else {
+        el.reviewStartSub.textContent = "今天没有到期的字，先把最近学的字巩固一下，记得更牢。";
+      }
+      const chips = [];
+      if (dueList.length) chips.push(`<span class="rv-chip">待复习 ${dueList.length}</span>`);
+      if (weakList.length) chips.push(`<span class="rv-chip weak">需要加强 ${weakList.length}</span>`);
+      chips.push(`<span class="rv-chip">本轮 ${willReview} 关</span>`);
+      el.reviewStartChips.innerHTML = chips.join("");
     }
 
-    function computeReviewScore() {
-      const totalLevels = state.reviewQueue.length || 1;
-      const full = totalLevels * REVIEW_LEVEL_MAX;
-      return Math.round((state.reviewRawScore / full) * 100);
-    }
-
-    function updateReviewTopProgress() {
-      const total = state.reviewQueue.length || 1;
+    function bumpReviewTopProgress() {
+      const total = state.reviewLevelPlan.length || 1;
       const done = Math.max(0, Math.min(total, state.reviewLevel));
-      const ratio = done / total;
-      if (el.reviewTopProgress) {
-        el.reviewTopProgress.style.width = `${Math.round(ratio * 100)}%`;
-      }
-      if (el.reviewTaskText) {
-        el.reviewTaskText.textContent = `小任务：听字音找汉字（${done}/${total}）`;
-      }
-      if (el.reviewStars) {
-        el.reviewStars.textContent = `星星：${state.reviewRoundStars}`;
+      el.reviewTopProgress.style.width = `${Math.round((done / total) * 100)}%`;
+      el.reviewProgress.textContent = `第${Math.min(done + 1, total)}/${total}关`;
+      el.reviewStars.textContent = `⭐ ${state.reviewRoundStars}`;
+      if (state.reviewCombo >= 2) {
+        el.reviewCombo.classList.remove("hidden");
+        el.reviewCombo.textContent = `连对 x${state.reviewCombo}`;
+      } else {
+        el.reviewCombo.classList.add("hidden");
       }
     }
 
-    function updateReviewMascot(text, cheer = false) {
-      if (!el.reviewMascotLine || !el.reviewMascotIcon) return;
+    function updateReviewMascot(text) {
+      if (!el.reviewMascotLine) return;
       el.reviewMascotLine.textContent = text;
-      el.reviewMascotIcon.classList.remove("cheer");
-      if (cheer) {
-        el.reviewMascotIcon.classList.add("cheer");
-        setTimeout(() => el.reviewMascotIcon.classList.remove("cheer"), 420);
-      }
     }
 
-    function spawnReviewStars(x, y, count = 10) {
-      if (!el.reviewFxLayer) return;
-      const layer = el.reviewFxLayer;
+    // 答题反馈：在点中的卡片位置撒星星
+    function spawnReviewStars(node, count = 10) {
+      if (!node || !el.reviewStage) return;
+      const stageRect = el.reviewStage.getBoundingClientRect();
+      const rect = node.getBoundingClientRect();
+      const cx = rect.left - stageRect.left + rect.width / 2;
+      const cy = rect.top - stageRect.top + rect.height / 2;
       const symbols = ["⭐", "✨", "🌟"];
       for (let i = 0; i < count; i += 1) {
         const star = document.createElement("span");
-        star.className = "star-particle";
+        star.className = "rv-confetti";
         star.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-        const dx = (Math.random() - 0.5) * 140;
-        const dy = -50 - Math.random() * 90;
-        star.style.left = `${x}px`;
-        star.style.top = `${y}px`;
-        star.style.setProperty("--tx", `${dx}px`);
-        star.style.setProperty("--ty", `${dy}px`);
-        layer.appendChild(star);
-        setTimeout(() => star.remove(), 760);
+        star.style.left = `${cx}px`;
+        star.style.top = `${cy}px`;
+        star.style.setProperty("--dx", `${(Math.random() - 0.5) * 180}px`);
+        star.style.setProperty("--dy", `${-60 - Math.random() * 110}px`);
+        el.reviewStage.appendChild(star);
+        setTimeout(() => star.remove(), 940);
       }
     }
 
-    function showComboBurst(combo) {
-      if (!el.reviewFxLayer || combo < 2) return;
-      const chip = document.createElement("div");
-      chip.className = "combo-burst";
-      chip.textContent = `连击 x${combo}`;
-      el.reviewFxLayer.appendChild(chip);
-      setTimeout(() => chip.remove(), 520);
-    }
-
-    function updateReviewMetaOnPass(char) {
-      const meta = state.reviewMeta[char] || defaultReviewMetaForChar(char);
-      meta.lastReviewedAt = Date.now();
-      meta.reviewCount = Math.max(0, (meta.reviewCount || 0) + 1);
+    // 记忆曲线：答对延后、答错提前
+    function applyReviewResult(char, correct, firstTry) {
+      const meta = reviewMetaOf(char);
+      const now = Date.now();
+      meta.lastReviewedAt = now;
+      meta.reviewCount += 1;
+      if (correct) {
+        if (firstTry) {
+          meta.streak += 1;
+          if (meta.streak >= 2) meta.ease = Math.min(3, meta.ease + 0.1);
+          // 间隔取当前档位（第一档 1 天），成功后升档
+          meta.interval = REVIEW_INTERVAL_DAYS[meta.stage];
+          meta.stage = Math.min(REVIEW_INTERVAL_DAYS.length - 1, meta.stage + 1);
+        } else {
+          // 提示后才答对：不升档，缩短间隔，明天再来一次
+          meta.streak = 0;
+          meta.lapses += 1;
+          meta.ease = Math.max(1.3, meta.ease - 0.1);
+          meta.interval = Math.max(1, Math.round(meta.interval / 2));
+        }
+      } else {
+        meta.lapses += 1;
+        meta.streak = 0;
+        meta.ease = Math.max(1.3, meta.ease - 0.2);
+        meta.stage = Math.max(0, meta.stage - 2);
+        meta.interval = 1;
+      }
+      meta.due = now + Math.max(1, meta.interval) * DAY_MS;
       state.reviewMeta[char] = meta;
       saveProgress();
     }
@@ -3679,399 +4022,336 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       ], 0.2);
     }
 
-    function updateReviewModeUI() {
-      const isArcher = state.reviewGameMode === "archer";
-      el.reviewEntryArcher.classList.toggle("active", isArcher);
-      el.reviewEntryTank.classList.toggle("active", !isArcher);
-      el.reviewArena.classList.toggle("mode-archer", isArcher);
-      el.reviewArena.classList.toggle("mode-tank", !isArcher);
-      el.reviewTheme.textContent = isArcher ? "射箭训练场" : "坦克前线";
-      el.reviewLauncher.textContent = isArcher ? "🏹" : "🪖";
-      el.reviewProjectile.textContent = isArcher ? "➶" : "💣";
-      el.reviewProjectile.classList.toggle("tank", !isArcher);
-      el.reviewImpact.textContent = isArcher ? "✨" : "💥";
-      el.reviewCrosshair.classList.toggle("hidden", !isArcher);
-      if (isArcher) {
-        el.reviewCrosshair.style.left = "50%";
-        el.reviewCrosshair.style.top = "54%";
-      }
-      if (!state.reviewQueue.length) {
-        updateReviewMascot(isArcher ? "欢迎来到射箭场，听音后点中汉字靶标。" : "欢迎来到坦克场，听音后击中正确目标。");
-      }
-      updateReviewHud();
-    }
-
-    function updateReviewHud() {
-      const ratio = state.reviewLevelDurationMs > 0
-        ? Math.max(0, Math.min(1, state.reviewTimeLeftMs / state.reviewLevelDurationMs))
-        : 1;
-      const leftSec = Math.max(0, state.reviewTimeLeftMs) / 1000;
-      const modeText = state.reviewGameMode === "archer" ? "射箭任务" : "坦克任务";
-      el.reviewHudMode.textContent = `${modeText} ${leftSec.toFixed(1)}s`;
-      el.reviewHudCombo.textContent = `连击 x${state.reviewCombo}`;
-      el.reviewTimerBar.style.transform = `scaleX(${ratio})`;
-      el.reviewHudFoot.textContent = `最高连击 x${state.reviewBestCombo}`;
-    }
-
-    function clearReviewLevelTimer() {
-      if (!state.reviewLevelTimer) return;
-      clearInterval(state.reviewLevelTimer);
-      state.reviewLevelTimer = 0;
-    }
-
-    function stopReviewMotion() {
-      if (state.reviewMotionRaf) {
-        cancelAnimationFrame(state.reviewMotionRaf);
-      }
-      state.reviewMotionRaf = 0;
-      state.reviewMotionData = [];
-      state.reviewLastFrameTs = 0;
-    }
-
     function clearReviewRuntime() {
-      clearReviewLevelTimer();
-      stopReviewMotion();
       state.reviewBusy = false;
-      el.reviewProjectile.classList.remove("show");
-      el.reviewImpact.classList.remove("show");
     }
 
-    function startReviewLevelTimer() {
-      clearReviewLevelTimer();
-      state.reviewLevelDurationMs = state.reviewGameMode === "archer" ? 12000 : 11000;
-      state.reviewTimeLeftMs = state.reviewLevelDurationMs;
-      updateReviewHud();
-      state.reviewLevelTimer = setInterval(() => {
-        state.reviewTimeLeftMs = Math.max(0, state.reviewTimeLeftMs - 100);
-        updateReviewHud();
-        if (state.reviewTimeLeftMs > 0) return;
-        clearReviewLevelTimer();
-        onReviewTimeout();
-      }, 100);
+    const REVIEW_CHEERS = ["太棒了！", "好厉害！", "答对啦！", "真聪明！", "就是这个字！", "记得真牢！"];
+
+    function setReviewTask(text) {
+      if (el.reviewTaskText) el.reviewTaskText.textContent = text;
     }
 
-    function onReviewTimeout() {
-      if (el.reviewPage.classList.contains("hidden")) return;
-      if (state.reviewBusy) {
-        setTimeout(onReviewTimeout, 120);
-        return;
-      }
-      state.reviewBusy = true;
-      state.reviewCombo = 0;
-      state.reviewLevelPenalty = REVIEW_LEVEL_MAX;
-      playReviewTimeoutSound();
-      const targetBtn = [...el.reviewOptions.querySelectorAll("button")].find(node => node.textContent === state.reviewCurrentTarget);
-      if (targetBtn) targetBtn.classList.add("hit");
-      el.reviewFeedback.textContent = state.reviewGameMode === "archer" ? "超时了，本关结束，下一靶！" : "超时了，敌方撤离，下一波！";
-      el.reviewFeedback.className = "feedback bad";
-      updateReviewMascot("慢一点也没关系，我们继续试一次。");
-      updateReviewHud();
-      setTimeout(() => {
-        state.reviewLevel += 1;
-        state.reviewBusy = false;
-        renderReviewLevel();
-      }, 520);
+    function setReviewFeedback(text, kind) {
+      if (!el.reviewFeedback) return;
+      el.reviewFeedback.textContent = text || "";
+      el.reviewFeedback.className = "rv-feedback" + (kind ? " " + kind : "");
     }
 
-    function startReviewMotion(nodes) {
-      stopReviewMotion();
-      const box = el.reviewOptions.getBoundingClientRect();
-      const w = Math.max(220, box.width);
-      const h = Math.max(170, box.height);
-      const isTank = state.reviewGameMode === "tank";
-      const laneYs = [0.17, 0.33, 0.49, 0.65, 0.81].map(r => h * r);
-
-      state.reviewMotionData = nodes.map((node, idx) => {
-        if (isTank) {
-          return {
-            node,
-            x: w * (0.18 + idx * 0.16),
-            y: laneYs[idx % laneYs.length] - 30,
-            speed: 0.004 + idx * 0.0012,
-            phase: Math.random() * Math.PI * 2
-          };
-        }
-        return {
-          node,
-          x: w * (0.12 + idx * 0.16),
-          y: h * (0.18 + (idx % 3) * 0.2),
-          vx: (idx % 2 ? -1 : 1) * (0.045 + Math.random() * 0.045),
-          vy: (idx % 3 ? 1 : -1) * (0.015 + Math.random() * 0.028),
-          amp: 6 + Math.random() * 5,
-          phase: Math.random() * Math.PI * 2
-        };
-      });
-
-      state.reviewLastFrameTs = 0;
-      const tick = (ts) => {
-        if (!state.reviewMotionData.length) return;
-        const dt = state.reviewLastFrameTs ? Math.min(34, ts - state.reviewLastFrameTs) : 16;
-        state.reviewLastFrameTs = ts;
-        const boxNow = el.reviewOptions.getBoundingClientRect();
-        const width = Math.max(220, boxNow.width);
-        const height = Math.max(170, boxNow.height);
-        state.reviewMotionData.forEach((item, idx) => {
-          if (state.reviewGameMode === "tank") {
-            item.x -= item.speed * dt * 7;
-            if (item.x < -74) item.x = width + 28 + Math.random() * 80;
-            const y = (height * [0.17, 0.33, 0.49, 0.65, 0.81][idx % 5]) - 30 + Math.sin(ts * 0.006 + item.phase) * 3;
-            item.node.style.left = `${item.x}px`;
-            item.node.style.top = `${y}px`;
-            return;
-          }
-          item.x += item.vx * dt;
-          item.y += item.vy * dt;
-          const maxX = width - 72;
-          const maxY = height - 72;
-          if (item.x < 6 || item.x > maxX) item.vx *= -1;
-          if (item.y < 6 || item.y > maxY) item.vy *= -1;
-          const swayY = item.y + Math.sin(ts * 0.004 + item.phase) * item.amp;
-          item.node.style.left = `${item.x}px`;
-          item.node.style.top = `${Math.max(4, Math.min(maxY, swayY))}px`;
-        });
-        state.reviewMotionRaf = requestAnimationFrame(tick);
-      };
-      state.reviewMotionRaf = requestAnimationFrame(tick);
+    function reviewOptionPool(exclude) {
+      return [...new Set([...state.learned, ...state.unlearned])]
+        .filter(ch => ch && ch !== exclude);
     }
 
-    function setupReviewTargets(nodes) {
-      const isTank = state.reviewGameMode === "tank";
-      nodes.forEach((btn, idx) => {
-        btn.classList.toggle("archer-target", !isTank);
-        btn.classList.toggle("tank-target", isTank);
-        btn.style.zIndex = `${2 + idx}`;
-        btn.addEventListener("pointerdown", () => {
-          btn.classList.remove("tap");
-          requestAnimationFrame(() => btn.classList.add("tap"));
-          setTimeout(() => btn.classList.remove("tap"), 260);
-        });
-      });
-      startReviewMotion(nodes);
+    function buildReviewOptions(target, count) {
+      const pool = reviewOptionPool(target);
+      const opts = randomPick(pool, Math.max(0, count - 1));
+      opts.push(target);
+      return randomPick(opts, opts.length);
     }
 
-    function showReviewImpact(x, y) {
-      const impact = el.reviewImpact;
-      impact.style.left = `${x - 14}px`;
-      impact.style.top = `${y - 16}px`;
-      impact.classList.add("show");
-      setTimeout(() => impact.classList.remove("show"), 170);
-    }
-
-    function animateReviewShot(btn, done) {
-      const isTank = state.reviewGameMode === "tank";
-      playReviewFireSound(isTank);
-      const projectile = el.reviewProjectile;
-      const arenaRect = el.reviewArena.getBoundingClientRect();
-      const targetRect = btn.getBoundingClientRect();
-      const launcherRect = el.reviewLauncher.getBoundingClientRect();
-      const startX = launcherRect.left - arenaRect.left + launcherRect.width / 2;
-      const startY = launcherRect.top - arenaRect.top + launcherRect.height / 2;
-      const endX = targetRect.left - arenaRect.left + targetRect.width / 2;
-      const endY = targetRect.top - arenaRect.top + targetRect.height / 2;
-      const dx = endX - startX;
-      const dy = endY - startY;
-      const duration = isTank ? 300 : 460;
-      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-      el.reviewLauncher.style.transform = `rotate(${angle}deg)`;
-
-      projectile.style.transitionDuration = `${duration}ms`;
-      projectile.style.left = `${startX}px`;
-      projectile.style.top = `${startY}px`;
-      projectile.style.bottom = "auto";
-      projectile.style.transform = "translate(0, 0) scale(0.5)";
-      projectile.classList.add("show");
-      requestAnimationFrame(() => {
-        const arcY = isTank ? 0 : -20;
-        projectile.style.transform = `translate(${dx}px, ${dy + arcY}px) scale(1)`;
-      });
-      setTimeout(() => {
-        projectile.classList.remove("show");
-        projectile.style.transform = "translate(0, 0) scale(0.5)";
-        el.reviewLauncher.style.transform = "rotate(0deg)";
-        showReviewImpact(endX, endY);
-        done();
-      }, duration + 20);
-    }
-
-    function moveReviewCrosshair(clientX, clientY) {
-      if (state.reviewGameMode !== "archer") return;
-      const rect = el.reviewArena.getBoundingClientRect();
-      const x = Math.max(18, Math.min(rect.width - 18, clientX - rect.left));
-      const y = Math.max(18, Math.min(rect.height - 18, clientY - rect.top));
-      el.reviewCrosshair.style.left = `${x}px`;
-      el.reviewCrosshair.style.top = `${y}px`;
-    }
-
-    function handleReviewAttempt(selectedChar, targetChar, btn) {
+    // 一关结束：结算记忆曲线 + 星星 + 连对
+    function finishReviewLevel(firstTry, clickedNode) {
       if (state.reviewBusy) return;
       state.reviewBusy = true;
-      const allButtons = [...el.reviewOptions.querySelectorAll("button")];
-      allButtons.forEach(node => {
-        node.disabled = true;
-      });
-
-      animateReviewShot(btn, () => {
-        if (selectedChar === targetChar) {
-          btn.classList.add("hit");
-          const gained = Math.max(0, REVIEW_LEVEL_MAX - state.reviewLevelPenalty);
-          state.reviewRawScore += gained;
-          state.reviewCombo += 1;
-          state.reviewBestCombo = Math.max(state.reviewBestCombo, state.reviewCombo);
-          state.reviewRoundStars += 1;
-          clearReviewLevelTimer();
-          playReviewHitSound();
-          updateReviewMetaOnPass(targetChar);
-          el.reviewFeedback.textContent = state.reviewGameMode === "archer"
-            ? `命中靶心！连击 x${state.reviewCombo}`
-            : `击毁目标！连击 x${state.reviewCombo}`;
-          el.reviewFeedback.className = "feedback ok";
-          const arenaRect = el.reviewArena.getBoundingClientRect();
-          const targetRect = btn.getBoundingClientRect();
-          const x = targetRect.left - arenaRect.left + targetRect.width / 2;
-          const y = targetRect.top - arenaRect.top + targetRect.height / 2;
-          spawnReviewStars(x, y, 12);
-          showComboBurst(state.reviewCombo);
-          if (state.reviewCombo >= 3) {
-            updateReviewMascot(`太厉害了，连击 x${state.reviewCombo}！`, true);
-          } else {
-            updateReviewMascot("命中啦，继续！", true);
+      const level = state.reviewLevelPlan[state.reviewLevel];
+      const char = level ? level.char : "";
+      if (char) {
+        applyReviewResult(char, true, firstTry);
+        const prev = state.reviewCharResults[char] || { wrong: 0 };
+        state.reviewCharResults[char] = { wrong: prev.wrong + (firstTry ? 0 : 1), ok: true };
+        if (!firstTry) {
+          if (!state.reviewMistakeChars.includes(char)) state.reviewMistakeChars.push(char);
+          if (!level.extra && state.reviewExtraQueue.length < REVIEW_MAX_EXTRA && !state.reviewExtraQueue.includes(char)) {
+            state.reviewExtraQueue.push(char);
           }
-          updateReviewTopProgress();
-          updateReviewHud();
-          state.reviewLevel += 1;
-          state.reviewLevelPenalty = 0;
-          setTimeout(() => {
-            state.reviewBusy = false;
-            renderReviewLevel();
-          }, 340);
-          return;
         }
-
-        btn.classList.add("miss");
-        state.reviewCombo = 0;
-        state.reviewLevelPenalty = Math.min(REVIEW_LEVEL_MAX, state.reviewLevelPenalty + 2);
-        playReviewMissSound();
-        el.reviewFeedback.textContent = state.reviewGameMode === "archer" ? `没中靶心，再来一箭（本关最多扣${REVIEW_LEVEL_MAX}分）` : `没有击毁目标，再开一炮（本关最多扣${REVIEW_LEVEL_MAX}分）`;
-        el.reviewFeedback.className = "feedback bad";
-        updateReviewMascot("再试一次，你可以的。");
-        setTimeout(() => btn.classList.remove("miss"), 240);
-        updateReviewHud();
-        allButtons.forEach(node => {
-          node.disabled = false;
-        });
-        state.reviewBusy = false;
-      });
-    }
-
-    function reviewSummaryByMode() {
-      if (state.reviewGameMode === "tank") {
-        return "坦克大战：听字音，锁定字块并开炮击毁目标字。";
       }
-      return "射箭场：听字音，瞄准漂浮靶标，一箭命中目标字。";
-    }
-
-    function renderReviewResult() {
-      const total = state.reviewQueue.length;
-      const score = computeReviewScore();
-      clearReviewRuntime();
-      el.reviewProgress.textContent = `第${total}/${total}关`;
-      el.reviewScore.textContent = `分数：${score}`;
-      el.reviewStars.textContent = `星星：${state.reviewRoundStars}`;
-      el.reviewTrophyTotal.textContent = `奖杯：${state.trophyTotal}`;
-      el.reviewSummary.textContent = `本次已完成${total}关复习。点击“重新生成15关”可开始下一轮。`;
-      el.reviewHint.textContent = "本轮复习完成";
-      el.reviewOptions.innerHTML = "";
-      el.reviewFeedback.textContent = "";
-      if (score === 100 && !state.reviewAwardedInSession) {
-        state.reviewAwardedInSession = true;
-        state.trophyTotal += 1;
-        playTrophySound();
-        playBigCheerSound();
-        speak("一百分，太棒啦，获得奖杯");
-      } else if (score < 100) {
-        playEncourageSound();
-        speak(`本轮复习${score}分，继续加油哦`);
-      }
-      el.reviewTrophyTotal.textContent = `奖杯：${state.trophyTotal}`;
-      updateReviewTopProgress();
-      updateReviewMascot(score === 100 ? "哇，开宝箱啦！你太棒了！" : `这轮拿到${state.reviewRoundStars}颗星，继续加油。`, true);
-      const trophyIcon = `<svg class="trophy-icon" viewBox="0 0 64 64" aria-hidden="true"><path fill="#f5b302" d="M21 10h22v9c0 6-5 11-11 11s-11-5-11-11z"/><path fill="#d08b00" d="M26 30h12v8H26z"/><path fill="#efb810" d="M20 38h24v6H20z"/><path fill="#b57500" d="M18 44h28v8H18z"/><path fill="#f5b302" d="M21 13H11c0 7 4 12 10 13v-5c-3-1-5-4-5-8h5zm22 0h10c0 7-4 12-10 13v-5c3-1 5-4 5-8h-5z"/></svg>`;
-      const trophy = score === 100
-        ? `<div class="trophy">${trophyIcon}<span>满分！宝箱已开启！</span></div>`
-        : `<div style="font-size:46px;">🎁✨</div><div>这次拿到 ${state.reviewRoundStars} 颗星星</div>`;
-      el.reviewResult.innerHTML = `${trophy}<div style="font-size:24px;margin-top:8px;">最终分数：${score}</div>`;
-      el.reviewResult.classList.remove("hidden");
-      if (score === 100) {
-        el.trophyModalScore.textContent = `最终分数：${score}`;
-        el.trophyModal.classList.remove("hidden");
+      if (firstTry) {
+        state.reviewPerfectCount += 1;
+        state.reviewRoundStars += 2;
+        state.reviewCombo += 1;
       } else {
-        el.trophyModal.classList.add("hidden");
+        state.reviewRoundStars += 1;
+        state.reviewCombo = 0;
       }
-      saveProgress();
+      state.reviewBestCombo = Math.max(state.reviewBestCombo, state.reviewCombo);
+      if (clickedNode) spawnReviewStars(clickedNode, firstTry ? 12 : 8);
+      playReviewHitSound();
+      if (state.reviewCombo >= 3) playStickerSound();
+      bumpReviewTopProgress();
+      setReviewFeedback(
+        firstTry ? `${REVIEW_CHEERS[Math.floor(Math.random() * REVIEW_CHEERS.length)]} ⭐⭐` : "答对啦 ⭐",
+        "ok"
+      );
+      updateReviewMascot(firstTry ? "一次就答对，记得真牢！" : "想一想也记住了，继续加油。");
+      state.reviewLevel += 1;
+      setTimeout(renderReviewLevel, 820);
+    }
+
+    function failReviewAttempt(message) {
+      state.reviewLevelMistakes = (state.reviewLevelMistakes || 0) + 1;
+      state.reviewCombo = 0;
+      bumpReviewTopProgress();
+      playReviewMissSound();
+      setReviewFeedback(message, "bad");
+      updateReviewMascot("不着急，听清楚再选。");
+    }
+
+    // ---------- 玩法一：听音找字 ----------
+    function renderListenLevel(char) {
+      setReviewTask("听一听，点出这个字");
+      const head = document.createElement("div");
+      head.className = "rv-listen-head";
+      const playBtn = document.createElement("button");
+      playBtn.className = "rv-speak-btn";
+      playBtn.textContent = "🔊 听一听";
+      playBtn.addEventListener("click", () => speak(char));
+      head.appendChild(playBtn);
+      const hint = document.createElement("div");
+      hint.className = "rv-hint-text";
+      hint.textContent = "可以多听几遍，想好再点";
+      head.appendChild(hint);
+      el.reviewStage.appendChild(head);
+
+      const wrap = document.createElement("div");
+      wrap.className = "rv-options";
+      buildReviewOptions(char, 4).forEach(ch => {
+        const btn = document.createElement("button");
+        btn.className = "rv-card";
+        btn.textContent = ch;
+        btn.addEventListener("click", () => {
+          if (state.reviewBusy || btn.dataset.done === "1") return;
+          if (ch === char) {
+            btn.classList.add("correct");
+            btn.dataset.done = "1";
+            finishReviewLevel(state.reviewLevelMistakes === 0, btn);
+            return;
+          }
+          btn.classList.add("wrong");
+          btn.dataset.done = "1";
+          btn.disabled = true;
+          btn.classList.add("dim");
+          setTimeout(() => btn.classList.remove("wrong"), 420);
+          failReviewAttempt(`这个是「${ch}」，再听听看`);
+          speak(char);
+        });
+        wrap.appendChild(btn);
+      });
+      el.reviewStage.appendChild(wrap);
+      setTimeout(() => speak(char), 200);
+    }
+
+    // ---------- 玩法二：找一找（字阵里找出所有相同的字）----------
+    function renderFindLevel(char) {
+      setReviewTask("把相同的字都找出来");
+      const copyCount = Math.random() < 0.5 ? 2 : 3;
+      const head = document.createElement("div");
+      head.className = "rv-find-head";
+      const targetEl = document.createElement("div");
+      targetEl.className = "rv-find-target";
+      targetEl.textContent = char;
+      head.appendChild(targetEl);
+      const hint = document.createElement("div");
+      hint.className = "rv-hint-text";
+      hint.textContent = `点一下，听读音`;
+      head.appendChild(hint);
+      el.reviewStage.appendChild(head);
+      targetEl.addEventListener("click", () => speak(char));
+
+      const cells = [];
+      for (let i = 0; i < copyCount; i += 1) cells.push(char);
+      randomPick(reviewOptionPool(char), 9 - copyCount).forEach(ch => cells.push(ch));
+      const layout = randomPick(cells, cells.length);
+
+      const grid = document.createElement("div");
+      grid.className = "rv-grid";
+      let found = 0;
+      layout.forEach(ch => {
+        const cell = document.createElement("button");
+        cell.className = "rv-cell";
+        cell.textContent = ch;
+        cell.addEventListener("click", () => {
+          if (state.reviewBusy || cell.dataset.done === "1") return;
+          if (ch === char) {
+            cell.dataset.done = "1";
+            cell.classList.add("found");
+            cell.disabled = true;
+            found += 1;
+            speak(char);
+            playReviewHitSound();
+            setReviewFeedback(`找到 ${found}/${copyCount} 个`, "ok");
+            if (found >= copyCount) {
+              cell.classList.add("correct");
+              finishReviewLevel(state.reviewLevelMistakes === 0, cell);
+            }
+            return;
+          }
+          cell.dataset.done = "1";
+          cell.classList.add("wrong");
+          cell.disabled = true;
+          cell.classList.add("dim");
+          setTimeout(() => cell.classList.remove("wrong"), 420);
+          failReviewAttempt(`这个是「${ch}」，要找的是「${char}」`);
+          speak(char);
+        });
+        grid.appendChild(cell);
+      });
+      el.reviewStage.appendChild(grid);
+      setTimeout(() => speak(char), 200);
+    }
+
+    // ---------- 玩法三：翻牌配对 ----------
+    function renderPairLevel(char) {
+      setReviewTask("翻一翻，把相同的字配成一对");
+      const partners = randomPick(reviewOptionPool(char), 2);
+      const deck = randomPick([char, char, partners[0], partners[0], partners[1], partners[1]], 6);
+      const grid = document.createElement("div");
+      grid.className = "rv-pairs";
+      let openCards = [];
+      let matchedCount = 0;
+      let lock = false;
+
+      deck.forEach(ch => {
+        const card = document.createElement("button");
+        card.className = "rv-pair";
+        const back = document.createElement("span");
+        back.className = "rv-pair-back";
+        back.textContent = "？";
+        const face = document.createElement("span");
+        face.className = "rv-pair-face";
+        face.textContent = ch;
+        card.appendChild(back);
+        card.appendChild(face);
+        card.dataset.char = ch;
+
+        card.addEventListener("click", () => {
+          if (lock || state.reviewBusy) return;
+          if (card.classList.contains("open") || card.classList.contains("matched")) return;
+          card.classList.add("open");
+          speak(ch);
+          openCards.push(card);
+          if (openCards.length < 2) return;
+
+          const [a, b] = openCards;
+          if (a.dataset.char === b.dataset.char) {
+            a.classList.add("matched");
+            b.classList.add("matched");
+            openCards = [];
+            matchedCount += 1;
+            playReviewHitSound();
+            setReviewFeedback("配对成功！", "ok");
+            if (matchedCount >= 3) {
+              finishReviewLevel(state.reviewLevelMistakes === 0, b);
+            }
+            return;
+          }
+          lock = true;
+          failReviewAttempt("不一样哦，再看一看");
+          setTimeout(() => {
+            a.classList.remove("open");
+            b.classList.remove("open");
+            openCards = [];
+            lock = false;
+          }, 760);
+        });
+        grid.appendChild(card);
+      });
+      el.reviewStage.appendChild(grid);
+      updateReviewMascot("翻开两张牌，找出一模一样的字。");
     }
 
     function renderReviewLevel() {
-      const total = state.reviewQueue.length;
-      updateReviewModeUI();
-      clearReviewRuntime();
-      updateReviewTopProgress();
-      if (!total) {
-        el.reviewProgress.textContent = "第0/0关";
-        el.reviewScore.textContent = "分数：0";
-        el.reviewStars.textContent = "星星：0";
-        el.reviewTrophyTotal.textContent = `奖杯：${state.trophyTotal}`;
-        el.reviewSummary.textContent = "当前已学字不足，先去“认字”学习后再来复习。";
-        el.reviewHint.textContent = "暂无可复习内容";
-        el.reviewOptions.innerHTML = "";
-        el.reviewFeedback.textContent = "";
-        el.reviewResult.classList.add("hidden");
-        updateReviewMascot("先去认字学几个字，再来挑战吧。");
-        return;
-      }
+      state.reviewBusy = false;
+      state.reviewLevelMistakes = 0;
+      el.reviewStage.innerHTML = "";
+      setReviewFeedback("");
+      setReviewTask("听一听，点出这个字");
 
-      const index = state.reviewLevel;
-      if (index >= total) {
+      let plan = state.reviewLevelPlan;
+      // 答错的字，本轮末尾再练一次
+      if (state.reviewLevel >= plan.length && state.reviewExtraQueue.length) {
+        const extra = state.reviewExtraQueue.shift();
+        plan.push({ char: extra, type: "listen", extra: true });
+      }
+      if (state.reviewLevel >= plan.length) {
         renderReviewResult();
         return;
       }
+      bumpReviewTopProgress();
+      const level = plan[state.reviewLevel];
+      state.reviewCurrentTarget = level.char;
+      if (level.type === "find") {
+        renderFindLevel(level.char);
+        return;
+      }
+      if (level.type === "pair") {
+        renderPairLevel(level.char);
+        return;
+      }
+      renderListenLevel(level.char);
+    }
 
-      const target = state.reviewQueue[index];
-      state.reviewCurrentTarget = target;
-      el.trophyModal.classList.add("hidden");
-      el.reviewResult.classList.add("hidden");
-      el.reviewProgress.textContent = `第${index + 1}/${total}关`;
-      el.reviewScore.textContent = `分数：${computeReviewScore()}`;
-      el.reviewStars.textContent = `星星：${state.reviewRoundStars}`;
-      el.reviewTrophyTotal.textContent = `奖杯：${state.trophyTotal}`;
-      el.reviewSummary.textContent = reviewSummaryByMode();
-      el.reviewHint.textContent = state.reviewGameMode === "archer" ? "听声音，射中正确汉字靶标" : "听声音，开炮击中正确汉字目标";
-      el.reviewFeedback.textContent = "";
-      el.reviewFeedback.className = "feedback";
-      updateReviewTopProgress();
-      updateReviewMascot("听一听读音，再点对应的字卡。");
+    function renderReviewResult() {
+      state.reviewBusy = true;
+      const total = state.reviewLevelPlan.length;
+      const stars = state.reviewRoundStars;
+      const perfect = state.reviewPerfectCount;
+      const weak = state.reviewMistakeChars.slice();
 
-      const allPool = [...new Set([...state.learned, ...state.unlearned])].filter(ch => ch !== target);
-      const options = randomPick(allPool, 4);
-      options.push(target);
-      const finalOptions = randomPick(options, 5);
-      el.reviewOptions.innerHTML = "";
-      finalOptions.forEach(ch => {
-        const btn = document.createElement("button");
-        btn.className = "review-target";
-        btn.textContent = ch;
-        btn.addEventListener("click", () => handleReviewAttempt(ch, target, btn));
-        el.reviewOptions.appendChild(btn);
-      });
-      const targetNodes = [...el.reviewOptions.querySelectorAll("button")];
-      setupReviewTargets(targetNodes);
-      startReviewLevelTimer();
-      state.reviewBusy = false;
+      el.reviewTopProgress.style.width = "100%";
+      el.reviewProgress.textContent = `第${total}/${total}关`;
+      el.reviewStars.textContent = `⭐ ${stars}`;
+      el.reviewCombo.classList.add("hidden");
+      setReviewTask("这轮复习完成啦");
+      el.reviewStage.innerHTML = "";
+      setReviewFeedback("");
 
-      speak(target);
+      const nextDue = buildReviewCandidates().filter(c => c.due).length;
+      const strongChars = Object.entries(state.reviewCharResults)
+        .filter(([, r]) => r.ok && r.wrong === 0)
+        .map(([ch]) => ch);
+
+      const icon = perfect === total ? "🏆" : (perfect >= total * 0.6 ? "🎉" : "🌈");
+      const title = perfect === total
+        ? "全部一次答对，太厉害啦！"
+        : (perfect >= total * 0.6 ? "记得很不错哦！" : "今天练得很认真！");
+
+      el.reviewResult.innerHTML = `
+        <div class="rv-result-icon">${icon}</div>
+        <h3 class="rv-result-title">${title}</h3>
+        <div class="rv-result-stars">${"⭐".repeat(Math.min(10, stars))}${stars > 10 ? " …" : ""} <span style="font-size:18px;color:#a8620f;">共 ${stars} 颗</span></div>
+        <div style="font-size:17px;font-weight:800;color:#8a6a3a;">${total} 关完成，其中 ${perfect} 关一次答对</div>
+        ${strongChars.length ? `<div style="font-size:15px;font-weight:800;color:#2f8a4c;">记得很牢：</div><div class="rv-result-list">${strongChars.slice(0, 20).map(ch => `<span class="rv-result-char">${ch}</span>`).join("")}</div>` : ""}
+        ${weak.length ? `<div style="font-size:15px;font-weight:800;color:#b04a2e;">还要再练：</div><div class="rv-result-list">${weak.map(ch => `<span class="rv-result-char weak">${ch}</span>`).join("")}</div>` : ""}
+        <div style="font-size:15px;font-weight:700;color:#9a7a4a;">还有 ${nextDue} 个字排着队，下次接着练</div>
+        <div class="rv-result-actions">
+          <button class="primary" id="reviewAgainBtn">再来一轮</button>
+          <button id="reviewHomeBtn">回首页</button>
+        </div>
+      `;
+      el.reviewResult.classList.remove("hidden");
+      const again = document.getElementById("reviewAgainBtn");
+      if (again) again.addEventListener("click", buildReviewSession);
+      const home = document.getElementById("reviewHomeBtn");
+      if (home) home.addEventListener("click", () => showPage("home"));
+
+      if (perfect === total && total > 0) {
+        state.trophyTotal += 1;
+        playTrophySound();
+        playBigCheerSound();
+        speak("全部答对，太棒啦，获得一个奖杯");
+        el.trophyModalScore.textContent = `本轮 ${total} 关全部一次答对`;
+        el.trophyModal.classList.remove("hidden");
+        saveProgress();
+        return;
+      }
+      playEncourageSound();
+      speak(`这轮复习完成，答对 ${perfect} 个，继续加油`);
+      saveProgress();
     }
 
     function renderReviewSession() {
-      updateReviewModeUI();
       renderReviewLevel();
     }
 
@@ -5725,7 +6005,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       el.entryReview.addEventListener("click", () => {
         speak("复习");
         showPage("review");
-        prepareReviewModePick();
+        prepareReviewStartPanel();
       });
       el.entryLibrary.addEventListener("click", () => {
         speak("字库");
@@ -5740,9 +6020,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       el.backHomeFromReview.addEventListener("click", () => showPage("home"));
       el.backHomeFromLibrary.addEventListener("click", () => showPage("home"));
       el.backHomeFromRadicals.addEventListener("click", () => showPage("home"));
-      el.reviewPlay.addEventListener("click", () => {
-        if (state.reviewCurrentTarget) speak(state.reviewCurrentTarget);
-      });
       el.trophyModalClose.addEventListener("click", () => {
         el.trophyModal.classList.add("hidden");
       });
@@ -5752,26 +6029,16 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         }
       });
       el.reviewRestart.addEventListener("click", buildReviewSession);
-      el.reviewArena.addEventListener("pointermove", (e) => {
-        moveReviewCrosshair(e.clientX, e.clientY);
-      });
-      el.reviewEntryArcher.addEventListener("click", () => {
-        state.reviewGameMode = "archer";
-        speak("射箭模式");
-        if (!state.reviewQueue.length) {
-          buildReviewSession();
+      el.reviewStartBtn.addEventListener("click", () => {
+        if (el.reviewStartBtn.dataset.mode === "learn") {
+          showPage("learn");
+          resetCharFlow();
+          setTab("learn", true);
+          renderLearnPanel();
           return;
         }
-        renderReviewLevel();
-      });
-      el.reviewEntryTank.addEventListener("click", () => {
-        state.reviewGameMode = "tank";
-        speak("坦克模式");
-        if (!state.reviewQueue.length) {
-          buildReviewSession();
-          return;
-        }
-        renderReviewLevel();
+        speak("开始闯关");
+        buildReviewSession();
       });
       el.tabLearn.addEventListener("click", () => setTab("learn"));
       el.tabListen.addEventListener("click", () => setTab("listen"));
