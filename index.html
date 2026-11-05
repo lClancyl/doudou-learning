@@ -230,32 +230,72 @@
     }
 
     .polyphones {
-      min-height: 42px;
-      align-items: center;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      width: 100%;
+      max-width: 520px;
+      margin: 2px auto 0;
     }
 
-    .polyphone-item {
-      display: grid;
-      justify-items: center;
-      gap: 4px;
-      min-width: 132px;
-    }
-
-    .polyphone-chip {
-      font-size: 15px;
-      padding: 6px 10px;
-      border: 1px solid var(--peppa-pink-light);
-      background: linear-gradient(180deg, #fff5fa, #ffe8f2);
-      border-radius: 12px;
-    }
-
-    .polyphone-note {
-      margin: 0;
+    .poly-head {
       font-size: 12px;
-      line-height: 1.3;
-      color: #7a3d5c;
+      color: #8a5570;
       text-align: center;
-      max-width: 170px;
+      letter-spacing: .5px;
+    }
+
+    .poly-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .poly-row {
+      display: grid;
+      grid-template-columns: auto auto 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--peppa-pink-light);
+      background: linear-gradient(180deg, #fffdfd, #fff2f8);
+      text-align: left;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+    .poly-row:active {
+      transform: scale(.985);
+    }
+
+    .poly-row.playing {
+      border-color: var(--peppa-pink);
+      box-shadow: 0 0 0 3px rgba(233, 30, 137, .16);
+    }
+
+    .poly-pinyin {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--peppa-pink);
+      min-width: 46px;
+    }
+
+    .poly-word {
+      font-size: 15px;
+      color: #45303b;
+      white-space: nowrap;
+    }
+
+    .poly-note {
+      font-size: 12px;
+      line-height: 1.35;
+      color: #7a3d5c;
+      min-width: 0;
+    }
+
+    .poly-play {
+      font-size: 13px;
+      opacity: .55;
     }
 
     .chips {
@@ -3560,24 +3600,27 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         { pinyin: "hao2", label: "háo", sample: "风在呼号" }
       ],
       和: [
-        { pinyin: "he2", label: "hé", sample: "我和你一起读书" },
-        { pinyin: "huo4", label: "huò", sample: "面和得很好" }
+        { pinyin: "he2", label: "hé", word: "我和你", sample: "我和你一起读书。" },
+        { pinyin: "huo2", label: "huó", word: "和面", sample: "奶奶在和面，准备包饺子。" },
+        { pinyin: "huo4", label: "huò", word: "和药", sample: "药要用水和一下。" }
       ],
       间: [
         { pinyin: "jian1", label: "jiān", sample: "房间很干净" },
         { pinyin: "jian4", label: "jiàn", sample: "间隔一点距离" }
       ],
       着: [
-        { pinyin: "zhe", label: "zhe", sample: "看着我" },
-        { pinyin: "zhao2", label: "zháo", sample: "着火了" }
+        { pinyin: "zhe5", label: "zhe", word: "看着", sample: "妈妈看着我笑。" },
+        { pinyin: "zhao2", label: "zháo", word: "着急", sample: "找不到书包，我很着急。" },
+        { pinyin: "zhuo2", label: "zhuó", word: "穿着", sample: "她穿着红裙子。" },
+        { pinyin: "zhao1", label: "zhāo", word: "一着", sample: "下棋走出漂亮的一着。" }
       ],
       觉: [
         { pinyin: "jue2", label: "jué", sample: "我觉得今天很开心" },
         { pinyin: "jiao4", label: "jiào", sample: "睡觉要早一点" }
       ],
       了: [
-        { pinyin: "le", label: "le", sample: "下课了，我们回家" },
-        { pinyin: "liao3", label: "liǎo", sample: "一眼就了然" }
+        { pinyin: "le5", label: "le", word: "下课了", sample: "下课了，我们回家。" },
+        { pinyin: "liao3", label: "liǎo", word: "了不起", sample: "你真了不起！" }
       ],
       处: [
         { pinyin: "chu4", label: "chù", sample: "到处都是花" },
@@ -3592,8 +3635,113 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         { pinyin: "xing1", label: "xīng", sample: "兴奋地鼓掌" }
       ],
       都: [
-        { pinyin: "dou1", label: "dōu", sample: "我们都来了" },
-        { pinyin: "du1", label: "dū", sample: "首都北京" }
+        { pinyin: "dou1", label: "dōu", word: "都来了", sample: "我们都来了。" },
+        { pinyin: "du1", label: "dū", word: "首都", sample: "首都北京很美丽。" }
+      ],
+      大: [
+        { pinyin: "da4", label: "dà", word: "大象", sample: "大象的鼻子很长。" },
+        { pinyin: "dai4", label: "dài", word: "大夫", sample: "大夫给我看病。" }
+      ],
+      分: [
+        { pinyin: "fen1", label: "fēn", word: "分开", sample: "把苹果分开。" },
+        { pinyin: "fen4", label: "fèn", word: "水分", sample: "苹果里有很多水分。" }
+      ],
+      把: [
+        { pinyin: "ba3", label: "bǎ", word: "把手", sample: "他抓住我的把手。" },
+        { pinyin: "ba4", label: "bà", word: "刀把儿", sample: "刀把儿是木头做的。" }
+      ],
+      中: [
+        { pinyin: "zhong1", label: "zhōng", word: "中间", sample: "我站在中间。" },
+        { pinyin: "zhong4", label: "zhòng", word: "中奖", sample: "他中奖了。" }
+      ],
+      好: [
+        { pinyin: "hao3", label: "hǎo", word: "好人", sample: "明明是个好孩子。" },
+        { pinyin: "hao4", label: "hào", word: "爱好", sample: "我的爱好是画画。" }
+      ],
+      看: [
+        { pinyin: "kan4", label: "kàn", word: "看书", sample: "我在看书。" },
+        { pinyin: "kan1", label: "kān", word: "看门", sample: "爷爷在看门。" }
+      ],
+      会: [
+        { pinyin: "hui4", label: "huì", word: "开会", sample: "明天要开会。" },
+        { pinyin: "kuai4", label: "kuài", word: "会计", sample: "妈妈是会计。" }
+      ],
+      要: [
+        { pinyin: "yao4", label: "yào", word: "想要", sample: "我想要一个球。" },
+        { pinyin: "yao1", label: "yāo", word: "要求", sample: "他要求我帮忙。" }
+      ],
+      色: [
+        { pinyin: "se4", label: "sè", word: "红色", sample: "我喜欢红色。" },
+        { pinyin: "shai3", label: "shǎi", word: "色子", sample: "我们玩色子吧。" }
+      ],
+      几: [
+        { pinyin: "ji3", label: "jǐ", word: "几个", sample: "桌上有几个苹果。" },
+        { pinyin: "ji1", label: "jī", word: "几乎", sample: "几乎全班都来了。" }
+      ],
+      给: [
+        { pinyin: "gei3", label: "gěi", word: "给我", sample: "妈妈给我一本书。" },
+        { pinyin: "ji3", label: "jǐ", word: "给予", sample: "老师给予我帮助。" }
+      ],
+      累: [
+        { pinyin: "lei4", label: "lèi", word: "很累", sample: "跑完步我很累。" },
+        { pinyin: "lei3", label: "lěi", word: "积累", sample: "每天积累一点。" }
+      ],
+      喝: [
+        { pinyin: "he1", label: "hē", word: "喝水", sample: "我要喝水。" },
+        { pinyin: "he4", label: "hè", word: "喝彩", sample: "大家一起喝彩。" }
+      ],
+      担: [
+        { pinyin: "dan1", label: "dān", word: "担心", sample: "妈妈担心我。" },
+        { pinyin: "dan4", label: "dàn", word: "重担", sample: "他挑起了重担。" }
+      ],
+      闷: [
+        { pinyin: "men4", label: "mèn", word: "闷闷不乐", sample: "他闷闷不乐。" },
+        { pinyin: "men1", label: "mēn", word: "闷热", sample: "今天很闷热。" }
+      ],
+      校: [
+        { pinyin: "xiao4", label: "xiào", word: "学校", sample: "我们的学校很大。" },
+        { pinyin: "jiao4", label: "jiào", word: "校对", sample: "老师在校对作业。" }
+      ],
+      凉: [
+        { pinyin: "liang2", label: "liáng", word: "凉快", sample: "今天很凉快。" },
+        { pinyin: "liang4", label: "liàng", word: "凉一凉", sample: "把开水凉一凉。" }
+      ],
+      正: [
+        { pinyin: "zheng4", label: "zhèng", word: "正方形", sample: "这是正方形。" },
+        { pinyin: "zheng1", label: "zhēng", word: "正月", sample: "正月里过新年。" }
+      ],
+      什: [
+        { pinyin: "shen2", label: "shén", word: "什么", sample: "你在做什么？" },
+        { pinyin: "shi2", label: "shí", word: "什锦", sample: "桌上有一盘什锦糖。" }
+      ],
+      同: [
+        { pinyin: "tong2", label: "tóng", word: "同学", sample: "我和他是同学。" },
+        { pinyin: "tong4", label: "tòng", word: "胡同", sample: "前面是条胡同。" }
+      ],
+      车: [
+        { pinyin: "che1", label: "chē", word: "汽车", sample: "爸爸开车上班。" },
+        { pinyin: "ju1", label: "jū", word: "车马炮", sample: "象棋里的车很厉害。" }
+      ],
+      的: [
+        { pinyin: "de5", label: "de", word: "我的", sample: "这是我的书包。" },
+        { pinyin: "di2", label: "dí", word: "的确", sample: "他的确说得对。" },
+        { pinyin: "di4", label: "dì", word: "目的", sample: "这次活动的目的很清楚。" }
+      ],
+      打: [
+        { pinyin: "da3", label: "dǎ", word: "打球", sample: "我们去打球。" },
+        { pinyin: "da2", label: "dá", word: "一打", sample: "买一打铅笔。" }
+      ],
+      子: [
+        { pinyin: "zi3", label: "zǐ", word: "子女", sample: "子女要孝顺父母。" },
+        { pinyin: "zi5", label: "zi", word: "桌子", sample: "桌子上有个苹果。" }
+      ],
+      头: [
+        { pinyin: "tou2", label: "tóu", word: "头发", sample: "她的头发很长。" },
+        { pinyin: "tou5", label: "tou", word: "石头", sample: "门口有块石头。" }
+      ],
+      哪: [
+        { pinyin: "na3", label: "nǎ", word: "哪个", sample: "哪个是你的书包？" },
+        { pinyin: "na5", label: "na", word: "天哪", sample: "天哪，这么多星星！" }
       ]
     };
 
@@ -4356,12 +4504,13 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
     // mode: "listen" 只能选读音不同的干扰项（否则两个选项念起来一样，没法判断）
     //       "sound"  优先放同音字，考"同音不同形"
-    function buildReviewOptions(target, count, mode) {
+    function buildReviewOptions(target, count, mode, exclude) {
       const need = Math.max(0, count - 1);
       const pool = reviewOptionPool(target);
       const soundTwins = new Set(reviewGroupChars(REVIEW_SOUND_MAP, target));
       const picked = [];
-      const used = new Set([target]);
+      // exclude：多音字的例词里出现的其他字不能再当干扰项，否则听"看着"会分不清选看还是着
+      const used = new Set([target].concat(exclude || []));
       const allow = list => (mode === "listen" ? list.filter(ch => !soundTwins.has(ch)) : list);
       const take = list => {
         allow(list).forEach(ch => {
@@ -4446,7 +4595,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const playBtn = document.createElement("button");
       playBtn.className = "rv-speak-btn";
       playBtn.textContent = "🔊 听一听";
-      playBtn.addEventListener("click", () => speak(char));
+      playBtn.addEventListener("click", () => speakListenCue(char));
       head.appendChild(playBtn);
       const hint = document.createElement("div");
       hint.className = "rv-hint-text";
@@ -4456,7 +4605,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       const wrap = document.createElement("div");
       wrap.className = "rv-options";
-      buildReviewOptions(char, 4, "listen").forEach(ch => {
+      const cueWord = polyphoneWord(char);
+      buildReviewOptions(char, 4, "listen", cueWord ? [...cueWord] : []).forEach(ch => {
         const btn = document.createElement("button");
         btn.className = "rv-card";
         btn.textContent = ch;
@@ -4474,12 +4624,12 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           btn.classList.add("dim");
           setTimeout(() => btn.classList.remove("wrong"), 420);
           failReviewAttempt(`这个是「${ch}」，再听听看`);
-          speak(char);
+          speakListenCue(char);
         });
         wrap.appendChild(btn);
       });
       el.reviewStage.appendChild(wrap);
-      setTimeout(() => speak(char), 200);
+      setTimeout(() => speakListenCue(char), 200);
     }
 
     // ---------- 玩法二：找一找（字阵里找出所有相同的字）----------
@@ -6012,74 +6162,80 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
     function renderPolyphoneChips(char) {
       const list = POLYPHONE_MAP[char] || [];
-      el.polyphoneChips.innerHTML = "";
+      const box = el.polyphoneChips;
+      box.innerHTML = "";
+      box.classList.toggle("hidden", !list.length);
       if (!list.length) return;
+
+      const head = document.createElement("div");
+      head.className = "poly-head";
+      head.textContent = `多音字 · 有 ${list.length} 种读法，点一点听`;
+      box.appendChild(head);
+
+      const wrap = document.createElement("div");
+      wrap.className = "poly-list";
       list.forEach(item => {
-        const wrap = document.createElement("div");
-        wrap.className = "polyphone-item";
-        const b = document.createElement("button");
-        b.className = "chip polyphone-chip";
-        b.textContent = `${item.label} (${item.pinyin})`;
-        b.title = `读音：${item.label}`;
-        b.addEventListener("click", () => speakPolyphone(char, item));
-        const note = document.createElement("p");
-        note.className = "polyphone-note";
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = "poly-row";
+
+        const py = document.createElement("span");
+        py.className = "poly-pinyin";
+        py.textContent = item.label || item.pinyin;
+
+        const word = document.createElement("span");
+        word.className = "poly-word";
+        word.textContent = extractPolyphoneWord(char, item);
+
+        const note = document.createElement("span");
+        note.className = "poly-note";
         note.textContent = item.sample || "";
-        wrap.appendChild(b);
-        wrap.appendChild(note);
-        el.polyphoneChips.appendChild(wrap);
+
+        const play = document.createElement("span");
+        play.className = "poly-play";
+        play.textContent = "🔊";
+
+        row.append(py, word, note, play);
+        row.addEventListener("click", () => {
+          wrap.querySelectorAll(".poly-row.playing").forEach(n => n.classList.remove("playing"));
+          row.classList.add("playing");
+          speakPolyphone(char, item);
+          setTimeout(() => row.classList.remove("playing"), 1600);
+        });
+        wrap.appendChild(row);
       });
+      box.appendChild(wrap);
     }
 
     function buildPolyphoneSpeakText(char, item) {
       const word = extractPolyphoneWord(char, item);
-      if (!word || word === char) return char;
-      return `${char}，${word}的${char}`;
+      const sample = String(item.sample || "").trim();
+      if (!sample) return word || char;
+      if (!word || word === char) return sample;
+      return sample.includes(word) ? sample : `${word}。${sample}`;
     }
 
-    function buildPolyphoneIflytekText(char, item) {
-      const word = extractPolyphoneWord(char, item);
-      const py = normalizeIflytekPinyin(item.pinyin);
-      if (!py) return buildPolyphoneSpeakText(char, item);
-      const forcedChar = `${char}[=${py}]`;
-      if (!word || word === char) return forcedChar;
-      return `${forcedChar}，${word}的${forcedChar}`;
-    }
-
-    function normalizeIflytekPinyin(pinyin) {
-      const s = String(pinyin || "").trim().toLowerCase();
-      if (!s) return "";
-      const base = s.replace(/[^a-z0-9]/g, "");
-      if (!base) return "";
-      // iFlytek supports multi-pronunciation annotation like: 兴[=xing4]
-      // Keep tone number when provided; default to 1 if missing.
-      if (/[1-5]$/.test(base)) return base;
-      return `${base}1`;
-    }
-
+    // 多音字绝不读"单字"：单字没有上下文，TTS 会自己挑一个读音，经常挑错。
+    // 一律读例词 / 例句，词里天然带着正确读音。
     function speakPolyphone(char, item) {
-      const plainText = buildPolyphoneSpeakText(char, item);
-      if (!(state.selectedVoiceName === "__iflytek__" && hasIflytekTtsConfig())) {
-        speak(plainText);
-        return;
-      }
-      unlockSpeechIfNeeded();
-      const reqId = ++state.speechReqId;
-      state.speechStartedAt = Date.now();
-      // iOS: cancel() is broken, skip it
-      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (navigator.maxTouchPoints > 1 && navigator.platform === 'MacIntel');
-      if (!isIOS && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-      const forcedText = buildPolyphoneIflytekText(char, item);
-      speakWithIflytek(forcedText, reqId).then(ok => {
-        if (ok || reqId !== state.speechReqId) return;
-        speak(plainText);
-      });
+      speak(buildPolyphoneSpeakText(char, item));
+    }
+
+    function polyphoneWord(char) {
+      const list = POLYPHONE_MAP[char] || [];
+      if (!list.length) return "";
+      return extractPolyphoneWord(char, list[0]);
+    }
+
+    // 听音关的题面：多音字读它的例词，其他字照旧读单字
+    function speakListenCue(char) {
+      const word = polyphoneWord(char);
+      speak(word && word !== char ? word : char);
     }
 
     function extractPolyphoneWord(char, item) {
+      const given = String(item.word || "").trim();
+      if (given) return given;
       const sample = String(item.sample || "");
       const han = sample.replace(/[^\u3400-\u9fff]/g, "");
       if (!han) return char;
@@ -6107,6 +6263,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         el.currentChar.textContent = "✓";
         el.sentenceBox.textContent = "太棒了，未学字已全部完成。";
         el.polyphoneChips.innerHTML = "";
+        el.polyphoneChips.classList.add("hidden");
         el.wordChips.innerHTML = "";
         el.completeLearn.disabled = true;
         el.completeWrite.disabled = true;
@@ -6676,6 +6833,11 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       el.currentChar.addEventListener("click", () => {
         const lesson = getCurrentLesson();
+        const poly = POLYPHONE_MAP[lesson.char];
+        if (poly && poly.length) {
+          speakPolyphone(lesson.char, poly[0]);
+          return;
+        }
         speak(lesson.char, lesson.audio || "");
       });
       el.sentenceBox.addEventListener("click", () => speak(el.sentenceBox.textContent));
