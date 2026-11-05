@@ -1188,6 +1188,84 @@
     .rv-pair.open .rv-pair-face, .rv-pair.matched .rv-pair-face { display: block; font-family: var(--font-hanzi, inherit); font-size: clamp(44px, 7.6vw, 66px); font-weight: 700; }
     .rv-pair.open .rv-pair-back, .rv-pair.matched .rv-pair-back { display: none; }
     .rv-pair.matched { border-color: #6fd48b; box-shadow: 0 6px 0 rgba(157, 226, 178, 0.6); }
+    /* 填一填 / 句子里找字 */
+    .rv-sentence {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      padding: 18px 14px;
+      border-radius: 22px;
+      border: 3px dashed #ffd9a8;
+      background: linear-gradient(180deg, #fffdf7 0%, #fff4e4 100%);
+      font-family: var(--font-hanzi, inherit);
+      font-size: clamp(30px, 5.2vw, 42px);
+      font-weight: 700;
+      color: #4a3a2c;
+      line-height: 1.55;
+    }
+    .rv-sentence-char {
+      display: inline-block;
+      padding: 0 3px;
+      border-radius: 10px;
+      transition: background .15s ease, color .15s ease;
+    }
+    .rv-sentence-char.tappable { cursor: pointer; }
+    .rv-sentence-char.tappable:active { background: #ffe3f0; }
+    .rv-sentence-char.found {
+      background: #dcf9e4;
+      color: #2f8a4c;
+      animation: rvPop .35s ease;
+    }
+    .rv-sentence-blank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.12em;
+      height: 1.12em;
+      margin: 0 3px;
+      border-radius: 10px;
+      border: 3px solid #ffb3d1;
+      background: #fff;
+      color: #ffa8c8;
+      font-size: .78em;
+    }
+    .rv-sentence-blank.filled {
+      color: #2f8a4c;
+      border-color: #6fd48b;
+      background: #f2fff6;
+      animation: rvPop .35s ease;
+    }
+    /* 描一描 */
+    .rv-trace {
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+    }
+    .rv-trace-box {
+      width: 256px;
+      height: 256px;
+      padding: 4px;
+      box-sizing: content-box;
+      border-radius: 20px;
+      border: 3px solid #ffd2e4;
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(233, 30, 137, 0.13);
+      background-image:
+        linear-gradient(to right, rgba(255, 197, 220, .55) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 197, 220, .55) 1px, transparent 1px);
+      background-size: 50% 50%;
+      background-position: 0 0, 0 0;
+    }
+    .rv-trace-box svg { display: block; }
+    .rv-trace-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .rv-trace-actions .rv-ghost { margin-left: 0; }
     .rv-feedback {
       min-height: 30px;
       text-align: center;
@@ -3051,7 +3129,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     const REVIEW_INTERVAL_DAYS = [1, 2, 4, 7, 15, 30, 60, 120, 240];
     const REVIEW_SESSION_SIZE = 8;
     const REVIEW_MAX_EXTRA = 3;
-    const REVIEW_LEVEL_TYPES = ["listen", "find", "listen", "pair", "listen", "find", "listen", "pair"];
+    // 一轮关卡的难度阶梯：热身 → 辨认 → 观察 → 用字 → 阅读 → 书写
+    const REVIEW_LEVEL_LADDER = ["listen", "find", "pair", "diff", "context", "sentence", "diff", "trace"];
+    const REVIEW_LEVEL_FALLBACK = { context: "diff", sentence: "find", trace: "diff" };
     const DAY_MS = 24 * 60 * 60 * 1000;
     const IFLYTEK_TTS = {
       enabled: true,
@@ -3122,7 +3202,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       冬: { words: ["冬天", "冬日", "雪人"], sentence: "冬天可以堆雪人。" },
       星: { words: ["星星", "星空", "星光"], sentence: "晚上有很多星星。" },
       月: { words: ["月亮", "月光", "月牙"], sentence: "月亮挂在天上。" },
-      日: { words: ["太阳", "日光", "日出"], sentence: "太阳升起来了。" },
+      日: { words: ["日光", "日出", "生日"], sentence: "日出的时候，天慢慢亮了。" },
       云: { words: ["白云", "云朵", "云彩"], sentence: "天上有白云。" },
       雨: { words: ["下雨", "雨点", "雨伞"], sentence: "下雨要打伞。" },
       风: { words: ["大风", "风车", "风筝"], sentence: "风吹得很凉快。" },
@@ -3132,7 +3212,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       山: { words: ["高山", "山顶", "山路"], sentence: "远处有一座山。" },
       水: { words: ["喝水", "水杯", "清水"], sentence: "我们要多喝水。" },
       火: { words: ["火苗", "着火", "火车"], sentence: "火是热的。" },
-      人: { words: ["大人", "好人", "人们"], sentence: "我们都是好孩子。" },
+      人: { words: ["大人", "好人", "人们"], sentence: "公园里的人真多。" },
       口: { words: ["口水", "口红", "开口"], sentence: "张开口说你好。" },
       手: { words: ["小手", "拍手", "手心"], sentence: "洗手要认真。" },
       足: { words: ["手足", "足迹", "足球"], sentence: "我们一起踢足球。" },
@@ -3287,7 +3367,151 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       视: { words: ["电视", "视力", "注视"], sentence: "看电视要保护视力。" },
       床: { words: ["床单", "上床", "小床"], sentence: "睡前把床铺好。" },
       被: { words: ["被子", "棉被", "盖被"], sentence: "天冷要盖好被子。" },
-      处: { words: ["到处", "相处", "好处"], sentence: "花园里到处是花。" }
+      处: { words: ["到处", "相处", "好处"], sentence: "花园里到处是花。" },
+      一: { words: ["一个", "一起", "第一"], sentence: "我有一个好朋友。" },
+      二: { words: ["二月", "第二", "二十"], sentence: "二月天气慢慢变暖了。" },
+      三: { words: ["三月", "三个", "三角"], sentence: "三月花都开了。" },
+      个: { words: ["一个", "个子", "半个"], sentence: "我有一个红气球。" },
+      大: { words: ["大家", "大人", "长大"], sentence: "大象的耳朵很大。" },
+      上: { words: ["上面", "上学", "早上"], sentence: "小鸟飞上大树。" },
+      下: { words: ["下面", "下雨", "下车"], sentence: "下雨了要带伞。" },
+      小: { words: ["小鸟", "小心", "大小"], sentence: "小鸟在树上唱歌。" },
+      天: { words: ["天空", "今天", "白天"], sentence: "天空又蓝又高。" },
+      开: { words: ["开门", "开花", "开始"], sentence: "春天花开了。" },
+      门: { words: ["大门", "开门", "门口"], sentence: "请把大门关上。" },
+      羊: { words: ["小羊", "山羊", "羊毛"], sentence: "小羊在草地上吃草。" },
+      只: { words: ["一只", "只有", "两只"], sentence: "一只小鸟飞来了。" },
+      有: { words: ["有趣", "没有", "有时"], sentence: "天上有很多星星。" },
+      牛: { words: ["小牛", "牛奶", "水牛"], sentence: "小牛跟着妈妈走。" },
+      中: { words: ["中间", "中午", "中国"], sentence: "月亮躲在云中间。" },
+      头: { words: ["头发", "石头", "点头"], sentence: "我点点头说好。" },
+      田: { words: ["田地", "水田", "田野"], sentence: "田野里长满了稻子。" },
+      土: { words: ["泥土", "土地", "土里"], sentence: "花生长在土里。" },
+      里: { words: ["里面", "家里", "手里"], sentence: "书包里面有铅笔。" },
+      在: { words: ["在家", "现在", "正在"], sentence: "我在家里画画。" },
+      白: { words: ["白云", "白天", "雪白"], sentence: "天上飘着白云。" },
+      马: { words: ["小马", "马上", "木马"], sentence: "小马跑得很快。" },
+      出: { words: ["出去", "出现", "出来"], sentence: "太阳出来了。" },
+      王: { words: ["国王", "王子", "大王"], sentence: "国王住在大城堡里。" },
+      子: { words: ["孩子", "儿子", "种子"], sentence: "孩子在草地上放风筝。" },
+      儿: { words: ["儿子", "女儿", "儿童"], sentence: "儿童节我们很开心。" },
+      女: { words: ["女孩", "女儿", "女生"], sentence: "那个女孩在笑。" },
+      刀: { words: ["小刀", "刀子", "剪刀"], sentence: "小刀很锋利，要小心。" },
+      木: { words: ["木头", "树木", "木马"], sentence: "这块木头很重。" },
+      伞: { words: ["雨伞", "打伞", "小花伞"], sentence: "下雨要打伞。" },
+      瓜: { words: ["西瓜", "南瓜", "冬瓜"], sentence: "夏天吃西瓜最凉快。" },
+      气: { words: ["天气", "生气", "空气"], sentence: "今天天气很好。" },
+      飞: { words: ["飞机", "飞走", "起飞"], sentence: "飞机飞得很高。" },
+      米: { words: ["大米", "米饭", "小米"], sentence: "我吃了一碗米饭。" },
+      电: { words: ["电灯", "电话", "闪电"], sentence: "天黑了要开电灯。" },
+      石: { words: ["石头", "石子", "石桥"], sentence: "河边有很多石头。" },
+      了: { words: ["好了", "来了", "走了"], sentence: "雨停了，太阳出来了。" },
+      来: { words: ["回来", "出来", "后来"], sentence: "妈妈回来了。" },
+      玉: { words: ["玉米", "白玉", "玉石"], sentence: "玉米又甜又香。" },
+      去: { words: ["回去", "出去", "去年"], sentence: "我们一起去公园。" },
+      回: { words: ["回来", "回家", "回头"], sentence: "爸爸下班回家了。" },
+      多: { words: ["很多", "多少", "许多"], sentence: "天上有很多云。" },
+      少: { words: ["多少", "很少", "少数"], sentence: "杯子里的水很少。" },
+      问: { words: ["问好", "问题", "请问"], sentence: "我有问题要问老师。" },
+      早: { words: ["早上", "早安", "早晨"], sentence: "早上我去幼儿园。" },
+      巴: { words: ["嘴巴", "尾巴", "下巴"], sentence: "小狗摇着尾巴。" },
+      父: { words: ["父亲", "父母", "父爱"], sentence: "父亲带我去钓鱼。" },
+      工: { words: ["工人", "工作", "手工"], sentence: "工人在修马路。" },
+      力: { words: ["力气", "用力", "努力"], sentence: "我用力推开门。" },
+      不: { words: ["不要", "不行", "不会"], sentence: "不要在马路上跑。" },
+      五: { words: ["五个", "五月", "十五"], sentence: "五月天气暖和了。" },
+      几: { words: ["几个", "几天", "几点"], sentence: "桌上有几个苹果？" },
+      男: { words: ["男孩", "男人", "男生"], sentence: "那个男孩在踢球。" },
+      坐: { words: ["坐下", "坐好", "请坐"], sentence: "请坐下来休息。" },
+      打: { words: ["打球", "打开", "打字"], sentence: "我们一起打球。" },
+      四: { words: ["四个", "四月", "四十"], sentence: "桌上有四个杯子。" },
+      六: { words: ["六个", "六月", "十六"], sentence: "六月天很热。" },
+      闪: { words: ["闪光", "闪电", "闪亮"], sentence: "星星一闪一闪的。" },
+      的: { words: ["我的", "好的", "大的"], sentence: "这是我的小书包。" },
+      朵: { words: ["一朵", "花朵", "耳朵"], sentence: "一朵花开在窗台上。" },
+      果: { words: ["水果", "苹果", "果子"], sentence: "我每天都吃水果。" },
+      比: { words: ["比赛", "比较", "比一比"], sentence: "我们来比一比谁更高。" },
+      午: { words: ["中午", "上午", "下午"], sentence: "中午我要睡一会儿。" },
+      面: { words: ["面条", "前面", "见面"], sentence: "妈妈煮了面条。" },
+      高: { words: ["高兴", "身高", "高山"], sentence: "我今天很高兴。" },
+      包: { words: ["书包", "面包", "包子"], sentence: "书包里装着书。" },
+      文: { words: ["语文", "文字", "文明"], sentence: "我最喜欢语文课。" },
+      分: { words: ["分开", "分钟", "十分"], sentence: "再等一分钟就好。" },
+      平: { words: ["平安", "公平", "水平"], sentence: "祝大家平平安安。" },
+      我: { words: ["我们", "自我", "忘我"], sentence: "我是妈妈的好宝贝。" },
+      连: { words: ["连忙", "连接", "连续"], sentence: "他连忙跑过去。" },
+      元: { words: ["元旦", "一元", "元宝"], sentence: "我有一元钱。" },
+      丁: { words: ["丁香", "园丁", "补丁"], sentence: "园丁在给花浇水。" },
+      厂: { words: ["工厂", "厂子", "厂房"], sentence: "爸爸在工厂上班。" },
+      目: { words: ["目光", "耳目", "题目"], sentence: "他的目光很温柔。" },
+      见: { words: ["看见", "见面", "再见"], sentence: "我看见一只小鸟。" },
+      兔: { words: ["小兔", "兔子", "白兔"], sentence: "小兔子跳得真高。" },
+      禾: { words: ["禾苗", "禾田", "禾草"], sentence: "禾苗绿绿的。" },
+      是: { words: ["就是", "不是", "是的"], sentence: "这是我的妈妈。" },
+      把: { words: ["把手", "一把", "把门"], sentence: "请把门关上。" },
+      笑: { words: ["微笑", "笑脸", "大笑"], sentence: "他笑着向我招手。" },
+      着: { words: ["看着", "听着", "拿着"], sentence: "我看着他画画。" },
+      看: { words: ["看书", "看见", "看看"], sentence: "我喜欢看书。" },
+      会: { words: ["会说", "学会", "一会儿"], sentence: "我会自己穿衣服。" },
+      自: { words: ["自己", "自然", "自从"], sentence: "我自己会吃饭。" },
+      己: { words: ["自己", "知己", "利己"], sentence: "自己的事情自己做。" },
+      好: { words: ["好看", "好人", "你好"], sentence: "这朵花真好看。" },
+      也: { words: ["也是", "也好", "也许"], sentence: "我也想去看看。" },
+      可: { words: ["可以", "可爱", "可是"], sentence: "小猫真可爱。" },
+      爸: { words: ["爸爸", "老爸", "爸妈"], sentence: "爸爸带我去看海。" },
+      妈: { words: ["妈妈", "大妈", "爸妈"], sentence: "妈妈做的饭最香。" },
+      这: { words: ["这里", "这个", "这样"], sentence: "这里有一朵小花。" },
+      爷: { words: ["爷爷", "老爷", "爷孙"], sentence: "爷爷在公园下棋。" },
+      奶: { words: ["奶奶", "牛奶", "奶油"], sentence: "奶奶给我讲故事。" },
+      们: { words: ["我们", "你们", "他们"], sentence: "我们一起去玩。" },
+      串: { words: ["一串葡萄", "串门", "串起来"], sentence: "桌上有一串葡萄。" },
+      球: { words: ["皮球", "打球", "气球"], sentence: "我拍皮球拍了十下。" },
+      圆: { words: ["圆圈", "圆形", "圆圆"], sentence: "月亮圆圆的。" },
+      形: { words: ["形状", "圆形", "图形"], sentence: "这个图形是三角形。" },
+      长: { words: ["长大", "长长", "长头发"], sentence: "我要快快长大。" },
+      方: { words: ["方形", "方向", "四方"], sentence: "积木是方形的。" },
+      正: { words: ["正好", "正确", "正方形"], sentence: "这个答案很正确。" },
+      角: { words: ["三角", "牛角", "角落"], sentence: "三角形有三条边。" },
+      灯: { words: ["电灯", "台灯", "路灯"], sentence: "天黑了要开灯。" },
+      块: { words: ["一块", "方块", "石块"], sentence: "给我一块饼干。" },
+      冰: { words: ["冰块", "冰水", "滑冰"], sentence: "夏天我想吃冰块。" },
+      那: { words: ["那个", "那里", "那样"], sentence: "那个小朋友是谁？" },
+      弓: { words: ["弓箭", "弯弓", "拉弓"], sentence: "他拉开弓射箭。" },
+      买: { words: ["买东西", "买书", "买菜"], sentence: "妈妈去买菜了。" },
+      哪: { words: ["哪里", "哪个", "在哪"], sentence: "你的书包在哪里？" },
+      乐: { words: ["快乐", "音乐", "乐园"], sentence: "我今天很快乐。" },
+      谢: { words: ["谢谢", "感谢", "道谢"], sentence: "谢谢你的帮助。" },
+      想: { words: ["想念", "想法", "想一想"], sentence: "我想妈妈了。" },
+      抱: { words: ["抱住", "拥抱", "抱抱"], sentence: "妈妈抱抱我。" },
+      竹: { words: ["竹子", "竹叶", "竹林"], sentence: "熊猫爱吃竹子。" },
+      要: { words: ["需要", "重要", "要是"], sentence: "我要喝水。" },
+      立: { words: ["站立", "立正", "起立"], sentence: "请起立唱国歌。" },
+      红: { words: ["红色", "红花", "脸红"], sentence: "红红的苹果真甜。" },
+      色: { words: ["颜色", "红色", "白色"], sentence: "我喜欢蓝颜色。" },
+      吃: { words: ["吃饭", "好吃", "吃药"], sentence: "我们一起吃饭吧。" },
+      香: { words: ["香味", "花香", "香气"], sentence: "这朵花很香。" },
+      穿: { words: ["穿衣", "穿上", "穿鞋"], sentence: "我自己会穿鞋。" },
+      身: { words: ["身体", "身上", "身高"], sentence: "多运动身体好。" },
+      它: { words: ["它们", "它的", "其它"], sentence: "小猫饿了，我给它喂食。" },
+      发: { words: ["头发", "发现", "出发"], sentence: "我们出发去公园。" },
+      衣: { words: ["衣服", "上衣", "毛衣"], sentence: "我自己穿衣服。" },
+      他: { words: ["他们", "他的", "其他"], sentence: "他是我的好朋友。" },
+      她: { words: ["她们", "她的", "是她"], sentence: "她是我的老师。" },
+      毛: { words: ["毛巾", "羽毛", "毛线"], sentence: "我用毛巾擦手。" },
+      朋: { words: ["朋友", "亲朋", "小朋友"], sentence: "我和朋友一起玩。" },
+      哥: { words: ["哥哥", "大哥", "表哥"], sentence: "哥哥在写作业。" },
+      弟: { words: ["弟弟", "兄弟", "表弟"], sentence: "弟弟在睡觉。" },
+      兄: { words: ["兄弟", "兄长", "兄弟俩"], sentence: "我们兄弟俩一起玩。" },
+      眉: { words: ["眉毛", "眉头", "画眉"], sentence: "她的眉毛细细的。" },
+      你: { words: ["你们", "你好", "你的"], sentence: "你好，我叫豆豆。" },
+      七: { words: ["七个", "七月", "十七"], sentence: "七只小鸭在游泳。" },
+      八: { words: ["八个", "八月", "十八"], sentence: "桌上有八颗糖。" },
+      九: { words: ["九个", "九月", "十九"], sentence: "九月开学了。" },
+      十: { words: ["十个", "十月", "十分"], sentence: "我数到十就来找你。" },
+      生: { words: ["生日", "生活", "花生"], sentence: "今天是我的生日。" },
+      跑: { words: ["跑步", "跑开", "快跑"], sentence: "小狗跑得很快。" },
+      步: { words: ["走路", "脚步", "散步"], sentence: "我们一起去散步。" },
+      老: { words: ["老师", "老人", "老家"], sentence: "老师教我们唱歌。" },
     };
 
     const DEFAULT_LESSON = DEFAULT_UNLEARNED.map(char => ({
@@ -3445,6 +3669,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       reviewLevel: 0,
       reviewLevelPlan: [],
       reviewCurrentTarget: "",
+      reviewRenderToken: 0,
       reviewAwardedInSession: false,
       reviewBusy: false,
       reviewCombo: 0,
@@ -3737,6 +3962,36 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       return picked;
     }
 
+    function reviewHasSentence(char) {
+      const preset = AUTO_CONTENT[char];
+      return !!(preset && preset.sentence && preset.sentence.includes(char));
+    }
+
+    function reviewHasContent(char) {
+      const preset = AUTO_CONTENT[char];
+      if (!preset) return false;
+      const words = (preset.words || []).filter(w => w.length >= 2 && w.includes(char));
+      return words.length > 0 || reviewHasSentence(char);
+    }
+
+    function reviewTypeAvailable(type, char) {
+      if (type === "context") return reviewHasContent(char);
+      if (type === "sentence") return reviewHasSentence(char);
+      if (type === "trace") return !!window.HanziWriter;
+      return true;
+    }
+
+    // 按难度阶梯给每个字分配玩法；字库里没有组词/句子数据的字，退到下一档
+    function buildReviewPlan(chars) {
+      return chars.map((ch, i) => {
+        let type = REVIEW_LEVEL_LADDER[i % REVIEW_LEVEL_LADDER.length];
+        if (!reviewTypeAvailable(type, ch)) {
+          type = REVIEW_LEVEL_FALLBACK[type] || "listen";
+        }
+        return { char: ch, type, extra: false };
+      });
+    }
+
     function buildReviewSession() {
       const picked = pickReviewChars();
       if (!picked.length) {
@@ -3752,7 +4007,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       el.reviewResult.classList.add("hidden");
       el.reviewGameWrap.classList.remove("hidden");
       state.reviewQueue = chars;
-      state.reviewLevelPlan = chars.map((ch, i) => ({ char: ch, type: REVIEW_LEVEL_TYPES[i % REVIEW_LEVEL_TYPES.length], extra: false }));
+      state.reviewLevelPlan = buildReviewPlan(chars);
       state.reviewLevel = 0;
       state.reviewCurrentTarget = "";
       state.reviewAwardedInSession = false;
@@ -3808,6 +4063,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       if (dueList.length) chips.push(`<span class="rv-chip">待复习 ${dueList.length}</span>`);
       if (weakList.length) chips.push(`<span class="rv-chip weak">需要加强 ${weakList.length}</span>`);
       chips.push(`<span class="rv-chip">本轮 ${willReview} 关</span>`);
+      chips.push(`<span class="rv-chip">听音 · 找字 · 火眼金睛 · 填一填 · 描红</span>`);
       el.reviewStartChips.innerHTML = chips.join("");
     }
 
@@ -4043,11 +4299,95 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         .filter(ch => ch && ch !== exclude);
     }
 
-    function buildReviewOptions(target, count) {
+    // ---------- 形近字 / 同音字：干扰项"长得像、听起来像"，才需要真分辨 ----------
+    const REVIEW_SIMILAR_GROUPS = [
+      "日目白百旦早", "木本末未禾", "人入八", "大太犬天夫", "土士工",
+      "己已巳", "干于千", "手毛", "田由甲申电", "石右左",
+      "米来", "乌鸟", "刀力", "见贝", "王玉主", "云去", "雨两",
+      "门问闪", "车东", "平半", "小少", "早草", "好女", "我找",
+      "把巴", "包色", "头买", "有月", "会云", "立六", "花化",
+      "果田", "朵几", "比北", "午牛", "面而", "分公", "元无",
+      "丁了子", "厂广", "兔免", "笑笔", "着看", "爸妈", "爷父",
+      "们门", "书甲", "串中", "求球", "圆园", "形开", "长方",
+      "正止", "角用", "灯打", "块快", "冰水", "那哪", "弓引",
+      "买卖", "乐东", "谢射", "想相", "抱包", "竹个", "要西",
+      "耳目", "红工", "色巴", "吃乞", "香禾", "穿牙", "身才",
+      "它他", "衣一", "地他", "她也", "朋用", "弟第", "兄只",
+      "眉目", "鼻自", "片斤", "半羊", "天无", "从丛", "千干"
+    ];
+
+    const REVIEW_SOUND_GROUPS = [
+      "他她它", "在再", "是事四", "十时石", "一衣", "二儿耳", "三伞",
+      "五午舞", "八巴把爸", "九久", "人仁", "大达", "土吐", "门们",
+      "手首", "出初", "王亡", "子字自", "刀到", "木目", "鱼雨玉",
+      "气七", "飞非", "米迷", "云匀", "电店点", "了乐", "来赖",
+      "去趣", "多朵", "少嫂", "问文", "早草", "父付", "工公弓",
+      "力立", "不步", "几己机", "男南", "坐座", "打大", "闪山",
+      "的得地", "花华", "果过", "比笔", "面棉", "高糕", "包饱宝",
+      "文闻", "分芬", "平苹", "连脸", "元圆园", "丁灯钉", "见件",
+      "禾和河", "笑孝", "心新辛", "也叶爷", "可渴", "家加", "妈马",
+      "这着", "书树", "串穿", "球求", "形型行", "长常场", "方房放",
+      "正整", "角脚", "块快", "冰兵", "那哪拿", "买卖", "谢写",
+      "想香", "抱报", "竹住", "要药", "红虹", "吃七", "香乡",
+      "身深", "发花", "毛猫", "友有", "哥歌", "弟第", "眉梅", "鼻比"
+    ];
+
+    function buildCharGroupMap(groups) {
+      const map = {};
+      groups.forEach(group => {
+        const chars = [...group];
+        chars.forEach(ch => {
+          if (!map[ch]) map[ch] = new Set();
+          chars.forEach(other => {
+            if (other !== ch) map[ch].add(other);
+          });
+        });
+      });
+      return map;
+    }
+
+    const REVIEW_SIMILAR_MAP = buildCharGroupMap(REVIEW_SIMILAR_GROUPS);
+    const REVIEW_SOUND_MAP = buildCharGroupMap(REVIEW_SOUND_GROUPS);
+
+    function reviewGroupChars(map, char) {
+      const set = map[char];
+      return set ? [...set] : [];
+    }
+
+    // mode: "listen" 只能选读音不同的干扰项（否则两个选项念起来一样，没法判断）
+    //       "sound"  优先放同音字，考"同音不同形"
+    function buildReviewOptions(target, count, mode) {
+      const need = Math.max(0, count - 1);
       const pool = reviewOptionPool(target);
-      const opts = randomPick(pool, Math.max(0, count - 1));
-      opts.push(target);
-      return randomPick(opts, opts.length);
+      const soundTwins = new Set(reviewGroupChars(REVIEW_SOUND_MAP, target));
+      const picked = [];
+      const used = new Set([target]);
+      const allow = list => (mode === "listen" ? list.filter(ch => !soundTwins.has(ch)) : list);
+      const take = list => {
+        allow(list).forEach(ch => {
+          if (picked.length >= need || used.has(ch) || !ch) return;
+          used.add(ch);
+          picked.push(ch);
+        });
+      };
+      const inPool = list => list.filter(ch => pool.includes(ch));
+      const similar = reviewGroupChars(REVIEW_SIMILAR_MAP, target);
+      const sound = reviewGroupChars(REVIEW_SOUND_MAP, target);
+      if (mode === "sound") {
+        take(inPool(sound));
+        take(sound);
+      }
+      take(inPool(similar));
+      take(similar);
+      if (mode !== "listen") {
+        take(inPool(sound));
+        take(sound);
+      }
+      if (picked.length < need) {
+        take(randomPick(pool, pool.length));
+      }
+      const all = picked.concat([target]);
+      return randomPick(all, all.length);
     }
 
     // 一关结束：结算记忆曲线 + 星星 + 连对
@@ -4116,7 +4456,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
       const wrap = document.createElement("div");
       wrap.className = "rv-options";
-      buildReviewOptions(char, 4).forEach(ch => {
+      buildReviewOptions(char, 4, "listen").forEach(ch => {
         const btn = document.createElement("button");
         btn.className = "rv-card";
         btn.textContent = ch;
@@ -4204,7 +4544,11 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     // ---------- 玩法三：翻牌配对 ----------
     function renderPairLevel(char) {
       setReviewTask("翻一翻，把相同的字配成一对");
-      const partners = randomPick(reviewOptionPool(char), 2);
+      // 配对也用形近字当"陪练"，逼孩子看清字形差异
+      const similarPool = reviewGroupChars(REVIEW_SIMILAR_MAP, char);
+      const partners = similarPool.length >= 2
+        ? randomPick(similarPool, 2)
+        : randomPick(reviewOptionPool(char), 2);
       const deck = randomPick([char, char, partners[0], partners[0], partners[1], partners[1]], 6);
       const grid = document.createElement("div");
       grid.className = "rv-pairs";
@@ -4261,9 +4605,289 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       updateReviewMascot("翻开两张牌，找出一模一样的字。");
     }
 
+    // ---------- 玩法四：火眼金睛（一堆一样的字里，有一个长得像但不一样）----------
+    function renderDiffLevel(char) {
+      setReviewTask("火眼金睛：找出那个不一样的字");
+      const head = document.createElement("div");
+      head.className = "rv-find-head";
+      const targetEl = document.createElement("div");
+      targetEl.className = "rv-find-target";
+      targetEl.textContent = char;
+      head.appendChild(targetEl);
+      const hint = document.createElement("div");
+      hint.className = "rv-hint-text";
+      hint.textContent = "格子里都是它，只有一个不一样，仔细比一比";
+      head.appendChild(hint);
+      el.reviewStage.appendChild(head);
+      targetEl.addEventListener("click", () => speak(char));
+
+      const twins = reviewGroupChars(REVIEW_SIMILAR_MAP, char).filter(ch => ch !== char);
+      const odd = twins.length ? randomPick(twins, 1)[0] : "囗";
+      const cells = new Array(9).fill(char);
+      cells[Math.floor(Math.random() * 9)] = odd;
+
+      const grid = document.createElement("div");
+      grid.className = "rv-grid";
+      cells.forEach(ch => {
+        const cell = document.createElement("button");
+        cell.className = "rv-cell";
+        cell.textContent = ch;
+        cell.addEventListener("click", () => {
+          if (state.reviewBusy || cell.dataset.done === "1") return;
+          if (ch === odd) {
+            cell.dataset.done = "1";
+            cell.classList.add("found");
+            cell.disabled = true;
+            speak(char);
+            finishReviewLevel(state.reviewLevelMistakes === 0, cell);
+            return;
+          }
+          cell.dataset.done = "1";
+          cell.classList.add("wrong");
+          cell.disabled = true;
+          cell.classList.add("dim");
+          setTimeout(() => cell.classList.remove("wrong"), 420);
+          failReviewAttempt(`这个是「${ch}」，再仔细找找`);
+        });
+        grid.appendChild(cell);
+      });
+      el.reviewStage.appendChild(grid);
+      updateReviewMascot("它们长得好像呀，看清楚每一笔。");
+    }
+
+    // ---------- 玩法五：填一填（组词/句子挖空，同音字干扰）----------
+    function reviewContextOf(char) {
+      const preset = AUTO_CONTENT[char];
+      if (!preset) return null;
+      const sentence = preset.sentence && preset.sentence.includes(char) ? preset.sentence : "";
+      const words = (preset.words || []).filter(w => w.length >= 2 && w.includes(char));
+      const useSentence = sentence && (Math.random() < 0.6 || !words.length);
+      const text = useSentence ? sentence : randomPick(words, 1)[0];
+      if (!text) return null;
+      return { text, isSentence: !!useSentence };
+    }
+
+    function renderContextLevel(char) {
+      const ctx = reviewContextOf(char);
+      if (!ctx) {
+        renderDiffLevel(char);
+        return;
+      }
+      setReviewTask(ctx.isSentence ? "填一填：把这个字送回句子里" : "填一填：把这个字送回词语里");
+
+      const line = document.createElement("div");
+      line.className = "rv-sentence";
+      [...ctx.text].forEach(ch => {
+        const span = document.createElement("span");
+        if (ch === char) {
+          span.className = "rv-sentence-blank";
+          span.textContent = "▢";
+        } else {
+          span.className = "rv-sentence-char";
+          span.textContent = ch;
+        }
+        line.appendChild(span);
+      });
+      el.reviewStage.appendChild(line);
+
+      const wrap = document.createElement("div");
+      wrap.className = "rv-options";
+      buildReviewOptions(char, 4, "sound").forEach(ch => {
+        const btn = document.createElement("button");
+        btn.className = "rv-card";
+        btn.textContent = ch;
+        btn.addEventListener("click", () => {
+          if (state.reviewBusy || btn.dataset.done === "1") return;
+          if (ch === char) {
+            btn.dataset.done = "1";
+            btn.classList.add("correct");
+            line.querySelectorAll(".rv-sentence-blank").forEach(node => {
+              node.textContent = char;
+              node.classList.add("filled");
+            });
+            speak(ctx.text);
+            finishReviewLevel(state.reviewLevelMistakes === 0, btn);
+            return;
+          }
+          btn.dataset.done = "1";
+          btn.classList.add("wrong");
+          btn.disabled = true;
+          btn.classList.add("dim");
+          setTimeout(() => btn.classList.remove("wrong"), 420);
+          failReviewAttempt(`「${ch}」放进去不通顺，再想想`);
+        });
+        wrap.appendChild(btn);
+      });
+      el.reviewStage.appendChild(wrap);
+      updateReviewMascot("读一读这句话，缺的是哪个字呢？");
+    }
+
+    // ---------- 玩法六：句子里找字（在真实句子中定位目标字）----------
+    function renderSentenceLevel(char) {
+      const preset = AUTO_CONTENT[char];
+      const sentence = preset && preset.sentence && preset.sentence.includes(char) ? preset.sentence : "";
+      if (!sentence) {
+        renderFindLevel(char);
+        return;
+      }
+      setReviewTask("读一读，把句子里的这个字点出来");
+
+      const head = document.createElement("div");
+      head.className = "rv-find-head";
+      const targetEl = document.createElement("div");
+      targetEl.className = "rv-find-target";
+      targetEl.textContent = char;
+      head.appendChild(targetEl);
+      const hint = document.createElement("div");
+      hint.className = "rv-hint-text";
+      hint.textContent = "点一下这个字，可以听读音";
+      head.appendChild(hint);
+      el.reviewStage.appendChild(head);
+      targetEl.addEventListener("click", () => speak(char));
+
+      const line = document.createElement("div");
+      line.className = "rv-sentence";
+      const need = [...sentence].filter(ch => ch === char).length;
+      let found = 0;
+      [...sentence].forEach(ch => {
+        const span = document.createElement("span");
+        span.className = "rv-sentence-char";
+        span.textContent = ch;
+        if (ch === char) {
+          span.classList.add("tappable");
+          span.addEventListener("click", () => {
+            if (state.reviewBusy || span.dataset.done === "1") return;
+            span.dataset.done = "1";
+            span.classList.add("found");
+            found += 1;
+            speak(char);
+            playReviewHitSound();
+            setReviewFeedback(`找到 ${found}/${need} 个`, "ok");
+            if (found >= need) {
+              finishReviewLevel(state.reviewLevelMistakes === 0, span);
+            }
+          });
+        }
+        line.appendChild(span);
+      });
+      el.reviewStage.appendChild(line);
+      updateReviewMascot("先读一读句子，再把要找的字点出来。");
+    }
+
+    // ---------- 玩法七：描一描（按笔顺写出来）----------
+    function renderTraceLevel(char) {
+      if (!window.HanziWriter) {
+        renderDiffLevel(char);
+        return;
+      }
+      setReviewTask("描一描：跟着笔顺把这个字写出来");
+      const token = state.reviewRenderToken;
+
+      const wrap = document.createElement("div");
+      wrap.className = "rv-trace";
+      const box = document.createElement("div");
+      box.className = "rv-trace-box";
+      box.id = "rvTraceBox";
+      wrap.appendChild(box);
+      const tip = document.createElement("div");
+      tip.className = "rv-hint-text";
+      tip.textContent = "看完笔顺，从第一笔开始按顺序描";
+      wrap.appendChild(tip);
+      el.reviewStage.appendChild(wrap);
+
+      const actions = document.createElement("div");
+      actions.className = "rv-trace-actions";
+      const demoBtn = document.createElement("button");
+      demoBtn.className = "rv-ghost";
+      demoBtn.textContent = "再看一遍笔顺";
+      const retryBtn = document.createElement("button");
+      retryBtn.className = "rv-ghost";
+      retryBtn.textContent = "擦掉重写";
+      actions.appendChild(demoBtn);
+      actions.appendChild(retryBtn);
+      el.reviewStage.appendChild(actions);
+
+      let quizStarted = false;
+      const writer = HanziWriter.create("rvTraceBox", char, {
+        width: 240,
+        height: 240,
+        padding: 8,
+        showOutline: true,
+        strokeAnimationSpeed: 0.85,
+        delayBetweenStrokes: 240,
+        strokeColor: "#d56c1f",
+        radicalColor: "#d56c1f",
+        highlightColor: "#ffd166",
+        onLoadCharDataError: () => {
+          // 笔顺数据拿不到（离线）→ 自动换成火眼金睛，不卡在这一关
+          if (state.reviewRenderToken === token) renderDiffLevel(char);
+        }
+      });
+      state.reviewTraceWriter = writer;
+
+      const startQuiz = () => {
+        if (quizStarted || state.reviewRenderToken !== token) return;
+        quizStarted = true;
+        writer.quiz({
+          onMistake: () => {
+            state.reviewLevelMistakes = (state.reviewLevelMistakes || 0) + 1;
+            setReviewFeedback("这一笔不太对，看虚线再试一次", "bad");
+          },
+          onComplete: () => {
+            if (state.reviewRenderToken !== token) return;
+            speak(char);
+            finishReviewLevel(state.reviewLevelMistakes === 0, box);
+          }
+        });
+      };
+
+      const playDemo = () => {
+        if (state.reviewRenderToken !== token) return;
+        quizStarted = false;
+        try { writer.cancelQuiz(); } catch (err) {}
+        writer.animateCharacter({ onComplete: () => setTimeout(startQuiz, 260) });
+      };
+
+      demoBtn.addEventListener("click", playDemo);
+      retryBtn.addEventListener("click", () => {
+        try { writer.cancelQuiz(); } catch (err) {}
+        quizStarted = false;
+        writer.animateCharacter({ onComplete: () => setTimeout(startQuiz, 260) });
+      });
+
+      // 兜底：万一笔顺数据没加载出来，别让孩子卡在这一关
+      setTimeout(() => {
+        if (state.reviewRenderToken !== token || state.reviewBusy) return;
+        if (!box.querySelector("svg path")) {
+          renderDiffLevel(char);
+          return;
+        }
+        if (actions.querySelector(".rv-skip")) return;
+        const skipBtn = document.createElement("button");
+        skipBtn.className = "rv-ghost rv-skip";
+        skipBtn.textContent = "先跳过这一关";
+        skipBtn.addEventListener("click", () => {
+          if (state.reviewRenderToken !== token) return;
+          finishReviewLevel(false, box);
+        });
+        actions.appendChild(skipBtn);
+      }, 20000);
+
+      // 动画播完再开始描红；万一动画回调没来（页面切后台等），7 秒后强制开始
+      const demoTimer = setTimeout(startQuiz, 7000);
+      writer.animateCharacter({
+        onComplete: () => {
+          clearTimeout(demoTimer);
+          setTimeout(startQuiz, 260);
+        }
+      });
+      updateReviewMascot("慢慢写，一笔一笔来，写错也没关系。");
+    }
+
     function renderReviewLevel() {
       state.reviewBusy = false;
       state.reviewLevelMistakes = 0;
+      state.reviewRenderToken = (state.reviewRenderToken || 0) + 1;
       el.reviewStage.innerHTML = "";
       setReviewFeedback("");
       setReviewTask("听一听，点出这个字");
@@ -4281,15 +4905,17 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       bumpReviewTopProgress();
       const level = plan[state.reviewLevel];
       state.reviewCurrentTarget = level.char;
-      if (level.type === "find") {
-        renderFindLevel(level.char);
-        return;
-      }
-      if (level.type === "pair") {
-        renderPairLevel(level.char);
-        return;
-      }
-      renderListenLevel(level.char);
+      const renderers = {
+        listen: renderListenLevel,
+        find: renderFindLevel,
+        pair: renderPairLevel,
+        diff: renderDiffLevel,
+        context: renderContextLevel,
+        sentence: renderSentenceLevel,
+        trace: renderTraceLevel
+      };
+      const renderer = renderers[level.type] || renderListenLevel;
+      renderer(level.char);
     }
 
     function renderReviewResult() {
