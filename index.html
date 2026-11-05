@@ -4788,7 +4788,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
             cell.dataset.done = "1";
             cell.classList.add("found");
             cell.disabled = true;
-            speak(char);
+            // 不朗读：孩子点的是"不一样的字"，读目标字的音会让人误以为这个字也读这个音
             finishReviewLevel(state.reviewLevelMistakes === 0, cell);
             return;
           }
