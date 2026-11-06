@@ -1445,42 +1445,10 @@
       margin: 10px 0 8px;
     }
 
-    .radical-lead-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-
     .radical-lead {
-      margin: 0;
+      margin: 8px 0 0;
       font-size: 14px;
       color: #8a5570;
-    }
-
-    .radical-auto {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-left: auto;
-      padding: 5px 12px 5px 8px;
-      border-radius: 999px;
-      background: #fff1f7;
-      border: 1px solid #ffd3e4;
-      font-size: 12px;
-      font-weight: 700;
-      color: #b8336a;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .radical-auto input {
-      width: 15px;
-      height: 15px;
-      accent-color: var(--peppa-pink);
-      cursor: pointer;
-      margin: 0;
     }
 
     .radical-layout {
@@ -3207,13 +3175,7 @@
           <h1 style="margin-right:auto;">偏旁部首</h1>
           <button id="backHomeFromRadicals">返回首页</button>
         </div>
-        <div class="radical-lead-row">
-          <p class="radical-lead">点一点部首卡片，听听它的小故事 👀</p>
-          <label class="radical-auto">
-            <input type="checkbox" id="radicalAuto" checked />
-            <span>点一下就讲故事</span>
-          </label>
-        </div>
+        <p class="radical-lead">点一点部首卡片，想听故事就按 🎧 听故事 👀</p>
       </section>
 
       <section class="card">
@@ -3401,7 +3363,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
   <script>
     const STORAGE_KEY = "doudou-literacy-progress-v1";
     const AVATAR_STORAGE_KEY = "doudou-avatar-dataurl-v1";
-    const RADICAL_AUTO_KEY = "doudou-radical-auto-v1";
     const REVIEW_INTERVAL_DAYS = [1, 2, 4, 7, 15, 30, 60, 120, 240];
     const REVIEW_SESSION_SIZE = 8;
     const REVIEW_MAX_EXTRA = 3;
@@ -4086,8 +4047,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       librarySelectMode: false,
       librarySelected: new Set(),
       radicalSelected: "亻",
-      radicalAuto: true,
-      radicalEntryTimer: 0
     };
 
     const el = {
@@ -4161,7 +4120,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       radicalStory: document.getElementById("radicalStory"),
       radicalStoryFace: document.getElementById("radicalStoryFace"),
       radicalStoryText: document.getElementById("radicalStoryText"),
-      radicalAuto: document.getElementById("radicalAuto"),
       radicalGrid: document.getElementById("radicalGrid"),
       radicalDetail: document.getElementById("radicalDetail"),
       radicalBig: document.getElementById("radicalBig"),
@@ -6800,13 +6758,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }, wait);
     }
 
-    function speakRadicalCue(info) {
-      if (state.radicalAuto) {
-        speakRadicalStory(info);
-      } else {
-        speak(info.name);
-      }
-    }
 
     function renderRadicals() {
       const selected = state.radicalSelected;
@@ -6853,10 +6804,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           }
 
           btn.addEventListener("click", () => {
-            clearTimeout(state.radicalEntryTimer);
             state.radicalSelected = info.key;
             renderRadicals();
-            speakRadicalCue(info);
+            speak(info.name);
           });
           grid.appendChild(btn);
         });
@@ -7111,23 +7061,11 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         speak("偏旁部首");
         showPage("radicals");
         renderRadicals();
-        // 进页面后自动讲第一条，孩子不用找按钮
-        clearTimeout(state.radicalEntryTimer);
-        if (state.radicalAuto) {
-          state.radicalEntryTimer = setTimeout(() => {
-            speakRadicalStory(getRadicalInfo(state.radicalSelected));
-          }, 1700);
-        }
       });
       el.backHomeFromLearn.addEventListener("click", () => showPage("home"));
       el.backHomeFromReview.addEventListener("click", () => showPage("home"));
       el.backHomeFromLibrary.addEventListener("click", () => showPage("home"));
       el.backHomeFromRadicals.addEventListener("click", () => showPage("home"));
-      el.radicalAuto.addEventListener("change", () => {
-        state.radicalAuto = !!el.radicalAuto.checked;
-        try { localStorage.setItem(RADICAL_AUTO_KEY, state.radicalAuto ? "1" : "0"); } catch (err) {}
-        if (state.radicalAuto) speakRadicalStory(getRadicalInfo(state.radicalSelected));
-      });
       el.trophyModalClose.addEventListener("click", () => {
         el.trophyModal.classList.add("hidden");
       });
@@ -8803,13 +8741,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       };
 
       step("hydrateProgress", () => hydrateProgress());
-      step("hydrateRadicalAuto", () => {
-        try {
-          const raw = localStorage.getItem(RADICAL_AUTO_KEY);
-          state.radicalAuto = raw === null ? true : raw === "1";
-        } catch (err) { state.radicalAuto = true; }
-        if (el.radicalAuto) el.radicalAuto.checked = state.radicalAuto;
-      });
       step("ensureReviewMetaForLearned", () => ensureReviewMetaForLearned());
       step("loadAvatarFromStorage", () => loadAvatarFromStorage());
       step("lessonInput", () => {
