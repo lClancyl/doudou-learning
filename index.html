@@ -1445,90 +1445,211 @@
       margin: 10px 0 8px;
     }
 
+    .radical-lead {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: #8a5570;
+    }
+
     .radical-layout {
       display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 12px;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 14px;
       align-items: start;
-      margin-top: 10px;
+    }
+
+    .radical-groups {
+      display: grid;
+      gap: 16px;
+      max-height: 640px;
+      overflow: auto;
+      padding: 2px 4px 2px 2px;
+    }
+
+    .radical-group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .radical-group-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #5a3247;
+    }
+
+    .radical-group-count {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: 999px;
+      background: #ffe3ef;
+      color: #b8336a;
+    }
+
+    .radical-group-tip {
+      font-size: 12px;
+      color: #9a7386;
     }
 
     .radical-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
       gap: 8px;
-      max-height: 560px;
-      overflow: auto;
-      padding-right: 4px;
     }
 
-    .radical-item {
+    .radical-card {
       position: relative;
-      border-radius: 12px;
-      border: 1px solid var(--peppa-pink-light);
-      background: linear-gradient(180deg, #fff5fa, #ffe8f2);
-      font-size: 30px;
-      line-height: 1;
-      padding: 7px 0;
-      text-align: center;
-      font-weight: 800;
+      display: grid;
+      justify-items: center;
+      gap: 1px;
+      padding: 8px 4px 7px;
+      border-radius: 16px;
+      border: 2px solid #ffd3e4;
+      background: linear-gradient(180deg, #fffdfe, #ffeef5);
       cursor: pointer;
-      box-shadow: 0 3px 8px rgba(255, 107, 157, 0.1);
-      transition: transform 0.15s ease;
+      box-shadow: 0 4px 10px rgba(255, 107, 157, .10);
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
     }
 
-    .radical-item .rad-side {
+    .radical-card:hover {
+      transform: translateY(-3px) rotate(-1deg);
+      box-shadow: 0 8px 16px rgba(255, 107, 157, .18);
+    }
+
+    .radical-card:active {
+      transform: scale(.95);
+    }
+
+    .rc-glyph {
+      font-size: 30px;
+      line-height: 1.05;
+      font-weight: 900;
+      color: #d81b74;
+    }
+
+    .rc-name {
+      font-size: 11px;
+      color: #7a4a60;
+      white-space: nowrap;
+    }
+
+    .rc-side {
       position: absolute;
       top: 2px;
       right: 5px;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
-      color: var(--peppa-pink);
-      opacity: .75;
       line-height: 1;
+      color: #d81b74;
+      opacity: .7;
     }
 
-    .radical-item:hover {
-      transform: translateY(-2px);
+    .radical-card.active {
+      border-color: var(--peppa-pink);
+      background: linear-gradient(180deg, #fff0f7, #ffdcea);
+      box-shadow: 0 0 0 3px rgba(233, 30, 137, .16), 0 8px 16px rgba(255, 107, 157, .2);
+      animation: rcPop .32s ease;
     }
 
-    .radical-item.active {
-      outline: 3px solid var(--peppa-pink);
-      background: linear-gradient(180deg, #ffe0ec, #ffd0e0);
+    @keyframes rcPop {
+      0% { transform: scale(.9); }
+      60% { transform: scale(1.06); }
+      100% { transform: scale(1); }
     }
+
+    /* 每组一个色系，看起来更像一盒彩色的字卡 */
+    .g-blue .rc-glyph { color: #1f6fb2; }
+    .g-blue .radical-card { border-color: #cfe6fa; background: linear-gradient(180deg, #fdfeff, #eaf5ff); }
+    .g-blue .radical-group-count { background: #e2f1ff; color: #1f6fb2; }
+    .g-green .rc-glyph { color: #2e8b57; }
+    .g-green .radical-card { border-color: #d3efdd; background: linear-gradient(180deg, #fdfffe, #ecfaf1); }
+    .g-green .radical-group-count { background: #e3f7ea; color: #2e8b57; }
+    .g-yellow .rc-glyph { color: #c08a00; }
+    .g-yellow .radical-card { border-color: #f7e6b5; background: linear-gradient(180deg, #fffef8, #fff6dd); }
+    .g-yellow .radical-group-count { background: #fdf1cf; color: #a87900; }
+    .g-purple .rc-glyph { color: #7a4bd0; }
+    .g-purple .radical-card { border-color: #e3d8fb; background: linear-gradient(180deg, #fefdff, #f3edff); }
+    .g-purple .radical-group-count { background: #efe7ff; color: #7a4bd0; }
 
     .radical-detail {
-      border-radius: 16px;
-      border: 2px solid var(--peppa-pink-light);
-      background: linear-gradient(180deg, #fff5fa, #ffe0ec);
-      padding: 12px;
+      position: sticky;
+      top: 12px;
+      border-radius: 22px;
+      border: 2px dashed #ffb3cd;
+      background: radial-gradient(circle at 50% 0%, #ffffff, #ffe9f2 72%);
+      padding: 16px 14px 18px;
       display: grid;
-      gap: 8px;
+      gap: 9px;
+      justify-items: center;
+      min-height: 300px;
       align-content: start;
-      min-height: 260px;
-      box-shadow: 0 6px 18px rgba(255, 107, 157, 0.1);
+      box-shadow: 0 10px 24px rgba(255, 107, 157, .14);
     }
 
     .radical-big {
-      font-size: 90px;
-      text-align: center;
-      font-weight: 900;
+      font-size: 96px;
       line-height: 1;
-      color: var(--peppa-pink-dark);
-      text-shadow: 2px 2px 0 rgba(255, 179, 208, 0.3);
+      font-weight: 900;
+      color: #d81b74;
+      text-shadow: 3px 3px 0 #ffd6e6;
+      animation: rcBigIn .34s ease;
+    }
+
+    @keyframes rcBigIn {
+      0% { transform: scale(.72) rotate(-7deg); opacity: .2; }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
     }
 
     .radical-name {
-      font-size: 22px;
+      font-size: 23px;
       font-weight: 900;
-      text-align: center;
+      color: #4d2a3a;
     }
+
+    .radical-say {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #b8336a;
+      background: linear-gradient(180deg, #ffe1ee, #ffc9de);
+      box-shadow: 0 4px 10px rgba(255, 107, 157, .18);
+      cursor: pointer;
+    }
+
+    .radical-say:active { transform: scale(.95); }
 
     .radical-intro {
       margin: 0;
-      font-size: 15px;
+      font-size: 13px;
       line-height: 1.5;
-      color: #5d3d17;
+      color: #8a5570;
+      text-align: center;
+    }
+
+    .radical-examples-title {
+      margin-top: 2px;
+      font-size: 13px;
+      color: #8a5570;
+    }
+
+    .radical-examples .chip {
+      font-size: 24px;
+      padding: 6px 15px;
+      border-radius: 15px;
+      transition: transform .14s ease;
+    }
+
+    .radical-examples .chip:active { transform: scale(.92); }
+
+    @media (max-width: 760px) {
+      .radical-layout { grid-template-columns: 1fr; }
+      .radical-detail { position: static; min-height: 0; }
+      .radical-groups { max-height: none; overflow: visible; }
     }
 
     .library-select-status {
@@ -2995,20 +3116,19 @@
           <h1 style="margin-right:auto;">偏旁部首</h1>
           <button id="backHomeFromRadicals">返回首页</button>
         </div>
+        <p class="radical-lead">点一点部首卡片，看看它躲在哪些字里 👀</p>
       </section>
 
       <section class="card">
-        <div class="row">
-          <input id="radicalSearch" placeholder="搜索部首（如：氵、口、木）" style="flex:1;min-width:180px;" />
-          <span class="pill" id="radicalCount">部首：0</span>
-        </div>
         <div class="radical-layout">
-          <div class="radical-grid" id="radicalGrid"></div>
+          <div class="radical-groups" id="radicalGrid"></div>
           <div class="radical-detail" id="radicalDetail">
             <div class="radical-big" id="radicalBig">亻</div>
-            <div class="radical-name" id="radicalName">单人旁（亻）</div>
-            <p class="radical-intro" id="radicalIntro">你、他、们、休、作</p>
-            <div class="chips" id="radicalExamples"></div>
+            <div class="radical-name" id="radicalName">单人旁</div>
+            <button class="radical-say" id="radicalSay">🔊 读一读</button>
+            <p class="radical-intro" id="radicalIntro">这是左边旁，点下面的字听听看</p>
+            <div class="radical-examples-title">它藏在这些字里</div>
+            <div class="chips radical-examples" id="radicalExamples"></div>
           </div>
         </div>
       </section>
@@ -3795,6 +3915,34 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
     const RADICAL_MAP = Object.fromEntries(RADICAL_DATA.map(item => [item.key, item]));
 
+    // 按"部首站在字的哪个位置"分组，比拼音/笔画排序更好记
+    const RADICAL_GROUPS = [
+      {
+        key: "left", label: "左边旁", emoji: "👈", tip: "站在字的左边", color: "pink",
+        keys: ["亻", "氵", "讠", "扌", "冫", "忄", "礻", "衤", "纟", "钅", "⻊", "阝左", "犭", "禾", "木", "虫", "目", "石", "贝", "火"]
+      },
+      {
+        key: "top", label: "字头", emoji: "🔝", tip: "戴在字的头上", color: "blue",
+        keys: ["艹", "宀", "⺮", "雨"]
+      },
+      {
+        key: "bottom", label: "字底", emoji: "⬇️", tip: "垫在字的下边", color: "green",
+        keys: ["辶", "灬", "心"]
+      },
+      {
+        key: "right", label: "右边旁", emoji: "👉", tip: "靠在字的右边", color: "yellow",
+        keys: ["刂", "阝右", "攵"]
+      },
+      {
+        key: "frame", label: "字框", emoji: "🖼️", tip: "把字围在中间", color: "purple",
+        keys: ["门", "囗"]
+      }
+    ];
+
+    function radicalGroupOf(key) {
+      return RADICAL_GROUPS.find(g => g.keys.includes(key)) || RADICAL_GROUPS[0];
+    }
+
     const state = {
       learned: new Set(DEFAULT_LEARNED.filter(ch => !DEFAULT_UNLEARNED.includes(ch))),
       unlearned: new Set(DEFAULT_UNLEARNED),
@@ -3833,7 +3981,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       libraryFilter: "all",
       librarySelectMode: false,
       librarySelected: new Set(),
-      radicalFilter: "",
       radicalSelected: "亻"
     };
 
@@ -3903,8 +4050,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       libraryMarkLearned: document.getElementById("libraryMarkLearned"),
       libraryRestoreUnlearned: document.getElementById("libraryRestoreUnlearned"),
       librarySelectStatus: document.getElementById("librarySelectStatus"),
-      radicalSearch: document.getElementById("radicalSearch"),
-      radicalCount: document.getElementById("radicalCount"),
+      radicalSay: document.getElementById("radicalSay"),
       radicalGrid: document.getElementById("radicalGrid"),
       radicalDetail: document.getElementById("radicalDetail"),
       radicalBig: document.getElementById("radicalBig"),
@@ -6503,9 +6649,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     function renderRadicalDetail(key) {
       const info = getRadicalInfo(key);
       const glyph = info.radical || key;
+      const group = radicalGroupOf(key);
       el.radicalBig.textContent = glyph;
-      el.radicalName.textContent = `${info.name}（${glyph}${info.side ? "·" + info.side : ""}）`;
-      el.radicalIntro.textContent = info.intro || (info.examples || []).join("、");
+      // 重新挂一次动画，换部首时大字会弹出来
+      el.radicalBig.style.animation = "none";
+      void el.radicalBig.offsetWidth;
+      el.radicalBig.style.animation = "";
+      el.radicalName.textContent = info.name;
+      el.radicalIntro.textContent = `这是${group.label}，${group.tip}。点下面的字听听看`;
       el.radicalExamples.innerHTML = "";
       (info.examples || []).slice(0, 6).forEach(ch => {
         const b = document.createElement("button");
@@ -6514,44 +6665,64 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         b.addEventListener("click", () => speak(ch));
         el.radicalExamples.appendChild(b);
       });
-    }
-
-    function filteredRadicals() {
-      const kw = state.radicalFilter.trim();
-      const all = RADICAL_DATA.map(item => item.key);
-      if (!kw) return all;
-      return all.filter(key => {
-        if (key.includes(kw)) return true;
-        const info = getRadicalInfo(key);
-        return `${info.name} ${(info.examples || []).join("")}`.includes(kw);
-      });
+      el.radicalSay.onclick = () => speak(info.name);
     }
 
     function renderRadicals() {
-      const list = filteredRadicals();
-      if (!list.includes(state.radicalSelected)) {
-        state.radicalSelected = list[0] || "亻";
-      }
-      el.radicalCount.textContent = `部首：${list.length}`;
+      const selected = state.radicalSelected;
       el.radicalGrid.innerHTML = "";
-      list.forEach(key => {
-        const info = getRadicalInfo(key);
-        const btn = document.createElement("button");
-        btn.className = `radical-item ${key === state.radicalSelected ? "active" : ""}`;
-        if (info.side) {
-          btn.innerHTML = `${info.radical}<span class="rad-side">${info.side}</span>`;
-        } else {
-          btn.textContent = info.radical;
-        }
-        btn.title = info.name;
-        btn.addEventListener("click", () => {
-          state.radicalSelected = key;
-          renderRadicals();
-          speak(info.name.split("(")[0]);
+      RADICAL_GROUPS.forEach(group => {
+        const items = group.keys.map(k => getRadicalInfo(k));
+        if (!items.length) return;
+        const sec = document.createElement("div");
+        sec.className = `radical-group g-${group.color}`;
+
+        const head = document.createElement("div");
+        head.className = "radical-group-head";
+        const title = document.createElement("span");
+        title.className = "radical-group-title";
+        title.textContent = `${group.emoji} ${group.label}`;
+        const count = document.createElement("span");
+        count.className = "radical-group-count";
+        count.textContent = `${items.length} 个`;
+        const tip = document.createElement("span");
+        tip.className = "radical-group-tip";
+        tip.textContent = group.tip;
+        head.append(title, count, tip);
+        sec.appendChild(head);
+
+        const grid = document.createElement("div");
+        grid.className = "radical-grid";
+        items.forEach(info => {
+          const btn = document.createElement("button");
+          btn.className = `radical-card ${info.key === selected ? "active" : ""}`;
+          btn.title = info.name;
+
+          const glyph = document.createElement("span");
+          glyph.className = "rc-glyph";
+          glyph.textContent = info.radical;
+          const name = document.createElement("span");
+          name.className = "rc-name";
+          name.textContent = info.name;
+          btn.append(glyph, name);
+          if (info.side) {
+            const side = document.createElement("span");
+            side.className = "rc-side";
+            side.textContent = info.side;
+            btn.appendChild(side);
+          }
+
+          btn.addEventListener("click", () => {
+            state.radicalSelected = info.key;
+            renderRadicals();
+            speak(info.name);
+          });
+          grid.appendChild(btn);
         });
-        el.radicalGrid.appendChild(btn);
+        sec.appendChild(grid);
+        el.radicalGrid.appendChild(sec);
       });
-      renderRadicalDetail(state.radicalSelected);
+      renderRadicalDetail(selected);
     }
 
     function markCharsAsLearned(chars) {
@@ -6923,10 +7094,6 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       el.libraryMarkLearned.addEventListener("click", markSelectedLibraryCharsAsLearned);
       el.libraryRestoreUnlearned.addEventListener("click", markSelectedLibraryCharsAsUnlearned);
 
-      el.radicalSearch.addEventListener("input", () => {
-        state.radicalFilter = el.radicalSearch.value || "";
-        renderRadicals();
-      });
     }
 
 
