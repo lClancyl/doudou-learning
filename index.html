@@ -1445,10 +1445,42 @@
       margin: 10px 0 8px;
     }
 
+    .radical-lead-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
     .radical-lead {
-      margin: 8px 0 0;
+      margin: 0;
       font-size: 14px;
       color: #8a5570;
+    }
+
+    .radical-auto {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      padding: 5px 12px 5px 8px;
+      border-radius: 999px;
+      background: #fff1f7;
+      border: 1px solid #ffd3e4;
+      font-size: 12px;
+      font-weight: 700;
+      color: #b8336a;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .radical-auto input {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--peppa-pink);
+      cursor: pointer;
+      margin: 0;
     }
 
     .radical-layout {
@@ -1609,10 +1641,17 @@
       color: #4d2a3a;
     }
 
+    .radical-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     .radical-say {
       border: none;
       border-radius: 999px;
-      padding: 7px 18px;
+      padding: 7px 16px;
       font-size: 14px;
       font-weight: 700;
       color: #b8336a;
@@ -1623,12 +1662,64 @@
 
     .radical-say:active { transform: scale(.95); }
 
-    .radical-intro {
+    .radical-tell {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(180deg, #ff7ab6, #e91e89);
+      box-shadow: 0 5px 12px rgba(233, 30, 137, .28);
+      cursor: pointer;
+    }
+
+    .radical-tell::after { content: ""; }
+
+    .radical-tell:active { transform: scale(.95); }
+
+    .radical-tell.playing {
+      animation: rcSay 1s ease-in-out infinite;
+    }
+
+    @keyframes rcSay {
+      0%, 100% { box-shadow: 0 5px 12px rgba(233, 30, 137, .28); }
+      50% { box-shadow: 0 5px 20px rgba(233, 30, 137, .55); }
+    }
+
+    /* 小故事：像一张贴纸便签 */
+    .radical-story {
+      position: relative;
+      width: 100%;
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      padding: 11px 13px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fffdf6, #fff4d9);
+      border: 2px solid #ffe6ab;
+      box-shadow: 0 4px 12px rgba(214, 164, 32, .12);
+      animation: rsIn .3s ease;
+    }
+
+    @keyframes rsIn {
+      0% { transform: translateY(6px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .rs-face {
+      flex: none;
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .rs-text {
       margin: 0;
-      font-size: 13px;
-      line-height: 1.5;
-      color: #8a5570;
-      text-align: center;
+      font-size: 15px;
+      line-height: 1.65;
+      color: #6b4a1d;
+      font-weight: 600;
+      text-align: left;
     }
 
     .radical-examples-title {
@@ -3116,7 +3207,13 @@
           <h1 style="margin-right:auto;">偏旁部首</h1>
           <button id="backHomeFromRadicals">返回首页</button>
         </div>
-        <p class="radical-lead">点一点部首卡片，看看它躲在哪些字里 👀</p>
+        <div class="radical-lead-row">
+          <p class="radical-lead">点一点部首卡片，听听它的小故事 👀</p>
+          <label class="radical-auto">
+            <input type="checkbox" id="radicalAuto" checked />
+            <span>点一下就讲故事</span>
+          </label>
+        </div>
       </section>
 
       <section class="card">
@@ -3125,8 +3222,14 @@
           <div class="radical-detail" id="radicalDetail">
             <div class="radical-big" id="radicalBig">亻</div>
             <div class="radical-name" id="radicalName">单人旁</div>
-            <button class="radical-say" id="radicalSay">🔊 读一读</button>
-            <p class="radical-intro" id="radicalIntro">这是左边旁，点下面的字听听看</p>
+            <div class="radical-actions">
+              <button class="radical-say" id="radicalSay">🔊 读一读</button>
+              <button class="radical-tell" id="radicalTell">🎧 听故事</button>
+            </div>
+            <div class="radical-story" id="radicalStory">
+              <span class="rs-face" id="radicalStoryFace" aria-hidden="true">👈</span>
+              <p class="rs-text" id="radicalStoryText"></p>
+            </div>
             <div class="radical-examples-title">它藏在这些字里</div>
             <div class="chips radical-examples" id="radicalExamples"></div>
           </div>
@@ -3298,6 +3401,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
   <script>
     const STORAGE_KEY = "doudou-literacy-progress-v1";
     const AVATAR_STORAGE_KEY = "doudou-avatar-dataurl-v1";
+    const RADICAL_AUTO_KEY = "doudou-radical-auto-v1";
     const REVIEW_INTERVAL_DAYS = [1, 2, 4, 7, 15, 30, 60, 120, 240];
     const REVIEW_SESSION_SIZE = 8;
     const REVIEW_MAX_EXTRA = 3;
@@ -3877,40 +3981,40 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       ]
     };
 
-    // 偏旁部首：部首 / 小学叫法 / 例字（阝拆成左耳旁、右耳旁，用 key 区分）
+    // 偏旁部首：部首 / 小学叫法 / 例字 / 一句能听懂的小故事（阝拆左右，用 key 区分）
     const RADICAL_DATA = [
-      { key: "亻", radical: "亻", name: "单人旁", examples: ["你", "他", "们", "休", "作"] },
-      { key: "氵", radical: "氵", name: "三点水", examples: ["江", "河", "湖", "海", "清"] },
-      { key: "讠", radical: "讠", name: "言字旁", examples: ["说", "话", "讲", "认", "读"] },
-      { key: "扌", radical: "扌", name: "提手旁", examples: ["打", "拍", "拉", "找", "抱"] },
-      { key: "艹", radical: "艹", name: "草字头", examples: ["花", "草", "莲", "苹", "苗"] },
-      { key: "辶", radical: "辶", name: "走之底", examples: ["远", "近", "这", "送", "过"] },
-      { key: "宀", radical: "宀", name: "宝盖头", examples: ["家", "字", "宝", "室", "它"] },
-      { key: "刂", radical: "刂", name: "立刀旁", examples: ["到", "别", "刚", "利", "刻"] },
-      { key: "冫", radical: "冫", name: "两点水", examples: ["冷", "冰", "凉", "冻", "准"] },
-      { key: "忄", radical: "忄", name: "竖心旁", examples: ["情", "怕", "忙", "快", "悔"] },
-      { key: "灬", radical: "灬", name: "四点底", examples: ["热", "熊", "点", "烈", "照"] },
-      { key: "礻", radical: "礻", name: "示字旁", examples: ["礼", "福", "祝", "神", "祖"] },
-      { key: "衤", radical: "衤", name: "衣字旁", examples: ["被", "裤", "衬", "衫", "裙"] },
-      { key: "纟", radical: "纟", name: "绞丝旁", examples: ["红", "纸", "细", "线", "织"] },
-      { key: "钅", radical: "钅", name: "金字旁", examples: ["铁", "钟", "铅", "银", "铜"] },
-      { key: "⻊", radical: "⻊", name: "足字旁", examples: ["跑", "跳", "踩", "踢", "路"] },
-      { key: "阝左", radical: "阝", side: "左", name: "左耳旁", examples: ["阳", "队", "阶", "防", "阴"] },
-      { key: "阝右", radical: "阝", side: "右", name: "右耳旁", examples: ["都", "部", "郊", "邓", "那"] },
-      { key: "攵", radical: "攵", name: "反文旁", examples: ["放", "故", "教", "收", "敢"] },
-      { key: "犭", radical: "犭", name: "反犬旁", examples: ["猫", "狗", "狼", "狐", "狮"] },
-      { key: "门", radical: "门", name: "门字框", examples: ["问", "闪", "闭", "闯", "闲"] },
-      { key: "囗", radical: "囗", name: "国字框", examples: ["国", "园", "圆", "困", "图"] },
-      { key: "⺮", radical: "⺮", name: "竹字头", examples: ["笔", "篮", "竿", "简", "筐"] },
-      { key: "雨", radical: "雨", name: "雨字头", examples: ["雪", "雷", "雾", "霞", "霜"] },
-      { key: "禾", radical: "禾", name: "禾木旁", examples: ["秋", "种", "稻", "秒", "秧"] },
-      { key: "木", radical: "木", name: "木字旁", examples: ["林", "树", "松", "柏", "桃"] },
-      { key: "虫", radical: "虫", name: "虫字旁", examples: ["蝶", "蜂", "蚊", "蛇", "虾"] },
-      { key: "目", radical: "目", name: "目字旁", examples: ["眼", "睛", "盯", "瞧", "睡"] },
-      { key: "石", radical: "石", name: "石字旁", examples: ["砖", "矿", "碎", "碰", "研"] },
-      { key: "贝", radical: "贝", name: "贝字旁", examples: ["财", "购", "赔", "赚", "贵"] },
-      { key: "心", radical: "心", name: "心字底", examples: ["想", "思", "念", "感", "忘"] },
-      { key: "火", radical: "火", name: "火字旁", examples: ["灯", "烧", "烤", "炒", "炉"] }
+      { key: "亻", radical: "亻", name: "单人旁", examples: ["你", "他", "们", "休", "作"], story: "单人旁像一个站着的人。你、他、们，说的都是人。" },
+      { key: "氵", radical: "氵", name: "三点水", examples: ["江", "河", "湖", "海", "清"], story: "三点水像三滴小水珠。江河湖海都是水，所以都带着它。" },
+      { key: "讠", radical: "讠", name: "言字旁", examples: ["说", "话", "讲", "认", "读"], story: "言字旁是一张说话的小嘴巴。说话、读书，都要用它。" },
+      { key: "扌", radical: "扌", name: "提手旁", examples: ["打", "拍", "拉", "找", "抱"], story: "提手旁是一只小手。打、拍、拉，都要动手才做得出来。" },
+      { key: "艹", radical: "艹", name: "草字头", examples: ["花", "草", "莲", "苹", "苗"], story: "草字头是两棵小草。花草莲苹都是植物，头上都长草。" },
+      { key: "辶", radical: "辶", name: "走之底", examples: ["远", "近", "这", "送", "过"], story: "走之底像一只小脚丫。远、近、送、过，都要走一走。" },
+      { key: "宀", radical: "宀", name: "宝盖头", examples: ["家", "字", "宝", "室", "它"], story: "宝盖头是一个小屋顶。家、字、宝，都住在屋顶下面。" },
+      { key: "刂", radical: "刂", name: "立刀旁", examples: ["到", "别", "刚", "利", "刻"], story: "立刀旁是一把尖尖的刀。到、别、利，身边都站着一把刀。" },
+      { key: "冫", radical: "冫", name: "两点水", examples: ["冷", "冰", "凉", "冻", "准"], story: "两点水是两块小冰。冷、冰、凉，摸上去都冰凉凉。" },
+      { key: "忄", radical: "忄", name: "竖心旁", examples: ["情", "怕", "忙", "快", "悔"], story: "竖心旁是一颗心。情、怕、忙，都是心里的感觉。" },
+      { key: "灬", radical: "灬", name: "四点底", examples: ["热", "熊", "点", "烈", "照"], story: "四点底是四点小火苗。热、照、烈，都跟火有关系。" },
+      { key: "礻", radical: "礻", name: "示字旁", examples: ["礼", "福", "祝", "神", "祖"], story: "示字旁是一张供桌。礼、福、祝，都是在说好话。" },
+      { key: "衤", radical: "衤", name: "衣字旁", examples: ["被", "裤", "衬", "衫", "裙"], story: "衣字旁是一件衣服。被、裤、裙，都是穿在身上的。" },
+      { key: "纟", radical: "纟", name: "绞丝旁", examples: ["红", "纸", "细", "线", "织"], story: "绞丝旁是一团丝线。红、线、织，都跟线有关系。" },
+      { key: "钅", radical: "钅", name: "金字旁", examples: ["铁", "钟", "铅", "银", "铜"], story: "金字旁是一块金属。铁、银、铜，都是硬硬的金属。" },
+      { key: "⻊", radical: "⻊", name: "足字旁", examples: ["跑", "跳", "踩", "踢", "路"], story: "足字旁是一只脚。跑、跳、踢，都要用脚。" },
+      { key: "阝左", radical: "阝", side: "左", name: "左耳旁", examples: ["阳", "队", "阶", "防", "阴"], story: "左耳旁不是耳朵，是一座土山。阳、防、阶，都跟山和土有关。" },
+      { key: "阝右", radical: "阝", side: "右", name: "右耳旁", examples: ["都", "部", "郊", "邓", "那"], story: "右耳旁也不是耳朵，是城和村子。都、部、郊，说的都是地方。" },
+      { key: "攵", radical: "攵", name: "反文旁", examples: ["放", "故", "教", "收", "敢"], story: "反文旁是一只手拿着小棍。放、教、收，都是用手做的事。" },
+      { key: "犭", radical: "犭", name: "反犬旁", examples: ["猫", "狗", "狼", "狐", "狮"], story: "反犬旁是一只小狗。猫、狗、狼，都是动物。" },
+      { key: "门", radical: "门", name: "门字框", examples: ["问", "闪", "闭", "闯", "闲"], story: "门字框是一扇大门。问、闪、闭，都要开门关门。" },
+      { key: "囗", radical: "囗", name: "国字框", examples: ["国", "园", "圆", "困", "图"], story: "国字框是一圈围墙。国、园、图，都围在墙里面。" },
+      { key: "⺮", radical: "⺮", name: "竹字头", examples: ["笔", "篮", "竿", "简", "筐"], story: "竹字头是两根竹子。笔、篮、筐，都是用竹子做的。" },
+      { key: "雨", radical: "雨", name: "雨字头", examples: ["雪", "雷", "雾", "霞", "霜"], story: "雨字头是一朵雨云。雪、雷、雾，都从天上落下来。" },
+      { key: "禾", radical: "禾", name: "禾木旁", examples: ["秋", "种", "稻", "秒", "秧"], story: "禾木旁是一棵稻子。秋、种、稻，都跟庄稼有关。" },
+      { key: "木", radical: "木", name: "木字旁", examples: ["林", "树", "松", "柏", "桃"], story: "木字旁是一棵树。林、树、桃，都是树木。" },
+      { key: "虫", radical: "虫", name: "虫字旁", examples: ["蝶", "蜂", "蚊", "蛇", "虾"], story: "虫字旁是一条小虫子。蝶、蜂、蚊，都是小虫虫。" },
+      { key: "目", radical: "目", name: "目字旁", examples: ["眼", "睛", "盯", "瞧", "睡"], story: "目字旁是一只眼睛。睛、盯、瞧，都要用眼睛。" },
+      { key: "石", radical: "石", name: "石字旁", examples: ["砖", "矿", "碎", "碰", "研"], story: "石字旁是一块石头。砖、矿、碎，都是石头做的。" },
+      { key: "贝", radical: "贝", name: "贝字旁", examples: ["财", "购", "赔", "赚", "贵"], story: "贝字旁是一个贝壳。古时候贝壳当钱用，所以财、贵都带它。" },
+      { key: "心", radical: "心", name: "心字底", examples: ["想", "思", "念", "感", "忘"], story: "心字底是一颗心。想、思、忘，都是心里的事。" },
+      { key: "火", radical: "火", name: "火字旁", examples: ["灯", "烧", "烤", "炒", "炉"], story: "火字旁是一团火。灯、烧、烤，都跟火有关。" }
     ];
 
     const RADICAL_MAP = Object.fromEntries(RADICAL_DATA.map(item => [item.key, item]));
@@ -3981,7 +4085,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       libraryFilter: "all",
       librarySelectMode: false,
       librarySelected: new Set(),
-      radicalSelected: "亻"
+      radicalSelected: "亻",
+      radicalAuto: true,
+      radicalEntryTimer: 0
     };
 
     const el = {
@@ -4051,11 +4157,15 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       libraryRestoreUnlearned: document.getElementById("libraryRestoreUnlearned"),
       librarySelectStatus: document.getElementById("librarySelectStatus"),
       radicalSay: document.getElementById("radicalSay"),
+      radicalTell: document.getElementById("radicalTell"),
+      radicalStory: document.getElementById("radicalStory"),
+      radicalStoryFace: document.getElementById("radicalStoryFace"),
+      radicalStoryText: document.getElementById("radicalStoryText"),
+      radicalAuto: document.getElementById("radicalAuto"),
       radicalGrid: document.getElementById("radicalGrid"),
       radicalDetail: document.getElementById("radicalDetail"),
       radicalBig: document.getElementById("radicalBig"),
       radicalName: document.getElementById("radicalName"),
-      radicalIntro: document.getElementById("radicalIntro"),
       radicalExamples: document.getElementById("radicalExamples"),
       lessonInput: document.getElementById("lessonInput"),
       tracePad: document.getElementById("tracePad"),
@@ -6656,7 +6766,12 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       void el.radicalBig.offsetWidth;
       el.radicalBig.style.animation = "";
       el.radicalName.textContent = info.name;
-      el.radicalIntro.textContent = `这是${group.label}，${group.tip}。点下面的字听听看`;
+      el.radicalStoryFace.textContent = group.emoji;
+      el.radicalStoryText.textContent = info.story || `这是${group.label}，${group.tip}。`;
+      // 换一条故事就重播一次入场动画
+      el.radicalStory.style.animation = "none";
+      void el.radicalStory.offsetWidth;
+      el.radicalStory.style.animation = "";
       el.radicalExamples.innerHTML = "";
       (info.examples || []).slice(0, 6).forEach(ch => {
         const b = document.createElement("button");
@@ -6666,6 +6781,31 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         el.radicalExamples.appendChild(b);
       });
       el.radicalSay.onclick = () => speak(info.name);
+      el.radicalTell.onclick = () => speakRadicalStory(info);
+    }
+
+    function speakRadicalStory(info) {
+      const story = String(info.story || "").trim();
+      if (!story) {
+        speak(info.name);
+        return;
+      }
+      // 先说名字再说故事，孩子听得清是哪个偏旁
+      speak(`${info.name}。${story}`);
+      el.radicalTell.classList.add("playing");
+      clearTimeout(speakRadicalStory.timer);
+      const wait = Math.min(12000, 1400 + story.length * 190);
+      speakRadicalStory.timer = setTimeout(() => {
+        el.radicalTell.classList.remove("playing");
+      }, wait);
+    }
+
+    function speakRadicalCue(info) {
+      if (state.radicalAuto) {
+        speakRadicalStory(info);
+      } else {
+        speak(info.name);
+      }
     }
 
     function renderRadicals() {
@@ -6713,9 +6853,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           }
 
           btn.addEventListener("click", () => {
+            clearTimeout(state.radicalEntryTimer);
             state.radicalSelected = info.key;
             renderRadicals();
-            speak(info.name);
+            speakRadicalCue(info);
           });
           grid.appendChild(btn);
         });
@@ -6970,11 +7111,23 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         speak("偏旁部首");
         showPage("radicals");
         renderRadicals();
+        // 进页面后自动讲第一条，孩子不用找按钮
+        clearTimeout(state.radicalEntryTimer);
+        if (state.radicalAuto) {
+          state.radicalEntryTimer = setTimeout(() => {
+            speakRadicalStory(getRadicalInfo(state.radicalSelected));
+          }, 1700);
+        }
       });
       el.backHomeFromLearn.addEventListener("click", () => showPage("home"));
       el.backHomeFromReview.addEventListener("click", () => showPage("home"));
       el.backHomeFromLibrary.addEventListener("click", () => showPage("home"));
       el.backHomeFromRadicals.addEventListener("click", () => showPage("home"));
+      el.radicalAuto.addEventListener("change", () => {
+        state.radicalAuto = !!el.radicalAuto.checked;
+        try { localStorage.setItem(RADICAL_AUTO_KEY, state.radicalAuto ? "1" : "0"); } catch (err) {}
+        if (state.radicalAuto) speakRadicalStory(getRadicalInfo(state.radicalSelected));
+      });
       el.trophyModalClose.addEventListener("click", () => {
         el.trophyModal.classList.add("hidden");
       });
@@ -8650,6 +8803,13 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       };
 
       step("hydrateProgress", () => hydrateProgress());
+      step("hydrateRadicalAuto", () => {
+        try {
+          const raw = localStorage.getItem(RADICAL_AUTO_KEY);
+          state.radicalAuto = raw === null ? true : raw === "1";
+        } catch (err) { state.radicalAuto = true; }
+        if (el.radicalAuto) el.radicalAuto.checked = state.radicalAuto;
+      });
       step("ensureReviewMetaForLearned", () => ensureReviewMetaForLearned());
       step("loadAvatarFromStorage", () => loadAvatarFromStorage());
       step("lessonInput", () => {
