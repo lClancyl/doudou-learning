@@ -273,6 +273,33 @@
       box-shadow: 0 0 0 3px rgba(233, 30, 137, .16);
     }
 
+    .poly-row.selected {
+      border-color: var(--peppa-pink);
+      background: linear-gradient(180deg, #fff2f9, #ffdcea);
+      box-shadow: 0 0 0 2px rgba(233, 30, 137, .14);
+    }
+
+    .poly-row.selected .poly-pinyin::before {
+      content: "✓ ";
+      font-weight: 900;
+    }
+
+    /* 还没选读音时，轻轻闪一下提醒先选 */
+    .polyphones.picking .poly-list {
+      animation: polyPulse 1s ease-in-out 2;
+      border-radius: 16px;
+    }
+
+    @keyframes polyPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(233, 30, 137, 0); }
+      50% { box-shadow: 0 0 0 4px rgba(233, 30, 137, .18); }
+    }
+
+    .poly-head.hint {
+      color: var(--peppa-pink);
+      font-weight: 800;
+    }
+
     .poly-pinyin {
       font-size: 15px;
       font-weight: 700;
@@ -4046,6 +4073,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       libraryFilter: "all",
       librarySelectMode: false,
       librarySelected: new Set(),
+      polyChoice: {},
       radicalSelected: "亻",
     };
 
@@ -4964,8 +4992,18 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     }
 
     // ---------- 玩法四：火眼金睛（一堆一样的字里，有一个长得像但不一样）----------
+    // 单字没有上下文，TTS 容易挑错音；多音字用它的例词带出来（如"看着的着"）
+    function charSpeechPhrase(ch) {
+      const list = POLYPHONE_MAP[ch] || [];
+      if (!list.length) return ch;
+      const idx = state.polyChoice[ch];
+      const item = (typeof idx === "number" && list[idx]) ? list[idx] : list[0];
+      const word = extractPolyphoneWord(ch, item);
+      return (word && word !== ch) ? `${word}的${ch}` : ch;
+    }
+
     function renderDiffLevel(char) {
-      setReviewTask("火眼金睛：找出那个不一样的字");
+      setReviewTask("找不同：哪个字不一样？");
       const head = document.createElement("div");
       head.className = "rv-find-head";
       const targetEl = document.createElement("div");
@@ -4977,7 +5015,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       hint.textContent = "格子里都是它，只有一个不一样，仔细比一比";
       head.appendChild(hint);
       el.reviewStage.appendChild(head);
-      targetEl.addEventListener("click", () => speak(char));
+      targetEl.addEventListener("click", () => speakListenCue(char));
+      // 先告诉孩子这一关是"找不同"；孩子答对后要-cancel，别让它打断判定朗读
+      clearTimeout(renderDiffLevel.openTimer);
+      renderDiffLevel.openTimer = setTimeout(() => speak("找不同。只有一个字不一样，找出它"), 260);
 
       const twins = reviewGroupChars(REVIEW_SIMILAR_MAP, char).filter(ch => ch !== char);
       const odd = twins.length ? randomPick(twins, 1)[0] : "囗";
@@ -4996,8 +5037,14 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
             cell.dataset.done = "1";
             cell.classList.add("found");
             cell.disabled = true;
-            // 不朗读：孩子点的是"不一样的字"，读目标字的音会让人误以为这个字也读这个音
-            finishReviewLevel(state.reviewLevelMistakes === 0, cell);
+            // 锁住格子，避免朗读期间又点别的
+            grid.style.pointerEvents = "none";
+            clearTimeout(renderDiffLevel.openTimer);
+            // 读"选出来的这个字"的音，并说明它不是原来那个字
+            const say = `这是${charSpeechPhrase(odd)}，不是${charSpeechPhrase(char)}`;
+            speak(say);
+            const wait = Math.min(2600, 900 + say.length * 170);
+            setTimeout(() => finishReviewLevel(state.reviewLevelMistakes === 0, cell), wait);
             return;
           }
           cell.dataset.done = "1";
@@ -6368,24 +6415,27 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       el.completeWrite.textContent = "完成";
     }
 
+    // 多音字：先让孩子挑一个读音，挑完就用这个读音读，并记住选择
     function renderPolyphoneChips(char) {
       const list = POLYPHONE_MAP[char] || [];
       const box = el.polyphoneChips;
       box.innerHTML = "";
       box.classList.toggle("hidden", !list.length);
+      box.classList.remove("picking");
       if (!list.length) return;
 
+      const chosen = state.polyChoice[char];
       const head = document.createElement("div");
       head.className = "poly-head";
-      head.textContent = `多音字 · 有 ${list.length} 种读法，点一点听`;
       box.appendChild(head);
 
       const wrap = document.createElement("div");
       wrap.className = "poly-list";
-      list.forEach(item => {
+      list.forEach((item, idx) => {
         const row = document.createElement("button");
         row.type = "button";
         row.className = "poly-row";
+        if (idx === chosen) row.classList.add("selected");
 
         const py = document.createElement("span");
         py.className = "poly-pinyin";
@@ -6405,14 +6455,71 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
         row.append(py, word, note, play);
         row.addEventListener("click", () => {
-          wrap.querySelectorAll(".poly-row.playing").forEach(n => n.classList.remove("playing"));
-          row.classList.add("playing");
+          state.polyChoice[char] = idx;
+          wrap.querySelectorAll(".poly-row").forEach(n => {
+            n.classList.remove("playing");
+            n.classList.remove("selected");
+          });
+          row.classList.add("playing", "selected");
+          box.classList.remove("picking");
+          updatePolyphoneHead(char);
           speakPolyphone(char, item);
           setTimeout(() => row.classList.remove("playing"), 1600);
         });
         wrap.appendChild(row);
       });
       box.appendChild(wrap);
+      updatePolyphoneHead(char);
+    }
+
+    function updatePolyphoneHead(char) {
+      const list = POLYPHONE_MAP[char] || [];
+      const head = el.polyphoneChips.querySelector(".poly-head");
+      if (!head || !list.length) return;
+      const idx = state.polyChoice[char];
+      const picked = typeof idx === "number" ? list[idx] : null;
+      if (picked) {
+        head.textContent = `多音字 · 现在读「${picked.label || picked.pinyin}」，想换就点别的读法`;
+        head.classList.remove("hint");
+      } else {
+        head.textContent = `多音字 · 有 ${list.length} 种读法，先选一个再听`;
+        head.classList.add("hint");
+      }
+    }
+
+    // 还没选读音就点大字：不急着读，先请孩子选
+    function promptPolyphoneChoice(char) {
+      const list = POLYPHONE_MAP[char] || [];
+      const box = el.polyphoneChips;
+      if (!list.length) return;
+      if (!box || box.classList.contains("hidden")) {
+        speakPolyphone(char, list[0]);
+        return;
+      }
+      updatePolyphoneHead(char);
+      box.classList.remove("picking");
+      void box.offsetWidth;
+      box.classList.add("picking");
+      clearTimeout(promptPolyphoneChoice.timer);
+      promptPolyphoneChoice.timer = setTimeout(() => box.classList.remove("picking"), 2400);
+      if (box.scrollIntoView) box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      speak("这个字有好几种读法，你来选一个");
+    }
+
+    // 点大字 / 听环节的播放：多音字按孩子选过的读音读
+    function speakCurrentChar() {
+      const lesson = getCurrentLesson();
+      const poly = POLYPHONE_MAP[lesson.char];
+      if (poly && poly.length) {
+        const idx = state.polyChoice[lesson.char];
+        if (typeof idx === "number" && poly[idx]) {
+          speakPolyphone(lesson.char, poly[idx]);
+        } else {
+          promptPolyphoneChoice(lesson.char);
+        }
+        return;
+      }
+      speak(lesson.char, lesson.audio || "");
     }
 
     function buildPolyphoneSpeakText(char, item) {
@@ -7094,21 +7201,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       el.completeWrite.addEventListener("click", () => completeStep("write"));
       el.nextCharBtn.addEventListener("click", moveToNextChar);
 
-      el.currentChar.addEventListener("click", () => {
-        const lesson = getCurrentLesson();
-        const poly = POLYPHONE_MAP[lesson.char];
-        if (poly && poly.length) {
-          speakPolyphone(lesson.char, poly[0]);
-          return;
-        }
-        speak(lesson.char, lesson.audio || "");
-      });
+      el.currentChar.addEventListener("click", speakCurrentChar);
       el.sentenceBox.addEventListener("click", () => speak(el.sentenceBox.textContent));
 
-      document.getElementById("playListen").addEventListener("click", () => {
-        const lesson = getCurrentLesson();
-        speak(lesson.char, lesson.audio || "");
-      });
+      document.getElementById("playListen").addEventListener("click", speakCurrentChar);
       document.getElementById("refreshListen").addEventListener("click", renderListenPanel);
 
       document.getElementById("playStroke").addEventListener("click", () => {
