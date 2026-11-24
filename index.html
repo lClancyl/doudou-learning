@@ -3176,6 +3176,17 @@
       </section>
 
       <section class="card">
+        <strong>进度备份</strong>
+        <p class="tip">iPad / iPhone 上的 Safari 如果很久没打开这个页面，可能会清掉本地进度。隔段时间导出一份，存在「文件」里或发给自己，误清缓存、换设备都能恢复。</p>
+        <div class="row">
+          <button id="exportProgress">⬇️ 导出备份</button>
+          <button id="importProgress">⬆️ 恢复备份</button>
+          <input type="file" id="importProgressFile" accept=".json,application/json" class="hidden" />
+        </div>
+        <p class="tip" id="progressBackupStatus">已学进度和复习记录都会一起备份。</p>
+      </section>
+
+      <section class="card">
         <strong>新字字库（按顺序）</strong>
         <textarea id="lessonInput"></textarea>
         <p class="tip">默认每行只写汉字（也支持一行多个汉字）。词和句会自动联想生成；高级模式可用：汉字|词1,词2|句子|图片URL|音频URL。</p>
@@ -3378,6 +3389,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
   <script>
     const STORAGE_KEY = "doudou-literacy-progress-v1";
+    // 本地第二份存档：主存档读不出来时兜底（iOS Safari 偶尔会写坏/清掉单条记录）
+    const STORAGE_BACKUP_KEY = "doudou-literacy-progress-v1-bak";
     const AVATAR_STORAGE_KEY = "doudou-avatar-dataurl-v1";
     const REVIEW_INTERVAL_DAYS = [1, 2, 4, 7, 15, 30, 60, 120, 240];
     const REVIEW_SESSION_SIZE = 8;
@@ -4130,6 +4143,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       libraryToggleSelect: document.getElementById("libraryToggleSelect"),
       libraryMarkLearned: document.getElementById("libraryMarkLearned"),
       libraryRestoreUnlearned: document.getElementById("libraryRestoreUnlearned"),
+      exportProgress: document.getElementById("exportProgress"),
+      importProgress: document.getElementById("importProgress"),
+      importProgressFile: document.getElementById("importProgressFile"),
+      progressBackupStatus: document.getElementById("progressBackupStatus"),
       librarySelectStatus: document.getElementById("librarySelectStatus"),
       radicalSay: document.getElementById("radicalSay"),
       radicalTell: document.getElementById("radicalTell"),
@@ -4150,6 +4167,25 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     const APP_HISTORY_KEY = "doudou-app-page";
     let historyReady = false;
 
+    // 依次尝试主存档、本地备份存档，返回第一个能解析的
+    function readSavedProgress() {
+      const keys = [STORAGE_KEY, STORAGE_BACKUP_KEY];
+      for (let i = 0; i < keys.length; i += 1) {
+        const key = keys[i];
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) continue;
+          const data = JSON.parse(raw);
+          if (data && (Array.isArray(data.learned) || Array.isArray(data.lessons))) {
+            return { data, key };
+          }
+        } catch (err) {
+          console.warn("readSavedProgress: 存档读取失败", key, err);
+        }
+      }
+      return null;
+    }
+
     function saveProgress() {
       try {
         ensureReviewMetaForLearned();
@@ -4168,6 +4204,16 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           savedAt: Date.now(),
           version: 2
         };
+        // 写入新存档前，先把上一份完好的存档留作备份
+        try {
+          const prevRaw = localStorage.getItem(STORAGE_KEY);
+          if (prevRaw) {
+            JSON.parse(prevRaw);
+            localStorage.setItem(STORAGE_BACKUP_KEY, prevRaw);
+          }
+        } catch (err) {
+          console.warn("saveProgress: 旧存档异常，跳过备份", err);
+        }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
         console.log("saveProgress: ok, learned=" + learnArr.length + ", lessons=" + state.lessons.length);
       } catch (err) {
@@ -4232,12 +4278,15 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
 
     function hydrateProgress() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) {
+        const saved = readSavedProgress();
+        if (!saved) {
           console.log("hydrateProgress: no saved data, using defaults");
           return;
         }
-        const data = JSON.parse(raw);
+        const data = saved.data;
+        if (saved.key === STORAGE_BACKUP_KEY) {
+          console.warn("hydrateProgress: 主存档不可用，已从本地备份存档恢复");
+        }
         const dataVersion = Number(data.version) || 0;
         const savedLessons = Array.isArray(data.lessons) ? data.lessons : null;
         const savedLearned = Array.isArray(data.learned) ? data.learned : null;
@@ -4257,13 +4306,16 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         // Restore learned: use saved data if available and non-empty.
         // If savedLearned exists but is empty AND we have old data (version<2 or savedLessons exist),
         // that's likely data corruption — keep defaults and warn.
-        if (savedLearned && savedLearned.length > 0) {
-          state.learned = new Set(
-            savedLearned
-              .filter(ch => typeof ch === "string" && /[\u3400-\u9fff]/.test(ch))
-              .map(ch => ch.charAt(0))
-          );
+        const cleanedLearned = (savedLearned || [])
+          .filter(ch => typeof ch === "string" && /[\u3400-\u9fff]/.test(ch))
+          .map(ch => ch.charAt(0));
+        if (cleanedLearned.length > 0) {
+          state.learned = new Set(cleanedLearned);
           console.log("hydrateProgress: restored learned=" + state.learned.size + ", lessons=" + state.lessons.length);
+        } else if (savedLearned && savedLearned.length > 0) {
+          // 存档里有 learned 但内容无法识别 —— 别把进度清空，保留当前默认
+          console.warn("hydrateProgress: learned 内容异常，保留现有进度");
+          state.trophyTotal = 0;
         } else if (savedLearned && savedLearned.length === 0 && savedLessons && savedLessons.length > 0) {
           // Data exists but learned is empty — possible corruption, keep defaults
           console.warn("hydrateProgress: saved learned is empty but lessons exist, keeping defaults");
@@ -4290,6 +4342,60 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       } catch (err) {
         console.warn("hydrateProgress failed", err);
       }
+    }
+
+    // ---------- 进度备份：导出成文件 / 从文件恢复 ----------
+    function setBackupStatus(text) {
+      if (el.progressBackupStatus) el.progressBackupStatus.textContent = text;
+    }
+
+    function exportProgressFile() {
+      saveProgress();
+      const raw = localStorage.getItem(STORAGE_KEY) || "";
+      if (!raw) {
+        setBackupStatus("还没生成进度，先学几个字再来备份吧。");
+        return;
+      }
+      const stamp = new Date().toISOString().slice(0, 10);
+      try {
+        const blob = new Blob([raw], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `豆豆识字进度-${stamp}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+        setBackupStatus("已导出。把文件存到「文件」App 或发给自己，需要时回来点“恢复备份”。");
+      } catch (err) {
+        setBackupStatus("导出失败：" + err.message);
+      }
+    }
+
+    function importProgressFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result || ""));
+          if (!data || (!Array.isArray(data.learned) && !Array.isArray(data.lessons))) {
+            throw new Error("这不是进度备份文件");
+          }
+          // 覆盖前先把当前存档留一份，防止误导入
+          try {
+            const prev = localStorage.getItem(STORAGE_KEY);
+            if (prev) localStorage.setItem(STORAGE_BACKUP_KEY, prev);
+          } catch (err) { /* 忽略 */ }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          setBackupStatus("恢复成功，正在刷新…");
+          setTimeout(() => location.reload(), 600);
+        } catch (err) {
+          setBackupStatus("恢复失败：" + err.message);
+        }
+      };
+      reader.onerror = () => setBackupStatus("读取文件失败，再试一次。");
+      reader.readAsText(file);
     }
 
     // ---------- 记忆曲线调度（近似 SM-2）----------
@@ -7130,6 +7236,17 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       el.backHomeFromLearn.addEventListener("click", () => showPage("home"));
       el.backHomeFromReview.addEventListener("click", () => showPage("home"));
       el.backHomeFromLibrary.addEventListener("click", () => showPage("home"));
+      if (el.exportProgress) el.exportProgress.addEventListener("click", exportProgressFile);
+      if (el.importProgress) {
+        el.importProgress.addEventListener("click", () => el.importProgressFile && el.importProgressFile.click());
+      }
+      if (el.importProgressFile) {
+        el.importProgressFile.addEventListener("change", () => {
+          const file = el.importProgressFile.files && el.importProgressFile.files[0];
+          importProgressFile(file);
+          el.importProgressFile.value = "";
+        });
+      }
       el.backHomeFromRadicals.addEventListener("click", () => showPage("home"));
       el.trophyModalClose.addEventListener("click", () => {
         el.trophyModal.classList.add("hidden");
@@ -8795,6 +8912,12 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       };
 
       step("hydrateProgress", () => hydrateProgress());
+      step("requestPersistentStorage", () => {
+        // iOS/Safari 下尽量申请“持久存储”，减少被系统回收的概率（不支持也不会报错）
+        if (navigator.storage && navigator.storage.persist) {
+          navigator.storage.persist().catch(() => {});
+        }
+      });
       step("ensureReviewMetaForLearned", () => ensureReviewMetaForLearned());
       step("loadAvatarFromStorage", () => loadAvatarFromStorage());
       step("lessonInput", () => {
