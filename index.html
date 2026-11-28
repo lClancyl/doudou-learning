@@ -2943,7 +2943,7 @@
     .abc-replay.show { display: block; }
     .abc-chart {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
       gap: 10px;
       margin-top: 10px;
     }
@@ -2965,6 +2965,29 @@
     .abc-chart-item .low {
       font-size: 22px; font-weight: 800; color: #2c7fb8;
       font-family: var(--font-letter);
+    }
+    .abc-chart-item .abc-letters {
+      display: flex; align-items: baseline; gap: 6px;
+    }
+    .abc-chart-item .abc-sound {
+      margin-top: 6px; padding-top: 6px; width: 100%;
+      border-top: 2px dashed rgba(135,206,235,0.55);
+      display: flex; align-items: center; justify-content: center;
+      gap: 4px; flex-wrap: wrap;
+      cursor: pointer;
+      transition: transform 0.18s;
+    }
+    .abc-chart-item .abc-sound:active { transform: scale(0.94); }
+    .abc-chart-item .abc-sound b {
+      color: #e91e89; font-weight: 800; font-size: 13px;
+      font-family: var(--font-letter);
+    }
+    .abc-chart-item .abc-sound .sw {
+      color: #2c7fb8; font-weight: 800; font-size: 14px;
+      font-family: var(--font-letter);
+    }
+    .abc-chart-item .abc-sound i {
+      color: #9a9a9a; font-style: normal; font-size: 12px;
     }
 
   </style>
@@ -3373,7 +3396,7 @@
         </div>
 
         <div id="abcChart" class="hidden">
-          <p class="tip" style="text-align:center;">点一点字母，听听它的读音</p>
+          <p class="tip" style="text-align:center;">点上面的字母听字母名，点下面一行听它在单词里的发音</p>
           <div class="abc-chart" id="abcChartGrid"></div>
         </div>
       </section>
@@ -8561,6 +8584,38 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       { letter: 'Z', word: 'zebra', zh: '斑马', emoji: '🦓' }
     ];
 
+    // 每个字母在单词里的常见读音（自然拼读 phonics 音标）+ 例词
+    // I 换成 ink（ice cream 的 i 是长音 /aɪ/，不适合演示常见短音 /ɪ/）
+    // X 换成 box（x 开头的词太少，/ks/ 通常出现在词中或词尾）
+    const ABC_LETTER_SOUNDS = {
+      A: { sound: '/æ/', word: 'apple', zh: '苹果' },
+      B: { sound: '/b/', word: 'ball', zh: '球' },
+      C: { sound: '/k/', word: 'cat', zh: '猫' },
+      D: { sound: '/d/', word: 'dog', zh: '小狗' },
+      E: { sound: '/e/', word: 'egg', zh: '鸡蛋' },
+      F: { sound: '/f/', word: 'fish', zh: '鱼' },
+      G: { sound: '/g/', word: 'grape', zh: '葡萄' },
+      H: { sound: '/h/', word: 'hat', zh: '帽子' },
+      I: { sound: '/ɪ/', word: 'ink', zh: '墨水' },
+      J: { sound: '/dʒ/', word: 'juice', zh: '果汁' },
+      K: { sound: '/k/', word: 'kite', zh: '风筝' },
+      L: { sound: '/l/', word: 'lion', zh: '狮子' },
+      M: { sound: '/m/', word: 'moon', zh: '月亮' },
+      N: { sound: '/n/', word: 'nose', zh: '鼻子' },
+      O: { sound: '/ɒ/', word: 'orange', zh: '橙子' },
+      P: { sound: '/p/', word: 'pig', zh: '小猪' },
+      Q: { sound: '/kw/', word: 'queen', zh: '女王' },
+      R: { sound: '/r/', word: 'rabbit', zh: '兔子' },
+      S: { sound: '/s/', word: 'sun', zh: '太阳' },
+      T: { sound: '/t/', word: 'tiger', zh: '老虎' },
+      U: { sound: '/ʌ/', word: 'umbrella', zh: '雨伞' },
+      V: { sound: '/v/', word: 'van', zh: '小货车' },
+      W: { sound: '/w/', word: 'water', zh: '水' },
+      X: { sound: '/ks/', word: 'box', zh: '盒子', note: '常在词尾' },
+      Y: { sound: '/j/', word: 'yoyo', zh: '悠悠球' },
+      Z: { sound: '/z/', word: 'zebra', zh: '斑马' }
+    };
+
     function initEnglish() {
       const promptEl = document.getElementById('abcPrompt');
       const stageEl = document.getElementById('abcStage');
@@ -8883,10 +8938,26 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
         chartBuilt = true;
         chartGrid.innerHTML = '';
         ABC_LETTERS.forEach(up => {
+          const s = ABC_LETTER_SOUNDS[up];
           const item = document.createElement('div');
           item.className = 'abc-chart-item';
-          item.innerHTML = `<span class="up">${up}</span><span class="low">${up.toLowerCase()}</span>`;
-          item.addEventListener('click', () => speakLetter(up));
+          // 上半：字母名（A a），点击读字母名称
+          const letters = document.createElement('div');
+          letters.className = 'abc-letters';
+          letters.innerHTML = `<span class="up">${up}</span><span class="low">${up.toLowerCase()}</span>`;
+          letters.addEventListener('click', () => speakLetter(up));
+          item.appendChild(letters);
+          // 下半：词中常见读音 /æ/ + 例词 + 中文，点击读例词
+          if (s) {
+            const soundRow = document.createElement('div');
+            soundRow.className = 'abc-sound';
+            soundRow.innerHTML = `<b>${s.sound}</b><span class="sw">${s.word}</span><i>${s.zh}${s.note ? '（' + s.note + '）' : ''}</i>`;
+            soundRow.addEventListener('click', (e) => {
+              e.stopPropagation();
+              speakEn(s.word);
+            });
+            item.appendChild(soundRow);
+          }
           chartGrid.appendChild(item);
         });
       }
