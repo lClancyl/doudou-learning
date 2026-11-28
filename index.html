@@ -3405,7 +3405,7 @@
         </div>
 
         <div id="abcChart" class="hidden">
-          <p class="tip" style="text-align:center;">点上面的字母听字母名，点下面一行听它在单词里的发音</p>
+          <p class="tip" style="text-align:center;">点上面的字母听字母名；点下面的读音行，先听词中发音，再听例词</p>
           <div class="abc-chart" id="abcChartGrid"></div>
         </div>
       </section>
@@ -6219,10 +6219,19 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     }
 
     let enAudioToken = 0;
-    function playEnAudio(text, onFail) {
+    function playEnAudio(text, onFail, onEnded) {
       const token = ++enAudioToken;
       const sources = englishAudioSources(text);
       let idx = 0;
+
+      // 播放结束回调（用于"先读音、再读词"的链式朗读）
+      // 注意：源全部失败时这个监听还挂着，靠 token 守卫失效
+      if (onEnded) {
+        audioPlayer.addEventListener("ended", () => {
+          if (token !== enAudioToken) return;
+          try { onEnded(); } catch (err) {}
+        }, { once: true });
+      }
 
       const tryNext = () => {
         if (token !== enAudioToken) return; // 已被新的朗读取代
@@ -6293,7 +6302,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     // 系统合成音兜底时，优先挑女声，避免和在线音源（女声）来回切换听起来忽男忽女
     const EN_FEMALE_HINT = /samantha|karen|moira|tessa|zira|susan|serena|ava|allison|victoria|kate|martha|google us english|female/i;
 
-    function speakEnWithSynth(text, rate) {
+    function speakEnWithSynth(text, rate, onEnded) {
       if (!window.speechSynthesis) return;
       try {
         const u = new SpeechSynthesisUtterance(String(text));
@@ -6309,6 +6318,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           voices.find(v => /en[-_]US/i.test(v.lang)) ||
           voices[0];
         if (enVoice) u.voice = enVoice;
+        if (onEnded) {
+          u.onend = () => { try { onEnded(); } catch (err) {} };
+          u.onerror = () => { try { onEnded(); } catch (err) {} };
+        }
         window.speechSynthesis.speak(u);
       } catch (err) {
         console.warn("speakEn synth failed", err);
@@ -8594,35 +8607,36 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     ];
 
     // 每个字母在单词里的常见读音（自然拼读 phonics 音标）+ 例词
+    // speak 字段：音标没法直接喂 TTS，用自然拼读近似拼法（/b/→"buh"、/æ/→"aah"），点读音行先读这个音再读例词
     // I 换成 ink（ice cream 的 i 是长音 /aɪ/，不适合演示常见短音 /ɪ/）
     // X 换成 box（x 开头的词太少，/ks/ 通常出现在词中或词尾）
     const ABC_LETTER_SOUNDS = {
-      A: { sound: '/æ/', word: 'apple', zh: '苹果' },
-      B: { sound: '/b/', word: 'ball', zh: '球' },
-      C: { sound: '/k/', word: 'cat', zh: '猫' },
-      D: { sound: '/d/', word: 'dog', zh: '小狗' },
-      E: { sound: '/e/', word: 'egg', zh: '鸡蛋' },
-      F: { sound: '/f/', word: 'fish', zh: '鱼' },
-      G: { sound: '/g/', word: 'grape', zh: '葡萄' },
-      H: { sound: '/h/', word: 'hat', zh: '帽子' },
-      I: { sound: '/ɪ/', word: 'ink', zh: '墨水' },
-      J: { sound: '/dʒ/', word: 'juice', zh: '果汁' },
-      K: { sound: '/k/', word: 'kite', zh: '风筝' },
-      L: { sound: '/l/', word: 'lion', zh: '狮子' },
-      M: { sound: '/m/', word: 'moon', zh: '月亮' },
-      N: { sound: '/n/', word: 'nose', zh: '鼻子' },
-      O: { sound: '/ɒ/', word: 'orange', zh: '橙子' },
-      P: { sound: '/p/', word: 'pig', zh: '小猪' },
-      Q: { sound: '/kw/', word: 'queen', zh: '女王' },
-      R: { sound: '/r/', word: 'rabbit', zh: '兔子' },
-      S: { sound: '/s/', word: 'sun', zh: '太阳' },
-      T: { sound: '/t/', word: 'tiger', zh: '老虎' },
-      U: { sound: '/ʌ/', word: 'umbrella', zh: '雨伞' },
-      V: { sound: '/v/', word: 'van', zh: '小货车' },
-      W: { sound: '/w/', word: 'water', zh: '水' },
-      X: { sound: '/ks/', word: 'box', zh: '盒子', note: '常在词尾' },
-      Y: { sound: '/j/', word: 'yoyo', zh: '悠悠球' },
-      Z: { sound: '/z/', word: 'zebra', zh: '斑马' }
+      A: { sound: '/æ/', speak: 'aah', word: 'apple', zh: '苹果' },
+      B: { sound: '/b/', speak: 'buh', word: 'ball', zh: '球' },
+      C: { sound: '/k/', speak: 'kuh', word: 'cat', zh: '猫' },
+      D: { sound: '/d/', speak: 'duh', word: 'dog', zh: '小狗' },
+      E: { sound: '/e/', speak: 'eh', word: 'egg', zh: '鸡蛋' },
+      F: { sound: '/f/', speak: 'fuh', word: 'fish', zh: '鱼' },
+      G: { sound: '/g/', speak: 'guh', word: 'grape', zh: '葡萄' },
+      H: { sound: '/h/', speak: 'huh', word: 'hat', zh: '帽子' },
+      I: { sound: '/ɪ/', speak: 'ih', word: 'ink', zh: '墨水' },
+      J: { sound: '/dʒ/', speak: 'juh', word: 'juice', zh: '果汁' },
+      K: { sound: '/k/', speak: 'kuh', word: 'kite', zh: '风筝' },
+      L: { sound: '/l/', speak: 'luh', word: 'lion', zh: '狮子' },
+      M: { sound: '/m/', speak: 'muh', word: 'moon', zh: '月亮' },
+      N: { sound: '/n/', speak: 'nuh', word: 'nose', zh: '鼻子' },
+      O: { sound: '/ɒ/', speak: 'awe', word: 'orange', zh: '橙子' },
+      P: { sound: '/p/', speak: 'puh', word: 'pig', zh: '小猪' },
+      Q: { sound: '/kw/', speak: 'kwuh', word: 'queen', zh: '女王' },
+      R: { sound: '/r/', speak: 'ruh', word: 'rabbit', zh: '兔子' },
+      S: { sound: '/s/', speak: 'suh', word: 'sun', zh: '太阳' },
+      T: { sound: '/t/', speak: 'tuh', word: 'tiger', zh: '老虎' },
+      U: { sound: '/ʌ/', speak: 'uh', word: 'umbrella', zh: '雨伞' },
+      V: { sound: '/v/', speak: 'vuh', word: 'van', zh: '小货车' },
+      W: { sound: '/w/', speak: 'wuh', word: 'water', zh: '水' },
+      X: { sound: '/ks/', speak: 'iks', word: 'box', zh: '盒子', note: '常在词尾' },
+      Y: { sound: '/j/', speak: 'yuh', word: 'yoyo', zh: '悠悠球' },
+      Z: { sound: '/z/', speak: 'zuh', word: 'zebra', zh: '斑马' }
     };
 
     function initEnglish() {
@@ -8956,19 +8970,35 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
           letters.innerHTML = `<span class="up">${up}</span><span class="low">${up.toLowerCase()}</span>`;
           letters.addEventListener('click', () => speakLetter(up));
           item.appendChild(letters);
-          // 下半：词中常见读音 /æ/ + 例词 + 中文，点击读例词
+          // 下半：词中常见读音 /æ/ + 例词 + 中文，点击先读音标音再读例词
           if (s) {
             const soundRow = document.createElement('div');
             soundRow.className = 'abc-sound';
             soundRow.innerHTML = `<b>${s.sound}</b><span class="sw">${s.word}</span><i>${s.zh}${s.note ? '（' + s.note + '）' : ''}</i>`;
             soundRow.addEventListener('click', (e) => {
               e.stopPropagation();
-              speakEn(s.word);
+              speakPhonics(s);
             });
             item.appendChild(soundRow);
           }
           chartGrid.appendChild(item);
         });
+      }
+
+      // 点读音行：先单独读音标的近似音（如 /b/ → "buh"），结束后自动接例词，加深"音→词"关联
+      function speakPhonics(s) {
+        if (!s || !s.speak) return;
+        unlockSpeechIfNeeded();
+        state.speechReqId++;
+        const playWord = () => {
+          playEnAudio(s.word, () => speakEnWithSynth(s.word, 0.75));
+        };
+        playEnAudio(s.speak,
+          // 在线音源读不出这个音：系统合成兜底，读完后接例词
+          () => speakEnWithSynth(s.speak, 0.6, playWord),
+          // 在线音源播完，接着读例词
+          playWord
+        );
       }
 
       function setMode(mode) {
