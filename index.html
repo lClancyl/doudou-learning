@@ -2968,22 +2968,31 @@
     }
     .abc-chart-item .abc-letters {
       display: flex; align-items: baseline; gap: 6px;
+      width: 100%; justify-content: center;
+      padding: 3px 6px;
     }
+    /* 读音行整块可点：加大点击区域，视觉上像个独立小按钮 */
     .abc-chart-item .abc-sound {
-      margin-top: 6px; padding-top: 6px; width: 100%;
-      border-top: 2px dashed rgba(135,206,235,0.55);
+      margin-top: 4px; width: 100%;
+      padding: 8px 6px;
+      min-height: 34px;
+      background: rgba(135,206,235,0.16);
+      border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      gap: 4px; flex-wrap: wrap;
+      gap: 5px; flex-wrap: wrap;
       cursor: pointer;
-      transition: transform 0.18s;
+      transition: transform 0.18s, background 0.18s;
     }
-    .abc-chart-item .abc-sound:active { transform: scale(0.94); }
+    .abc-chart-item .abc-sound:active {
+      transform: scale(0.94);
+      background: rgba(135,206,235,0.3);
+    }
     .abc-chart-item .abc-sound b {
-      color: #e91e89; font-weight: 800; font-size: 13px;
+      color: #e91e89; font-weight: 800; font-size: 14px;
       font-family: var(--font-letter);
     }
     .abc-chart-item .abc-sound .sw {
-      color: #2c7fb8; font-weight: 800; font-size: 14px;
+      color: #2c7fb8; font-weight: 800; font-size: 15px;
       font-family: var(--font-letter);
     }
     .abc-chart-item .abc-sound i {
