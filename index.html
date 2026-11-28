@@ -8609,7 +8609,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
     // 每个字母在单词里的常见读音（自然拼读 phonics 音标）+ 例词
     // speak 字段：音标没法直接喂 TTS，用自然拼读近似拼法（/b/→"buh"、/æ/→"aah"），点读音行先读这个音再读例词
     // I 换成 ink（ice cream 的 i 是长音 /aɪ/，不适合演示常见短音 /ɪ/）
-    // X 换成 box（x 开头的词太少，/ks/ 通常出现在词中或词尾）
+    // X 用 xylophone：x 开头的词里 x 读 /z/（和首字母游戏同一个词）
     const ABC_LETTER_SOUNDS = {
       A: { sound: '/æ/', speak: 'aah', word: 'apple', zh: '苹果' },
       B: { sound: '/b/', speak: 'buh', word: 'ball', zh: '球' },
@@ -8634,7 +8634,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       U: { sound: '/ʌ/', speak: 'uh', word: 'umbrella', zh: '雨伞' },
       V: { sound: '/v/', speak: 'vuh', word: 'van', zh: '小货车' },
       W: { sound: '/w/', speak: 'wuh', word: 'water', zh: '水' },
-      X: { sound: '/ks/', speak: 'iks', word: 'box', zh: '盒子', note: '常在词尾' },
+      X: { sound: '/z/', word: 'xylophone', zh: '木琴' },
       Y: { sound: '/j/', speak: 'yuh', word: 'yoyo', zh: '悠悠球' },
       Z: { sound: '/z/', speak: 'zuh', word: 'zebra', zh: '斑马' }
     };
