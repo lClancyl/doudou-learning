@@ -1726,6 +1726,69 @@
       .radical-detail { position: static; min-height: 0; }
       .radical-groups { max-height: none; overflow: visible; }
     }
+    .radical-quiz-score {
+      margin-left: auto;
+      font-weight: 800;
+      color: #e91e89;
+      font-size: 15px;
+    }
+    .radical-quiz-char {
+      font-size: 84px;
+      font-weight: 900;
+      text-align: center;
+      color: #5a3e2b;
+      font-family: var(--font-letter);
+      line-height: 1.2;
+      margin: 6px 0 14px;
+    }
+    .radical-quiz-char.pop { animation: radicalQuizPop 0.35s ease-out; }
+    @keyframes radicalQuizPop {
+      0% { transform: scale(0.5); opacity: 0; }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .radical-quiz-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+    .radical-quiz-options .rq-opt {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 12px 8px;
+      border-radius: 16px;
+      border: 2px solid var(--sky-blue);
+      background: linear-gradient(180deg, #fff, #eef7ff);
+      box-shadow: 0 4px 12px rgba(135,206,235,0.22);
+      cursor: pointer;
+      transition: transform 0.18s;
+    }
+    .radical-quiz-options .rq-opt:active { transform: scale(0.94); }
+    .radical-quiz-options .rq-glyph {
+      font-size: 34px; font-weight: 900; color: #e91e89;
+      font-family: var(--font-letter);
+    }
+    .radical-quiz-options .rq-name {
+      font-size: 14px; font-weight: 800; color: #5a3e2b;
+      margin-top: 2px;
+    }
+    .radical-quiz-options .rq-opt.correct {
+      border-color: #7ec850;
+      background: linear-gradient(180deg, #fdfff6, #ecfae1);
+      animation: radicalQuizPop 0.3s ease-out;
+    }
+    .radical-quiz-options .rq-opt.wrong {
+      border-color: #f08a8a;
+      background: linear-gradient(180deg, #fff7f7, #ffeaea);
+      animation: radicalQuizShake 0.4s;
+    }
+    @keyframes radicalQuizShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+    }
 
     .library-select-status {
       min-height: 20px;
@@ -3232,12 +3295,13 @@
       <section class="card">
         <div class="row">
           <h1 style="margin-right:auto;">偏旁部首</h1>
+          <button class="subtab primary" id="radicalQuizBtn">🔎 找偏旁挑战</button>
           <button id="backHomeFromRadicals">返回首页</button>
         </div>
         <p class="radical-lead">点一点部首卡片，想听故事就按 🎧 听故事 👀</p>
       </section>
 
-      <section class="card">
+      <section class="card" id="radicalBrowseCard">
         <div class="radical-layout">
           <div class="radical-groups" id="radicalGrid"></div>
           <div class="radical-detail" id="radicalDetail">
@@ -3255,6 +3319,17 @@
             <div class="chips radical-examples" id="radicalExamples"></div>
           </div>
         </div>
+      </section>
+
+      <section class="card hidden" id="radicalQuizCard">
+        <div class="row">
+          <button id="radicalQuizBack">← 返回部首表</button>
+          <span class="radical-quiz-score" id="radicalQuizScore"></span>
+        </div>
+        <p class="radical-lead" id="radicalQuizPrompt">看字选偏旁：这个字里藏着哪个偏旁部首？</p>
+        <div class="radical-quiz-char" id="radicalQuizChar">江</div>
+        <div class="radical-quiz-options" id="radicalQuizOptions"></div>
+        <div class="abc-feedback" id="radicalQuizFeedback"></div>
       </section>
     </div>
 
@@ -4190,6 +4265,15 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       radicalBig: document.getElementById("radicalBig"),
       radicalName: document.getElementById("radicalName"),
       radicalExamples: document.getElementById("radicalExamples"),
+      radicalBrowseCard: document.getElementById("radicalBrowseCard"),
+      radicalQuizBtn: document.getElementById("radicalQuizBtn"),
+      radicalQuizCard: document.getElementById("radicalQuizCard"),
+      radicalQuizBack: document.getElementById("radicalQuizBack"),
+      radicalQuizPrompt: document.getElementById("radicalQuizPrompt"),
+      radicalQuizChar: document.getElementById("radicalQuizChar"),
+      radicalQuizOptions: document.getElementById("radicalQuizOptions"),
+      radicalQuizFeedback: document.getElementById("radicalQuizFeedback"),
+      radicalQuizScore: document.getElementById("radicalQuizScore"),
       lessonInput: document.getElementById("lessonInput"),
       tracePad: document.getElementById("tracePad"),
       writerTarget: document.getElementById("writerTarget"),
@@ -7053,6 +7137,155 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       renderRadicalDetail(selected);
     }
 
+    // ---------- 找偏旁挑战：看字选偏旁 ----------
+    const RADICAL_QUIZ_KEY = "doudou-radical-quiz-v1";
+    const RADICAL_QUIZ_ROUND = 10;
+    // 例字 → 部首 key（160 个例字无重复，已校验）
+    const CHAR_TO_RADICAL = {};
+    RADICAL_DATA.forEach(r => r.examples.forEach(ch => {
+      if (!CHAR_TO_RADICAL[ch]) CHAR_TO_RADICAL[ch] = r.key;
+    }));
+    const radicalQuizState = {
+      active: false, round: 0, score: 0, answer: null, locked: false,
+      used: [], stars: 0
+    };
+
+    function loadRadicalQuizStars() {
+      try {
+        radicalQuizState.stars = Math.max(0, Math.floor(Number(localStorage.getItem(RADICAL_QUIZ_KEY)) || 0));
+      } catch (err) {}
+    }
+
+    function addRadicalQuizStars(n) {
+      radicalQuizState.stars += n;
+      try { localStorage.setItem(RADICAL_QUIZ_KEY, String(radicalQuizState.stars)); } catch (err) {}
+    }
+
+    function updateRadicalQuizScore() {
+      el.radicalQuizScore.textContent = `本轮 ${radicalQuizState.round}/${RADICAL_QUIZ_ROUND} · 累计 ⭐${radicalQuizState.stars}`;
+    }
+
+    function showRadicalQuiz(active) {
+      radicalQuizState.active = active;
+      el.radicalBrowseCard.classList.toggle("hidden", active);
+      el.radicalQuizCard.classList.toggle("hidden", !active);
+      el.radicalQuizBtn.classList.toggle("hidden", active);
+    }
+
+    function startRadicalQuiz() {
+      loadRadicalQuizStars();
+      radicalQuizState.round = 0;
+      radicalQuizState.score = 0;
+      radicalQuizState.used = [];
+      radicalQuizState.answer = null;
+      showRadicalQuiz(true);
+      nextRadicalQuestion();
+    }
+
+    function nextRadicalQuestion() {
+      if (radicalQuizState.round >= RADICAL_QUIZ_ROUND) {
+        finishRadicalQuiz();
+        return;
+      }
+      radicalQuizState.round += 1;
+      radicalQuizState.locked = false;
+      const keys = Object.keys(CHAR_TO_RADICAL);
+      // 抽一个本轮没用过的字
+      let ch, guard = 0;
+      do {
+        ch = keys[Math.floor(Math.random() * keys.length)];
+      } while (radicalQuizState.used.includes(ch) && guard++ < 200);
+      radicalQuizState.used.push(ch);
+      const answerKey = CHAR_TO_RADICAL[ch];
+      radicalQuizState.answer = answerKey;
+
+      // 干扰项优先同组（位置相同更有迷惑性），不够再从其他组补
+      const group = radicalGroupOf(answerKey);
+      const sameGroup = group.keys.filter(k => k !== answerKey);
+      const others = RADICAL_DATA.map(r => r.key).filter(k => k !== answerKey && !group.keys.includes(k));
+      const distract = [];
+      const samePool = sameGroup.slice();
+      while (distract.length < 2 && samePool.length) {
+        distract.push(samePool.splice(Math.floor(Math.random() * samePool.length), 1)[0]);
+      }
+      const otherPool = others.slice();
+      while (distract.length < 3 && otherPool.length) {
+        distract.push(otherPool.splice(Math.floor(Math.random() * otherPool.length), 1)[0]);
+      }
+      const options = [answerKey, ...distract].sort(() => Math.random() - 0.5);
+
+      el.radicalQuizChar.textContent = ch;
+      el.radicalQuizChar.classList.remove("pop");
+      void el.radicalQuizChar.offsetWidth;
+      el.radicalQuizChar.classList.add("pop");
+      el.radicalQuizOptions.innerHTML = "";
+      el.radicalQuizFeedback.textContent = "";
+      updateRadicalQuizScore();
+
+      options.forEach(key => {
+        const info = getRadicalInfo(key);
+        const btn = document.createElement("button");
+        btn.className = "rq-opt";
+        const glyph = document.createElement("span");
+        glyph.className = "rq-glyph";
+        glyph.textContent = info.radical;
+        const name = document.createElement("span");
+        name.className = "rq-name";
+        name.textContent = info.name;
+        btn.append(glyph, name);
+        btn.addEventListener("click", () => {
+          if (radicalQuizState.locked) return;
+          if (key === radicalQuizState.answer) {
+            radicalQuizState.locked = true;
+            btn.classList.add("correct");
+            radicalQuizState.score += 1;
+            el.radicalQuizFeedback.textContent = "答对啦！";
+            speak(`${info.name}，答对啦！`);
+            setTimeout(nextRadicalQuestion, 1500);
+          } else {
+            btn.classList.add("wrong");
+            el.radicalQuizFeedback.textContent = "再想一想哦";
+            speak("不对哦，再想一想");
+            setTimeout(() => btn.classList.remove("wrong"), 600);
+          }
+        });
+        el.radicalQuizOptions.appendChild(btn);
+      });
+    }
+
+    function finishRadicalQuiz() {
+      const perfect = radicalQuizState.score >= RADICAL_QUIZ_ROUND;
+      addRadicalQuizStars(radicalQuizState.score);
+      updateRadicalQuizScore();
+      el.radicalQuizChar.textContent = "🎉";
+      el.radicalQuizOptions.innerHTML = "";
+      el.radicalQuizFeedback.textContent = `本轮答对 ${radicalQuizState.score}/${RADICAL_QUIZ_ROUND} 题` + (perfect ? "，太棒了！" : "");
+      if (perfect) {
+        el.trophyModalScore.textContent = "找偏旁挑战 10 题全对！";
+        el.trophyModal.classList.remove("hidden");
+      }
+      speak(perfect
+        ? `太棒了！全部答对，一共收集${radicalQuizState.stars}颗星星`
+        : `本轮答对${radicalQuizState.score}题，再来一组吧`);
+      // 稍等再开新一轮
+      clearTimeout(finishRadicalQuiz.timer);
+      finishRadicalQuiz.timer = setTimeout(() => {
+        if (!radicalQuizState.active) return;
+        radicalQuizState.round = 0;
+        radicalQuizState.score = 0;
+        radicalQuizState.used = [];
+        nextRadicalQuestion();
+      }, perfect ? 4200 : 2600);
+    }
+
+    function initRadicalQuiz() {
+      el.radicalQuizBtn.addEventListener("click", startRadicalQuiz);
+      el.radicalQuizBack.addEventListener("click", () => {
+        clearTimeout(finishRadicalQuiz.timer);
+        showRadicalQuiz(false);
+      });
+    }
+
     function markCharsAsLearned(chars) {
       const list = [...new Set(chars)].filter(ch => state.unlearned.has(ch));
       if (!list.length) return 0;
@@ -9059,6 +9292,7 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       step("initAdd", () => initAdd());
       step("initCompare", () => initCompare());
       step("initEnglish", () => initEnglish());
+      step("initRadicalQuiz", () => initRadicalQuiz());
       step("setupAppHistory", () => setupAppHistory());
     }
 
