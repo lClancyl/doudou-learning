@@ -5945,6 +5945,8 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
                 // Skip if iFlytek audio arrived too late (>3s since speak started)
                 var elapsed = Date.now() - (state.speechStartedAt || 0);
                 if (elapsed > 3000) { done(false); return; }
+                // 系统音兜底已经开口了，就不要中途换成讯飞，避免一句话里换声音
+                if (state.systemFallbackReqId === reqId) { done(false); return; }
                 // Mark that iFlytek handled this request — prevent stale system speech
                 state.iflytekHandledReqId = reqId;
                 // Cancel system speech if it's still playing (desktop only; iOS skips system speech)
@@ -6007,6 +6009,10 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       if (!window.speechSynthesis) return;
       const synth = window.speechSynthesis;
       if (reqId !== state.speechReqId) return;
+      // voices 列表为空时现场再取一次（Chrome 首次可能为空）
+      if (!state.voices.length && synth.getVoices) {
+        try { state.voices = synth.getVoices(); } catch (err) {}
+      }
       const u = new SpeechSynthesisUtterance(speechText);
       u.lang = "zh-CN";
       u.rate = oneChar ? 0.7 : 0.85;
@@ -6016,7 +6022,9 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       const zhVoice = state.voices.find(v => /zh-CN|zh_CN|Chinese\s*\(China\)/i.test(v.lang) && v.localService);
       const zhVoiceAny = state.voices.find(v => /zh|chinese|中文/i.test(`${v.lang} ${v.name}`));
       const voice = zhVoice || zhVoiceAny;
-      if (voice) u.voice = voice;
+      // 找不到任何中文音源就不播：宁可短暂静音等讯飞，也不让英文男声把中文读成一串怪音
+      if (!voice) return;
+      u.voice = voice;
       u.onerror = (e) => { console.warn("speechSynthesis error:", e); };
       // Safari workaround: small delay after cancel
       setTimeout(() => {
@@ -6100,24 +6108,37 @@ var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window
       }
 
       // On iOS, skip system speech entirely — cancel() can't stop it
-      if (!isIOS) {
+      // 配置了讯飞时不预播系统音：避免系统音先读、讯飞后接力的"双声"朗读
+      const iflytekConfigured = hasIflytekTtsConfig();
+      if (!iflytekConfigured && !isIOS) {
         speakWithSystemSpeech(speechText, oneChar, reqId);
       }
 
       // Try iFlytek TTS for better quality
-      // On desktop: arrives in time → cancel system speech, play audio
-      // On iOS: the only voice source, no conflict
       let selectedVcn = IFLYTEK_TTS.vcn;
       if (state.selectedVoiceName && state.selectedVoiceName.startsWith("__iflytek__:")) {
         selectedVcn = state.selectedVoiceName.split(":")[1];
       }
       const iflytekReqId = reqId;
+      // 讯飞 900ms 还没出声（网络慢）才退回系统音；系统音一旦开口，迟到的讯飞音频不再插播
+      let systemFallbackTimer = null;
+      if (iflytekConfigured) {
+        systemFallbackTimer = setTimeout(() => {
+          if (iflytekReqId !== state.speechReqId) return;
+          if (state.iflytekHandledReqId === iflytekReqId) return;
+          if (state.systemFallbackReqId === iflytekReqId) return;
+          state.systemFallbackReqId = iflytekReqId;
+          speakWithSystemSpeech(speechText, oneChar, iflytekReqId);
+        }, 900);
+      }
       speakWithIflytek(speechText, iflytekReqId, selectedVcn).then(ok => {
-        // On iOS: if iFlytek failed, fall back to system speech
-        if (isIOS && !ok && iflytekReqId === state.speechReqId) {
+        if (systemFallbackTimer) clearTimeout(systemFallbackTimer);
+        // 讯飞失败且系统音还没开口时，退回系统合成音兜底（iOS 同样适用）
+        if (!ok && iflytekReqId === state.speechReqId &&
+            state.systemFallbackReqId !== iflytekReqId &&
+            state.iflytekHandledReqId !== iflytekReqId) {
           speakWithSystemSpeech(speechText, oneChar, iflytekReqId);
         }
-        // Desktop: iFlytek already handled everything internally
       });
     }
 
